@@ -36,17 +36,21 @@ function App() {
 
   return (
     <div className="app">
-      <TopNav route={route} onNavigate={navigate} plain={plain} onPlain={togglePlain} />
+      <TopNav route={route} onNavigate={navigate} plain={plain} onPlain={togglePlain} hasWriting={entries.length > 0} />
       <NowPlaying track={window.AK.NOW_PLAYING} />
       <main className="page">
         {route === "home" && (
           <>
             <Hero onNavigate={navigate} />
-            <div className="section-h">
-              <h2>Latest writing</h2>
-              <a className="more" onClick={() => navigate("writing")}>See all {entries.length} →</a>
-            </div>
-            {entries.length > 0 && <FeaturedPair entries={entries} onOpen={openEntry} />}
+            {entries.length > 0 && (
+              <>
+                <div className="section-h">
+                  <h2>Latest writing</h2>
+                  <a className="more" onClick={() => navigate("writing")}>See all {entries.length} →</a>
+                </div>
+                <FeaturedPair entries={entries} onOpen={openEntry} />
+              </>
+            )}
             <div className="section-h">
               <h2>Projects</h2>
               <a className="more" onClick={() => navigate("projects")}>The full shelf →</a>

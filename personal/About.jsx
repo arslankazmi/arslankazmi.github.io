@@ -8,12 +8,7 @@ function About() {
       </div>
       <div>
         <span className="eyebrow">About</span>
-        <h1>The author, in three short paragraphs.</h1>
-        <p>
-          I'm a designer who writes, or a writer who designs — depending on which
-          half of the year you ask. I make personal software, the occasional
-          mixtape, and one very long essay every season.
-        </p>
+        <h1>The author, briefly.</h1>
         <p>
           I grew up on a quieter internet, made of forums and webrings and ugly,
           honest websites. This site is my attempt to keep a piece of that
@@ -24,10 +19,8 @@ function About() {
           with a book I haven't started.
         </p>
         <dl className="facts">
-          <dt>Now</dt>     <dd>Lisbon, mostly</dd>
-          <dt>Reading</dt> <dd><em>The Information</em>, James Gleick</dd>
-          <dt>Email</dt>   <dd><a>hi@arslan.land</a></dd>
-          <dt>Elsewhere</dt><dd><a>are.na</a> · <a>rss</a> · <a>github</a></dd>
+          <dt>Now</dt>   <dd>nowhere</dd>
+          <dt>Email</dt> <dd><a href="mailto:akazmi.public@gmail.com">akazmi.public@gmail.com</a></dd>
         </dl>
       </div>
     </section>

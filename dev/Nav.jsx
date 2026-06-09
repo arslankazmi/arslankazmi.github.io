@@ -1,6 +1,6 @@
 /** Dark hub nav: brand, Home/Writing routes, layout switcher (home only),
     Portfolio link, cross-link to the personal side, and the plain toggle. */
-function DHNav({ route, onNavigate, layout, onLayout, plain, onPlain }) {
+function DHNav({ route, onNavigate, layout, onLayout, plain, onPlain, hasWriting }) {
   const layouts = [
     { id: "terminal",  label: "Terminal"  },
     { id: "dashboard", label: "Dashboard" },
@@ -14,7 +14,7 @@ function DHNav({ route, onNavigate, layout, onLayout, plain, onPlain }) {
       </div>
       <div className="links">
         <a className={route === "home" ? "active" : ""} onClick={() => onNavigate("home")}>Home</a>
-        <a className={route === "writing" || route === "article" ? "active" : ""} onClick={() => onNavigate("writing")}>Writing</a>
+        {hasWriting && <a className={route === "writing" || route === "article" ? "active" : ""} onClick={() => onNavigate("writing")}>Writing</a>}
         <a href="../portfolio/">Projects ↗</a>
       </div>
       <div className="right">

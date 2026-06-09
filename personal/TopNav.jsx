@@ -1,8 +1,7 @@
 /** Top navigation bar — sticky, paper-blur. */
-function TopNav({ route, onNavigate, plain, onPlain }) {
+function TopNav({ route, onNavigate, plain, onPlain, hasWriting }) {
   const items = [
-    { id: "writing",  label: "Writing"  },
-    { id: "notebook", label: "Notebook" },
+    ...(hasWriting ? [{ id: "writing", label: "Writing" }, { id: "notebook", label: "Notebook" }] : []),
     { id: "projects", label: "Projects" },
     { id: "about",    label: "About"    },
   ];

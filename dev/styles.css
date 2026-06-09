@@ -93,7 +93,11 @@ body { margin: 0; background: var(--bg); color: var(--fg1); font-family: var(--f
 .dh-repos { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
 .dh-repo { background: var(--bg-elevated); border: 2px solid var(--ink-900); border-radius: 4px; padding: 16px 18px; display: flex; flex-direction: column; gap: 8px; cursor: pointer; box-shadow: 4px 4px 0 #000; transition: transform var(--dur-fast) var(--ease-out), box-shadow var(--dur-fast) var(--ease-out); }
 .dh-repo:hover { transform: translate(-2px,-2px); box-shadow: 6px 6px 0 #000; }
-.dh-repo .name { font-family: var(--font-mono); font-size: 14px; color: var(--accent); font-weight: 600; }
+.dh-repo .name { font-family: var(--font-mono); font-size: 14px; color: var(--accent); font-weight: 600; text-decoration: none; }
+.dh-repo .name:hover { text-decoration: underline; }
+.dh-repo .meta a { color: var(--fg3); text-decoration: none; }
+.dh-repo .meta a:hover { color: var(--accent); }
+.dh-repo .meta a.docs { color: var(--accent-2); }
 .dh-repo .desc { font-family: var(--font-body); font-size: 13px; color: var(--fg2); line-height: 1.45; margin: 0; flex: 1; }
 .dh-repo .tags { display: flex; gap: 6px; flex-wrap: wrap; }
 .dh-repo .tag { font-family: var(--font-body); font-size: 11px; color: var(--accent-2); background: var(--accent-2-soft); border-radius: 999px; padding: 2px 9px; }

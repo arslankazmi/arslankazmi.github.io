@@ -18,21 +18,24 @@ function StatTiles() {
 function RepoCard({ repo }) {
   return (
     <div className="dh-repo">
-      <span className="name">{repo.name}</span>
+      <a className="name" href={repo.url} target="_blank" rel="noopener">{repo.name}</a>
       <p className="desc">{repo.desc}</p>
-      <div className="tags">{repo.tags.map(t => <span className="tag" key={t}>{t}</span>)}</div>
+      {repo.tags && repo.tags.length > 0 &&
+        <div className="tags">{repo.tags.map(t => <span className="tag" key={t}>{t}</span>)}</div>}
       <div className="meta">
-        <span className="lang"><span className="dot" style={{ background: `var(${repo.langVar})` }}></span>{repo.lang}</span>
-        <span>★ {repo.stars}</span>
-        <span>⑂ {repo.forks}</span>
+        {repo.lang && <span className="lang"><span className="dot" style={{ background: `var(${repo.langVar})` }}></span>{repo.lang}</span>}
+        {repo.docs && <a className="docs" href={repo.docs} target="_blank" rel="noopener">docs ↗</a>}
+        <a className="repo" href={repo.url} target="_blank" rel="noopener">code ↗</a>
       </div>
     </div>
   );
 }
 
-function RepoGrid({ limit }) {
-  const repos = limit ? window.DH.repos.slice(0, limit) : window.DH.repos;
-  return <div className="dh-repos">{repos.map(r => <RepoCard key={r.name} repo={r} />)}</div>;
+function RepoGrid({ repos, limit }) {
+  const all = (repos && repos.length) ? repos : (window.DH.repos || []);
+  if (!all.length) return <p className="dh-empty">Loading repos…</p>;
+  const list = limit ? all.slice(0, limit) : all;
+  return <div className="dh-repos">{list.map(r => <RepoCard key={r.name} repo={r} />)}</div>;
 }
 
 function DataPanel() {
