@@ -4,7 +4,6 @@ function DHNav({ route, onNavigate, layout, onLayout, plain, onPlain, hasWriting
   const layouts = [
     { id: "terminal",  label: "Terminal"  },
     { id: "dashboard", label: "Dashboard" },
-    { id: "magazine",  label: "Magazine"  },
   ];
   return (
     <nav className="dh-nav">

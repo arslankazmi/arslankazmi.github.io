@@ -44,17 +44,6 @@ function HomeLayouts({ layout, posts, repos, stats, langs, byYear, onMore }) {
           <ReadingAndPlaying />
         </>
       )}
-      {layout === "magazine" && (
-        <>
-          <HeroMagazine />
-          <div className="dh-sec"><h2>Featured work</h2><span className="hint">top {Math.min(3, repos.length)}</span></div>
-          <RepoGrid repos={repos} limit={3} />
-          <div className="dh-sec"><h2>On GitHub</h2><span className="hint">live</span></div>
-          <StatTiles stats={stats} />
-          <div className="dh-sec"><h2>Reading &amp; playing</h2></div>
-          <ReadingAndPlaying />
-        </>
-      )}
     </>
   );
 }

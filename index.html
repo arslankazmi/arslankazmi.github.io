@@ -21,7 +21,8 @@
     }
     /* Hover a half → it grows to ~65% of the width (flex-grow 1.857 : 1 = 65 : 35), with a
        small overshoot-and-pull-back jiggle, as if the other side resists before giving way. */
-    .split .half:hover { animation: ak-expand 0.8s cubic-bezier(0.22, 1, 0.36, 1) forwards; }
+    /* ~0.22s delay = hover intent: a cursor just passing through won't trigger the expand. */
+    .split .half:hover { animation: ak-expand 0.8s cubic-bezier(0.22, 1, 0.36, 1) 0.22s forwards; }
     @keyframes ak-expand {
       0%   { flex-grow: 1; }
       45%  { flex-grow: 2.15; }   /* overshoot past 65% */
@@ -34,7 +35,7 @@
       max-width: 460px; padding: 0 6vw; text-align: left;
       transition: opacity 0.4s ease, transform 0.55s cubic-bezier(0.22, 1, 0.36, 1);
     }
-    .split:hover .half:not(:hover) .inner { opacity: 0; transform: scale(0.96); }
+    .split:hover .half:not(:hover) .inner { opacity: 0; transform: scale(0.96); transition-delay: 0.22s; }
 
     .half .mark { height: 56px; margin-bottom: 22px; display: block; }
     .half .k { font-family: var(--font-mono); font-size: 12px; letter-spacing: 0.1em; text-transform: uppercase; }
@@ -64,12 +65,16 @@
       height: 100vh; width: 0; border-left: 1px solid rgba(124,140,255,0.25); z-index: 5; pointer-events: none;
       transition: opacity 0.4s ease;
     }
-    .split:hover .seam { opacity: 0; }
+    .split:hover .seam { opacity: 0; transition-delay: 0.22s; }
     .brand {
-      position: fixed; top: 22px; left: 50%; transform: translateX(-50%); z-index: 6; pointer-events: none;
+      position: fixed; top: 20px; left: 50%; transform: translateX(-50%); z-index: 6; pointer-events: none;
+      display: flex; flex-direction: column; align-items: center; gap: 8px; text-align: center;
+    }
+    .brand .bname {
       font-family: var(--font-mono); font-size: 12px; letter-spacing: 0.12em; text-transform: uppercase;
       color: #fff; mix-blend-mode: difference;
     }
+    .brand .blogo { height: 40px; display: block; }
     .disclaimer {
       position: fixed; bottom: 16px; left: 50%; transform: translateX(-50%); z-index: 6;
       font-family: var(--font-mono); font-size: 11px; color: #fff; mix-blend-mode: difference; text-align: center; white-space: nowrap;
@@ -89,11 +94,13 @@
   </style>
 </head>
 <body>
-  <div class="brand">Arslan Kazmi</div>
+  <div class="brand">
+    <span class="bname">Arslan Kazmi</span>
+    <img class="blogo" src="./assets/logo-ak-blue.png" alt=""/>
+  </div>
   <div class="split">
     <a class="half dev" href="./dev/">
       <div class="inner">
-        <img class="mark" src="./assets/logo-ak-blue.png" alt=""/>
         <span class="k">// the workshop</span>
         <h2>arslan.dev</h2>
         <p>Programmer &amp; data scientist. Projects, signal, reading, and dev writing — dark, monospace, a little 8-bit.</p>
