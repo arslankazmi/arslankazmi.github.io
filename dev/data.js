@@ -24,18 +24,7 @@ const DH = {
     { lbl: "Rust",       val: 18, color: "var(--viz-7)" },
     { lbl: "Other",      val: 17, color: "var(--viz-8)" },
   ],
-
-  // Manually maintained — what's on the nightstand right now.
-  books: [
-    { ti: "The Wee Free Men", au: "Terry Pratchett · re-reading", spine: "var(--seagreen-500)" },
-  ],
-
-  // Manually maintained — edit as your rotation changes.
-  games: {
-    now:   { ti: "Metroid Prime 4", meta: "now playing", art: "../assets/metroid-prime.png" },
-    next:  "Subnautica 2",
-    again: "Slay the Spire 2",
-  },
+  // Reading & playing data now lives in shared/reading-data.js (window.RP), shared with the personal side.
 };
 
 window.DH = DH;

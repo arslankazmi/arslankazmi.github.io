@@ -1,0 +1,18 @@
+/* Shared "Reading & playing" card — token-driven; works on the dark (dev) and paper (personal) themes. */
+.rp-two { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+@media (max-width: 600px) { .rp-two { grid-template-columns: 1fr; } }
+.rp-shelf { display: flex; flex-direction: column; gap: 10px; }
+.rp-book { display: flex; gap: 12px; align-items: center; background: var(--bg-elevated); border: 1px solid var(--border); border-radius: 12px; padding: 10px 12px; }
+.rp-book .spine { width: 34px; height: 48px; border-radius: 3px; flex-shrink: 0; }
+.rp-book .ti { font-family: var(--font-display); font-size: 16px; color: var(--fg1); margin: 0; font-weight: 600; }
+.rp-book .au { font-family: var(--font-mono); font-size: 11px; color: var(--fg3); }
+.rp-now { background: var(--bg-elevated); border: 1px solid var(--border); border-radius: 12px; padding: 16px; display: flex; flex-direction: column; gap: 14px; }
+.rp-now .label { font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--accent-3); }
+.rp-now .game { display: flex; gap: 12px; align-items: center; }
+.rp-now .art { width: 52px; height: 52px; border-radius: 8px; background: linear-gradient(135deg, var(--purple-500), var(--cerulean-600)); }
+.rp-now img.art { width: auto; height: 34px; max-width: 110px; border-radius: 0; background: none; object-fit: contain; }
+.rp-now .game .ti { font-family: var(--font-display); font-size: 18px; color: var(--fg1); font-weight: 600; }
+.rp-now .game .meta { font-family: var(--font-mono); font-size: 11px; color: var(--fg3); }
+.rp-now .heart { height: 26px; }
+.rp-queue { display: flex; flex-direction: column; gap: 4px; font-family: var(--font-mono); font-size: 11px; color: var(--fg3); }
+.rp-queue b { color: var(--accent-2); font-weight: 600; }

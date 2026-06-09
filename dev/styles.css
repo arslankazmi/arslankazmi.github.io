@@ -202,23 +202,7 @@ body { margin: 0; background: var(--bg); color: var(--fg1); font-family: var(--f
 .dh-legend .val { font-family: var(--font-mono); font-size: 13px; color: var(--fg2); }
 .spark { width: 100%; height: 54px; display: block; }
 
-/* ---------- Reading + now playing ---------- */
-.dh-two { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
-.dh-shelf { display: flex; flex-direction: column; gap: 10px; }
-.dh-book { display: flex; gap: 12px; align-items: center; background: var(--bg-elevated); border: 1px solid var(--border); border-radius: 12px; padding: 10px 12px; }
-.dh-book .spine { width: 34px; height: 48px; border-radius: 3px; flex-shrink: 0; }
-.dh-book .ti { font-family: var(--font-display); font-size: 16px; color: var(--fg1); margin: 0; font-weight: 600; }
-.dh-book .au { font-family: var(--font-mono); font-size: 11px; color: var(--fg3); }
-.dh-now { background: var(--bg-elevated); border: 1px solid var(--border); border-radius: 12px; padding: 16px; display: flex; flex-direction: column; gap: 14px; }
-.dh-now .label { font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--accent-3); }
-.dh-now .game { display: flex; gap: 12px; align-items: center; }
-.dh-now .art { width: 52px; height: 52px; border-radius: 8px; background: linear-gradient(135deg, var(--purple-500), var(--cerulean-600)); }
-.dh-now img.art { width: auto; height: 34px; max-width: 110px; border-radius: 0; background: none; object-fit: contain; }
-.dh-now .game .ti { font-family: var(--font-display); font-size: 18px; color: var(--fg1); font-weight: 600; }
-.dh-now .game .meta { font-family: var(--font-mono); font-size: 11px; color: var(--fg3); }
-.dh-now .heart { height: 26px; }
-.dh-queue { display: flex; flex-direction: column; gap: 4px; font-family: var(--font-mono); font-size: 11px; color: var(--fg3); }
-.dh-queue b { color: var(--accent-2); font-weight: 600; }
+/* Reading & playing card → shared/reading-playing.css (.rp-*), linked in index.html. */
 
 /* ---------- Footer ---------- */
 .dh-foot { border-top: 1px solid var(--border); padding: 26px 28px 44px; display: flex; justify-content: space-between; align-items: center; gap: 20px; font-family: var(--font-mono); font-size: 12px; color: var(--fg3); flex-wrap: wrap; }

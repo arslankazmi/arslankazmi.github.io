@@ -60,6 +60,8 @@ function App() {
                 <ProjectGrid projects={window.AK.PROJECTS} />
               </>
             )}
+            <div className="section-h"><h2>Reading &amp; playing</h2></div>
+            <ReadingPlaying />
           </>
         )}
         {route === "writing" && (

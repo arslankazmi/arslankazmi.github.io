@@ -74,43 +74,6 @@ function DataPanel({ byYear, langs }) {
   );
 }
 
-function ReadingAndPlaying() {
-  const { books, games } = window.DH;
-  const now = (games && games.now) || { ti: "—", meta: "" };
-  return (
-    <div className="dh-two">
-      <div className="dh-shelf">
-        {books.map(b => (
-          <div className="dh-book" key={b.ti}>
-            <span className="spine" style={{ background: b.spine }}></span>
-            <div>
-              <p className="ti">{b.ti}</p>
-              <span className="au">{b.au}</span>
-            </div>
-          </div>
-        ))}
-      </div>
-      <div className="dh-now">
-        <span className="label">Now playing</span>
-        <div className="game">
-          {now.art ? <img className="art" src={now.art} alt="" /> : <span className="art"></span>}
-          <div>
-            <div className="ti">{now.ti}</div>
-            <div className="meta">{now.meta}</div>
-          </div>
-        </div>
-        {games && (games.next || games.again) && (
-          <div className="dh-queue">
-            {games.next && <span><b>up next</b> · {games.next}</span>}
-            {games.again && <span><b>replaying</b> · {games.again}</span>}
-          </div>
-        )}
-        <img className="heart" src="../assets/heart-pin.svg" alt="loved" style={{ alignSelf: "flex-start" }} />
-      </div>
-    </div>
-  );
-}
-
 function OtherSide() {
   return (
     <a className="dh-other" href="../personal/">
@@ -142,4 +105,4 @@ function DHFooter() {
   );
 }
 
-Object.assign(window, { StatTiles, RepoGrid, DataPanel, ReadingAndPlaying, OtherSide, DHFooter });
+Object.assign(window, { StatTiles, RepoGrid, DataPanel, OtherSide, DHFooter });

@@ -29,7 +29,7 @@ function HomeLayouts({ layout, posts, repos, stats, langs, byYear, onMore }) {
           <RepoGrid repos={repos} />
           {writing}
           <div className="dh-sec"><h2>Reading &amp; playing</h2></div>
-          <ReadingAndPlaying />
+          <ReadingPlaying />
           <OtherSide />
         </>
       )}
@@ -41,7 +41,7 @@ function HomeLayouts({ layout, posts, repos, stats, langs, byYear, onMore }) {
           <div className="dh-sec"><h2>Pinned</h2><span className="hint">{repos.length} repos</span></div>
           <RepoGrid repos={repos} />
           <div className="dh-sec"><h2>Reading &amp; playing</h2></div>
-          <ReadingAndPlaying />
+          <ReadingPlaying />
         </>
       )}
     </>
