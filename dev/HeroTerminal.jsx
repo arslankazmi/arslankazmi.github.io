@@ -13,8 +13,8 @@ function HeroTerminal() {
         <div className="out">arslan kazmi — {window.DH.tagline.toLowerCase()}</div>
         <div style={{ height: 10 }}></div>
         <div><span className="p">➜ ~</span> <span className="cmd">cat now.txt</span></div>
-        <div className="out">Building <span className="k">paperdesk</span>, reading <span className="k">The Information</span>,</div>
-        <div className="out">100%-ing <span className="k">Tunic</span>, and mailing mixtapes to 14 friends.</div>
+        <div className="out">Shipping small tools, reading too many tabs,</div>
+        <div className="out">and currently playing <span className="k">Metroid Prime 4</span>.</div>
         <div style={{ height: 10 }}></div>
         <div><span className="p">➜ ~</span> <span className="cmd">ls projects/</span> <span className="cursor"></span></div>
         <div className="scanlines"></div>

@@ -97,6 +97,7 @@ body {
 .now-strip button.what:hover { color: var(--accent); }
 .now-strip .np-hint { margin-left: auto; font-family: var(--font-mono); font-size: 11px; color: var(--purple-700); }
 @media (max-width: 600px) { .now-strip .np-hint { display: none; } }
+.footer .ai-note { opacity: 0.65; }
 
 /* ---------- Page container ---------- */
 .page {

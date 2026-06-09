@@ -123,7 +123,7 @@ function OtherSide() {
         </div>
         <span className="k">// the other side</span>
         <h3>arslan.land</h3>
-        <p>The quieter, paper side — essays, notebook, mixtapes. Same brand, light theme.</p>
+        <p>The quieter, paper side — essays, notebook, notes. Same brand, light theme.</p>
       </div>
       <span className="go">Switch themes ↗</span>
     </a>
@@ -134,7 +134,8 @@ function DHFooter() {
   return (
     <footer className="dh-foot">
       <div>
-        Built with the Arslan Kazmi design system · <a href="../personal/">the personal side ↗</a>
+        Written by hand · built on the Arslan Kazmi design system · <a href="../personal/">the personal side ↗</a><br/>
+        <span className="ai-note">AI may have been used to fix the code.</span>
       </div>
       <span className="sig">— A.K.</span>
     </footer>

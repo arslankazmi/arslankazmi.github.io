@@ -9,7 +9,7 @@ function Hero({ onNavigate }) {
           and write about why.
         </h1>
         <p>
-          A small site for essays, mixtapes, and the occasional weeknote.
+          A small site for essays, notes, and the occasional weeknote.
           Lately I've been thinking about reading slowly, the rooms inside
           websites, and why every good idea sounds embarrassing out loud.
         </p>

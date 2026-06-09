@@ -3,8 +3,9 @@ function Footer() {
   return (
     <footer className="footer">
       <div>
-        Made by hand, in a browser, with too much coffee.<br/>
-        © {new Date().getFullYear()} Arslan Kazmi · No cookies, no analytics, no rush.
+        Written by hand.<br/>
+        © {new Date().getFullYear()} Arslan Kazmi · No cookies, no analytics, no rush.<br/>
+        <span className="ai-note">AI may have been used to fix the code.</span>
       </div>
       <div className="sig">— A.K.</div>
     </footer>
