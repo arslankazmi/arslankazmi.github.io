@@ -43,10 +43,15 @@
       display: flex; flex-direction: column; align-items: center; gap: 14px;
       opacity: 0; pointer-events: none; transition: opacity 0.3s ease;
     }
-    .peek .hand { font-size: 28px; line-height: 1; }
+    .peek .hand { font-size: 36px; line-height: 1; }
     .peek .peek-txt {
-      writing-mode: vertical-rl; text-orientation: mixed;
-      font-family: var(--font-mono); font-size: 13px; letter-spacing: 0.16em; text-transform: uppercase;
+      writing-mode: vertical-rl; text-orientation: upright;
+      font-family: var(--font-display); font-weight: 700; font-size: 30px;
+      letter-spacing: 0.04em; text-transform: uppercase; line-height: 1.05;
+    }
+    .peek .peek-sub {
+      writing-mode: vertical-rl; text-orientation: upright;
+      font-family: var(--font-mono); font-size: 12px; letter-spacing: 0.06em; opacity: 0.75;
     }
     .dev .peek .peek-txt { color: var(--accent); }
     .land .peek .peek-txt { color: #5d4b85; }
@@ -122,7 +127,7 @@
         <p>Programmer &amp; data scientist. Projects, signal, reading, and dev writing — dark, monospace, a little 8-bit.</p>
         <span class="go">Enter the dev hub →</span>
       </div>
-      <span class="peek"><span class="hand">👈</span><span class="peek-txt">the dev side · pick me</span></span>
+      <span class="peek"><span class="hand">👈</span><span class="peek-txt">pick me</span><span class="peek-sub">the dev side</span></span>
     </a>
     <a class="half land" href="./personal/">
       <div class="inner">
@@ -131,7 +136,7 @@
         <p>Essays, a notebook, half-formed notes. Warm paper, slower, weirder — the writing half of the coin.</p>
         <span class="go">Read the writing →</span>
       </div>
-      <span class="peek"><span class="hand">👉</span><span class="peek-txt">the fun side · pick me</span></span>
+      <span class="peek"><span class="hand">👉</span><span class="peek-txt">pick me</span><span class="peek-sub">the fun side</span></span>
     </a>
     <div class="seam"></div>
   </div>

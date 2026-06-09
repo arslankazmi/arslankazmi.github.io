@@ -1,0 +1,29 @@
+/* Plain view (html[data-view="plain"]) + the Markdown copy button — shared by both sides.
+   The plain view is a table-based, text-in-columns replica of the page (cf. the portfolio). */
+html[data-view="plain"], html[data-view="plain"] body { background: #fff !important; background-image: none !important; }
+html[data-view="plain"] body { color: #111; font-family: Georgia, "Times New Roman", Times, serif; }
+
+.plain-root { max-width: 860px; margin: 0 auto; padding: 30px 20px 90px; }
+.plain-root h1 { font-family: inherit; font-size: 2rem; line-height: 1.15; margin: 0 0 .25rem; color: #111; }
+.plain-root h2 { font-family: inherit; font-size: 1.3rem; margin: 1.7rem 0 .5rem; color: #111; border-bottom: 1px solid #e2e2e2; padding-bottom: 3px; }
+.plain-root p { color: #222; line-height: 1.55; margin: .5rem 0; }
+.plain-root a { color: #0645ad; }
+.plain-root table { border-collapse: collapse; width: 100%; margin: .5rem 0 1.1rem; font-size: 0.92rem; }
+.plain-root th, .plain-root td { border: 1px solid #dcdcdc; text-align: left; vertical-align: top; padding: 5px 10px; }
+.plain-root th { background: #f3f3f1; font-weight: 700; }
+.plain-root .pm-nav { font-family: ui-monospace, monospace; font-size: .82rem; color: #555; margin-bottom: 1.2rem; }
+.plain-root .pm-nav a { cursor: pointer; }
+.plain-root .pm-body { color: #222; line-height: 1.62; }
+.plain-root .pm-body h2, .plain-root .pm-body h3 { font-family: inherit; }
+.plain-root hr { border: 0; border-top: 1px solid #ccc; margin: 1rem 0; }
+
+/* Markdown copy button — fixed bottom-right, on every page and view. */
+.md-copy {
+  position: fixed; bottom: 16px; right: 16px; z-index: 60;
+  font-family: ui-monospace, "SF Mono", monospace; font-size: 12px;
+  padding: 8px 12px; border-radius: 8px; cursor: pointer;
+  background: rgba(20, 18, 29, 0.82); color: #f0f0f0; border: 1px solid rgba(255, 255, 255, 0.2);
+  -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px);
+}
+.md-copy:hover { border-color: #9aa; }
+html[data-view="plain"] .md-copy { background: #fff; color: #111; border-color: #bbb; box-shadow: 0 2px 8px rgba(0,0,0,.12); }

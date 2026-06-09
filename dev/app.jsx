@@ -48,6 +48,40 @@ function HomeLayouts({ layout, posts, repos, stats, langs, byYear, onMore }) {
   );
 }
 
+/** Describe the current dev page as plain/markdown blocks. */
+function devBlocks({ route, posts, repos, stats, current }) {
+  if (route === "article" && current) {
+    return [
+      { t: "h1", text: current.title },
+      { t: "p", text: [current.dateLong || current.date, (current.tags || []).join(", ")].filter(Boolean).join(" · ") },
+      { t: "rawmd", md: "_Open this post on the site for the full text._" },
+    ];
+  }
+  if (route === "writing") {
+    return [
+      { t: "h1", text: "arslan.dev — writing" },
+      { t: "table", head: ["post", "date", "tags"], rows: posts.map(p => [{ text: p.title, href: `#/p/${p.slug}` }, p.date, (p.tags || []).join(", ")]) },
+    ];
+  }
+  const RP = window.RP || {}, books = RP.books || [], games = RP.games || {}, now = games.now || {};
+  const b = [
+    { t: "h1", text: "arslan.dev" },
+    { t: "p", text: (window.DH && window.DH.tagline) || "" },
+    { t: "h2", text: "On GitHub" },
+    { t: "table", head: ["metric", "value"], rows: (stats || []).map(s => [s.ico, `${s.num} · ${s.cap}`]) },
+    { t: "h2", text: "Pinned repos" },
+    { t: "table", head: ["repo", "what it is", "lang"], rows: (repos || []).map(r => [{ text: r.name, href: r.url }, r.desc, r.lang]) },
+  ];
+  if (posts.length) b.push({ t: "h2", text: "Writing" }, { t: "table", head: ["post", "date"], rows: posts.map(p => [{ text: p.title, href: `#/p/${p.slug}` }, p.date]) });
+  b.push(
+    { t: "h2", text: "Reading & playing" },
+    { t: "table", head: ["reading", "author"], rows: books.map(bk => [bk.ti, bk.au]) },
+    { t: "table", head: ["playing", ""], rows: [["now playing", now.ti || ""], ["up next", games.next || ""], ["replaying", games.again || ""]].filter(r => r[1]) },
+    { t: "links", items: [{ label: "project catalog ↗", href: "../portfolio/" }, { label: "the personal side →", href: "../personal/" }] }
+  );
+  return b;
+}
+
 function App() {
   const [route, setRoute] = useState("home");
   const [layout, setLayout] = useState("terminal");
@@ -114,8 +148,21 @@ function App() {
   };
 
   const current = slug ? posts.find(p => p.slug === slug) : null;
+  const buildBlocks = () => devBlocks({ route, posts, repos, stats, current });
 
-  if (plain) return <PlainView posts={posts} route={route} post={current} onNavigate={navigate} onOpen={openPost} onPlain={togglePlain} />;
+  if (plain) return (
+    <>
+      <div className="plain-root">
+        <p className="pm-nav">
+          <a onClick={togglePlain}>← rich view</a> · <a onClick={() => navigate("home")}>home</a>
+          {posts.length ? <> · <a onClick={() => navigate("writing")}>writing</a></> : null}
+          {" "}· <a href="../portfolio/">projects</a> · <a href="../personal/">arslan.land</a>
+        </p>
+        <PlainBlocks blocks={buildBlocks()} />
+      </div>
+      <CopyMarkdown getBlocks={buildBlocks} />
+    </>
+  );
 
   return (
     <div className="app">
@@ -131,6 +178,7 @@ function App() {
         {route === "article" && <Article post={current} onBack={() => navigate("writing")} />}
       </main>
       <DHFooter />
+      <CopyMarkdown getBlocks={buildBlocks} />
     </div>
   );
 }
