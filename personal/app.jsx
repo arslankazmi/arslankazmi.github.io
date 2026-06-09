@@ -33,11 +33,14 @@ function personalBlocks({ route, entries, current }) {
     { t: "p", text: "I make things on the internet and write about why. A small site for essays, notes, and the occasional weeknote." },
   ];
   if (entries.length) b.push({ t: "h2", text: "Writing" }, { t: "table", head: ["piece", "date", "tag"], rows: entries.map(e => [{ text: e.title, href: `#/p/${e.slug}` }, e.date, e.tag || ""]) });
-  if (projects.length) b.push({ t: "h2", text: "Projects" }, { t: "table", head: ["project", "what it is"], rows: projects.map(p => [p.title, p.blurb]) });
+  if (projects.length) b.push({ t: "h2", text: "Projects" }, { t: "grid", cols: 3, cells: projects.map(p => ({ title: p.title, lines: [p.blurb] })) });
+  const playLines = [now.ti, games.next ? `up next · ${games.next}` : null, games.again ? `replaying · ${games.again}` : null].filter(Boolean);
   b.push(
     { t: "h2", text: "Reading & playing" },
-    { t: "table", head: ["reading", "author"], rows: books.map(bk => [bk.ti, bk.au]) },
-    { t: "table", head: ["playing", ""], rows: [["now playing", now.ti || ""], ["up next", games.next || ""], ["replaying", games.again || ""]].filter(r => r[1]) },
+    { t: "grid", cols: 2, cells: [
+      { title: "Reading", lines: books.map(bk => `${bk.ti} — ${bk.au}`) },
+      { title: "Now playing", lines: playLines },
+    ] },
     { t: "links", items: [{ label: "the dev side →", href: "../dev/" }] }
   );
   return b;

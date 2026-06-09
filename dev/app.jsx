@@ -68,15 +68,21 @@ function devBlocks({ route, posts, repos, stats, current }) {
     { t: "h1", text: "arslan.dev" },
     { t: "p", text: (window.DH && window.DH.tagline) || "" },
     { t: "h2", text: "On GitHub" },
-    { t: "table", head: ["metric", "value"], rows: (stats || []).map(s => [s.ico, `${s.num} · ${s.cap}`]) },
+    // 4 stat tiles across, like the rich row.
+    { t: "grid", cols: 4, cells: (stats || []).map(s => ({ title: s.num, lines: [s.ico, s.cap] })) },
     { t: "h2", text: "Pinned repos" },
-    { t: "table", head: ["repo", "what it is", "lang"], rows: (repos || []).map(r => [{ text: r.name, href: r.url }, r.desc, r.lang]) },
+    // 3-up grid of repo tiles, like the rich grid.
+    { t: "grid", cols: 3, cells: (repos || []).map(r => ({ title: r.name, href: r.url, lines: [r.desc, r.lang, ...(r.docs ? [{ text: "docs ↗", href: r.docs }] : [])] })) },
   ];
   if (posts.length) b.push({ t: "h2", text: "Writing" }, { t: "table", head: ["post", "date"], rows: posts.map(p => [{ text: p.title, href: `#/p/${p.slug}` }, p.date]) });
+  const playLines = [now.ti, games.next ? `up next · ${games.next}` : null, games.again ? `replaying · ${games.again}` : null].filter(Boolean);
   b.push(
     { t: "h2", text: "Reading & playing" },
-    { t: "table", head: ["reading", "author"], rows: books.map(bk => [bk.ti, bk.au]) },
-    { t: "table", head: ["playing", ""], rows: [["now playing", now.ti || ""], ["up next", games.next || ""], ["replaying", games.again || ""]].filter(r => r[1]) },
+    // reading | playing, two columns side-by-side like the rich view.
+    { t: "grid", cols: 2, cells: [
+      { title: "Reading", lines: books.map(bk => `${bk.ti} — ${bk.au}`) },
+      { title: "Now playing", lines: playLines },
+    ] },
     { t: "links", items: [{ label: "project catalog ↗", href: "../portfolio/" }, { label: "the personal side →", href: "../personal/" }] }
   );
   return b;

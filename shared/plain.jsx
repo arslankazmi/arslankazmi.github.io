@@ -1,18 +1,27 @@
-/** Shared plain/markdown engine. A page is described as an ordered list of "blocks"; the same
-    list renders two ways: a table-based HTML "plain" replica, and a Markdown string (with
-    Markdown tables) for the copy-as-markdown button. Used by both /dev/ and /personal/. */
+/** Shared plain/markdown engine. A page is an ordered list of "blocks"; the same list renders two
+    ways: a self-contained, presentational HTML "plain" replica (renders in a 1999 browser — borders
+    via table ATTRIBUTES, no modern CSS needed), and a Markdown string. Block types:
+      h1 h2 p hr links rawmd · table {head, rows} (vertical list) · grid {cols, cells} (mirrors the
+      rich view's columnar/tiled layout — stat tiles, repo/project tiles, reading|playing side-by-side).
+    A grid cell is { title?, href?, lines:[ string | {text, href} ] }. */
 const { useState: useStatePM } = React;
 
-// A cell is a string, or { text, href }.
 function pmText(c) { return (c && typeof c === "object") ? (c.text ?? "") : (c == null ? "" : String(c)); }
 function pmHref(c) { return (c && typeof c === "object") ? (c.href || null) : null; }
 function mdEsc(s) { return String(s).replace(/\|/g, "\\|").replace(/\s*\n\s*/g, " ").trim(); }
 function mdCell(c) { const t = mdEsc(pmText(c)); const h = pmHref(c); return h ? `[${t}](${h})` : t; }
+function lineMd(ln) { return (ln && typeof ln === "object") ? `[${mdEsc(ln.text)}](${ln.href || ""})` : mdEsc(ln); }
+function gridCellMd(c) {
+  const parts = [];
+  if (c.title) parts.push(c.href ? `**[${mdEsc(c.title)}](${c.href})**` : `**${mdEsc(c.title)}**`);
+  for (const ln of (c.lines || [])) { const m = lineMd(ln); if (m) parts.push(m); }
+  return parts.join("<br>");
+}
 
-/** blocks → Markdown (tables preserved as Markdown tables). */
+/** blocks → Markdown (tables/grids preserved as Markdown tables). */
 function toMarkdown(blocks) {
   const out = [];
-  for (const b of blocks) {
+  for (const b of (blocks || [])) {
     if (b.t === "h1") out.push(`# ${b.text}`);
     else if (b.t === "h2") out.push(`## ${b.text}`);
     else if (b.t === "p") out.push(b.text);
@@ -26,13 +35,32 @@ function toMarkdown(blocks) {
         out.push(`| ${head.map(() => "---").join(" | ")} |`);
       }
       for (const r of (b.rows || [])) out.push(`| ${r.map(mdCell).join(" | ")} |`);
+    } else if (b.t === "grid") {
+      const cols = b.cols || 2;
+      const cells = (b.cells || []).map(gridCellMd);
+      out.push(`| ${Array.from({ length: cols }, () => " ").join(" | ")} |`);
+      out.push(`| ${Array.from({ length: cols }, () => "---").join(" | ")} |`);
+      for (let i = 0; i < cells.length; i += cols) {
+        const row = cells.slice(i, i + cols);
+        while (row.length < cols) row.push(" ");
+        out.push(`| ${row.join(" | ")} |`);
+      }
     }
     out.push("");
   }
   return out.join("\n").replace(/\n{3,}/g, "\n\n").trim() + "\n";
 }
 
-/** blocks → React (table-based plain HTML). */
+function GridCell({ c }) {
+  return (
+    <td valign="top">
+      {c.title && <div><b>{c.href ? <a href={c.href}>{c.title}</a> : c.title}</b></div>}
+      {(c.lines || []).map((ln, li) => <div key={li}>{(ln && typeof ln === "object") ? (ln.href ? <a href={ln.href}>{ln.text}</a> : ln.text) : ln}</div>)}
+    </td>
+  );
+}
+
+/** blocks → React, as self-contained presentational HTML (table borders via attributes). */
 function PlainBlocks({ blocks }) {
   return (blocks || []).map((b, i) => {
     if (b.t === "h1") return <h1 key={i}>{b.text}</h1>;
@@ -42,11 +70,29 @@ function PlainBlocks({ blocks }) {
     if (b.t === "rawmd") return <div key={i} className="pm-body" dangerouslySetInnerHTML={{ __html: window.marked ? window.marked.parse(b.md || "") : (b.md || "") }} />;
     if (b.t === "links") return <p key={i} className="pm-links">{(b.items || []).map((it, j) => <React.Fragment key={j}>{j > 0 ? " · " : ""}<a href={it.href} onClick={it.onClick}>{it.label}</a></React.Fragment>)}</p>;
     if (b.t === "table") return (
-      <table key={i}>
-        {b.head && b.head.length > 0 && <thead><tr>{b.head.map((h, j) => <th key={j}>{h}</th>)}</tr></thead>}
-        <tbody>{(b.rows || []).map((r, ri) => <tr key={ri}>{r.map((c, ci) => <td key={ci}>{pmHref(c) ? <a href={pmHref(c)}>{pmText(c)}</a> : pmText(c)}</td>)}</tr>)}</tbody>
+      <table key={i} border="1" cellPadding="6" cellSpacing="0" width="100%">
+        {b.head && b.head.length > 0 && <thead><tr>{b.head.map((h, j) => <th key={j} align="left" bgcolor="#f0f0f0">{h}</th>)}</tr></thead>}
+        <tbody>{(b.rows || []).map((r, ri) => <tr key={ri}>{r.map((c, ci) => <td key={ci} valign="top">{pmHref(c) ? <a href={pmHref(c)}>{pmText(c)}</a> : pmText(c)}</td>)}</tr>)}</tbody>
       </table>
     );
+    if (b.t === "grid") {
+      const cols = b.cols || 2;
+      const cells = b.cells || [];
+      const rows = [];
+      for (let j = 0; j < cells.length; j += cols) rows.push(cells.slice(j, j + cols));
+      return (
+        <table key={i} border="1" cellPadding="6" cellSpacing="0" width="100%">
+          <tbody>
+            {rows.map((row, ri) => (
+              <tr key={ri}>
+                {row.map((c, ci) => <GridCell key={ci} c={c} />)}
+                {row.length < cols && Array.from({ length: cols - row.length }, (_, k) => <td key={"e" + k}></td>)}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      );
+    }
     return null;
   });
 }
