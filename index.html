@@ -37,21 +37,16 @@
     }
     .split:hover .half:not(:hover) .inner { opacity: 0; transform: scale(0.96); transition-delay: 0.22s; }
 
-    /* "pick me" CTA — shows on the half that collapses, pointing to that side. */
+    /* CTA — shows on the half that collapses, calling you to that side. */
     .peek {
       position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
-      display: flex; flex-direction: column; align-items: center; gap: 14px;
+      display: flex; align-items: center; justify-content: center;
+      width: 90%; text-align: center;
       opacity: 0; pointer-events: none; transition: opacity 0.3s ease;
     }
-    .peek .hand { font-size: 36px; line-height: 1; }
     .peek .peek-txt {
-      writing-mode: vertical-rl; text-orientation: upright;
-      font-family: var(--font-display); font-weight: 700; font-size: 30px;
-      letter-spacing: 0.04em; text-transform: uppercase; line-height: 1.05;
-    }
-    .peek .peek-sub {
-      writing-mode: vertical-rl; text-orientation: upright;
-      font-family: var(--font-mono); font-size: 12px; letter-spacing: 0.06em; opacity: 0.75;
+      font-family: var(--font-display); font-weight: 700; font-size: 64px;
+      letter-spacing: 0.02em; text-transform: uppercase; line-height: 1.05;
     }
     .dev .peek .peek-txt { color: var(--accent); }
     .land .peek .peek-txt { color: #5d4b85; }
@@ -127,7 +122,7 @@
         <p>Programmer &amp; data scientist. Projects, signal, reading, and dev writing — dark, monospace, a little 8-bit.</p>
         <span class="go">Enter the dev hub →</span>
       </div>
-      <span class="peek"><span class="hand">👈</span><span class="peek-txt">pick me</span><span class="peek-sub">the dev side</span></span>
+      <span class="peek"><span class="peek-txt">Developers Come Here</span></span>
     </a>
     <a class="half land" href="./personal/">
       <div class="inner">
@@ -136,7 +131,7 @@
         <p>Essays, a notebook, half-formed notes. Warm paper, slower, weirder — the writing half of the coin.</p>
         <span class="go">Read the writing →</span>
       </div>
-      <span class="peek"><span class="hand">👉</span><span class="peek-txt">pick me</span><span class="peek-sub">the fun side</span></span>
+      <span class="peek"><span class="peek-txt">The Chill Side</span></span>
     </a>
     <div class="seam"></div>
   </div>
