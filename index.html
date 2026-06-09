@@ -17,11 +17,18 @@
       position: relative; flex: 1 1 0; min-width: 0; overflow: hidden;
       display: flex; align-items: center; justify-content: center;
       text-decoration: none; cursor: pointer;
-      transition: flex-grow 0.55s cubic-bezier(0.22, 1, 0.36, 1);
+      transition: flex-grow 0.45s cubic-bezier(0.22, 1, 0.36, 1);
     }
-    /* Hover a half → it grows to fill; the other shrinks to a thin sliver. */
-    .split:hover .half { flex-grow: 0.5; }
-    .split .half:hover { flex-grow: 8; }
+    /* Hover a half → it grows to ~65% of the width (flex-grow 1.857 : 1 = 65 : 35), with a
+       small overshoot-and-pull-back jiggle, as if the other side resists before giving way. */
+    .split .half:hover { animation: ak-expand 0.8s cubic-bezier(0.22, 1, 0.36, 1) forwards; }
+    @keyframes ak-expand {
+      0%   { flex-grow: 1; }
+      45%  { flex-grow: 2.15; }   /* overshoot past 65% */
+      63%  { flex-grow: 1.58; }   /* resist — pull back */
+      80%  { flex-grow: 1.98; }   /* nudge again */
+      100% { flex-grow: 1.857; }  /* settle at ~65% */
+    }
 
     .inner {
       max-width: 460px; padding: 0 6vw; text-align: left;
@@ -74,7 +81,7 @@
       body { overflow: auto; }
       .split { flex-direction: column; height: auto; }
       .half { min-height: 50vh; }
-      .split:hover .half, .split .half:hover { flex-grow: 1; }
+      .split:hover .half, .split .half:hover { flex-grow: 1; animation: none; }
       .split:hover .half:not(:hover) .inner { opacity: 1; transform: none; }
       .seam { display: none; }
       .disclaimer { white-space: normal; width: 90%; }
