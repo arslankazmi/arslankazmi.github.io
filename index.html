@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="utf-8"/>
+  <title>Arslan Kazmi</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="description" content="Arslan Kazmi — two sides of one site: arslan.dev (the workshop) and arslan.land (the writing)."/>
+  <link rel="icon" type="image/svg+xml" href="./assets/favicon.svg"/>
+  <!-- tokens + fonts from the design system (dev/dark palette for the splash) -->
+  <link rel="stylesheet" href="https://arslankazmi.github.io/ak-design/dist/dev.css"/>
+  <style>
+    body { min-height:100vh; margin:0; display:flex; flex-direction:column; align-items:center; justify-content:center;
+           gap:40px; padding:48px 20px; background:var(--bg); color:var(--fg1); font-family:var(--font-body); }
+    .top { text-align:center; }
+    .top img { height:74px; filter: drop-shadow(5px 5px 0 rgba(0,0,0,.5)); }
+    .top h1 { font-family:var(--font-display); font-size:clamp(30px,6vw,52px); letter-spacing:-0.03em; margin:18px 0 6px; }
+    .top p { font-family:var(--font-mono); font-size:13px; color:var(--fg3); margin:0; letter-spacing:.04em; }
+    .coins { display:grid; grid-template-columns:repeat(2,minmax(0,300px)); gap:22px; width:100%; max-width:680px; }
+    @media (max-width:620px){ .coins { grid-template-columns:1fr; } }
+    .coin { display:block; text-decoration:none; border-radius:4px; padding:30px 26px; border:2px solid var(--ink-900);
+            box-shadow:6px 6px 0 #000; transition:transform .15s var(--ease-out), box-shadow .15s var(--ease-out); }
+    .coin:hover { transform:translate(-3px,-3px); box-shadow:9px 9px 0 #000; }
+    .coin .k { font-family:var(--font-mono); font-size:11px; letter-spacing:.08em; text-transform:uppercase; }
+    .coin h2 { font-family:var(--font-display); font-size:26px; letter-spacing:-0.02em; margin:8px 0 6px; }
+    .coin p { font-size:13.5px; line-height:1.5; margin:0; }
+    .coin .go { font-family:var(--font-mono); font-size:12px; font-weight:600; display:inline-block; margin-top:14px; }
+    /* dev coin — dark, cerulean */
+    .dev { background:var(--bg-elevated); }
+    .dev .k { color:var(--accent); } .dev h2 { color:var(--fg1); } .dev p { color:var(--fg2); } .dev .go { color:var(--accent); }
+    /* personal coin — previews the paper side */
+    .land { background:#edece4; border-color:#211d2c; box-shadow:6px 6px 0 #b06bff; }
+    .land:hover { box-shadow:9px 9px 0 #b06bff; }
+    .land .k { color:#5d4b85; } .land h2 { color:#15131c; } .land p { color:#4b4666; } .land .go { color:#178e8b; }
+    footer { font-family:var(--font-mono); font-size:12px; color:var(--fg3); text-align:center; }
+    footer a { color:var(--accent-2); text-decoration:none; }
+  </style>
+</head>
+<body>
+  <div class="top">
+    <img src="./assets/logo-ak-blue.png" alt="Arslan Kazmi"/>
+    <h1>Arslan Kazmi</h1>
+    <p>two coins · one site · pick a side</p>
+  </div>
+
+  <div class="coins">
+    <a class="coin dev" href="./dev/">
+      <span class="k">// the workshop</span>
+      <h2>arslan.dev</h2>
+      <p>Programmer &amp; data scientist. Projects, signal, reading, and dev writing. Dark, monospace, a little 8-bit.</p>
+      <span class="go">Enter the dev hub →</span>
+    </a>
+    <a class="coin land" href="./personal/">
+      <span class="k">// the quiet side</span>
+      <h2>arslan.land</h2>
+      <p>Essays, a notebook, mixtapes. Warm paper, slower, weirder. The writing half of the coin.</p>
+      <span class="go">Read the writing →</span>
+    </a>
+  </div>
+
+  <footer>
+    <a href="./portfolio/">project catalog ↗</a> · built on the <a href="https://arslankazmi.github.io/ak-design/">Arslan Kazmi design system</a>
+  </footer>
+</body>
+</html>

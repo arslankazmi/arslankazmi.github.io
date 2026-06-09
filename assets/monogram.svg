@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" fill="none">
+  
+  <g font-family="Unreal T, Fraunces, serif" font-weight="700">
+    <text x="8" y="78" font-size="86" fill="#15131c" letter-spacing="-4">A</text>
+    <text x="58" y="92" font-size="86" fill="#178e8b" letter-spacing="-4">K</text>
+    <circle cx="108" cy="20" r="6" fill="#ff2b8f"></circle>
+  </g>
+</svg>

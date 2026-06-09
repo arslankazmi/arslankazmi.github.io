@@ -1,0 +1,179 @@
+/* Developer hub — dark. Design tokens come from the linked ak-design dev bundle (see index.html). */
+
+* { box-sizing: border-box; }
+html { background: var(--bg); }
+body { margin: 0; background: var(--bg); color: var(--fg1); font-family: var(--font-body); }
+
+.app { min-height: 100vh; display: flex; flex-direction: column; }
+
+/* ---------- Nav ---------- */
+.dh-nav {
+  position: sticky; top: 0; z-index: 50;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 14px 28px;
+  background: rgba(21, 19, 29, 0.82);
+  backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--border);
+}
+.dh-brand { display: flex; align-items: center; gap: 10px; cursor: pointer; }
+.dh-brand img { height: 30px; display: block; }
+.dh-brand b { font-family: var(--font-mono); font-size: 15px; font-weight: 600; color: var(--fg1); letter-spacing: -0.01em; }
+.dh-nav .links { display: flex; gap: 22px; }
+.dh-nav .links a { font-family: var(--font-mono); font-size: 13px; color: var(--fg2); text-decoration: none; cursor: pointer; }
+.dh-nav .links a:hover { color: var(--accent); }
+.dh-nav .links a.active { color: var(--accent); }
+.dh-nav .right { display: flex; align-items: center; gap: 14px; }
+.dh-switch { display: flex; gap: 0; border: 1px solid var(--border-strong); border-radius: 8px; overflow: hidden; }
+.dh-switch button { font-family: var(--font-mono); font-size: 12px; padding: 6px 11px; background: transparent; color: var(--fg2); border: 0; cursor: pointer; }
+.dh-switch button.on { background: var(--accent); color: var(--fg-on-accent); }
+.dh-personal { font-family: var(--font-mono); font-size: 12px; color: var(--accent-2); text-decoration: none; border: 1px solid var(--border-strong); border-radius: 8px; padding: 6px 11px; cursor: pointer; white-space: nowrap; }
+.dh-personal:hover { border-color: var(--accent-2); }
+
+.dh-page { flex: 1; width: 100%; max-width: 1080px; margin: 0 auto; padding: 40px 28px 80px; }
+
+/* ---------- Section heading ---------- */
+.dh-sec { display: flex; align-items: baseline; justify-content: space-between; margin: 44px 0 18px; }
+.dh-sec h2 { font-family: var(--font-display); font-size: 26px; font-weight: 700; letter-spacing: -0.02em; margin: 0; color: var(--fg1); display: flex; align-items: center; gap: 10px; }
+.dh-sec h2::before { content: ""; width: 12px; height: 18px; background: var(--accent); display: inline-block; box-shadow: 3px 0 0 var(--accent-2-soft); }
+.dh-sec .hint { font-family: var(--font-mono); font-size: 12px; color: var(--fg3); }
+.dh-eyebrow { font-family: var(--font-mono); font-size: 12px; color: var(--accent); letter-spacing: 0.04em; }
+
+/* ---------- Terminal hero (Layout A) ---------- */
+.term { background: var(--bg-sunken); border: 2px solid var(--ink-900); border-radius: 4px; overflow: hidden; box-shadow: 6px 6px 0 #000; }
+.term .bar { display: flex; align-items: center; gap: 8px; padding: 11px 14px; background: var(--bg-elevated); border-bottom: 2px solid var(--ink-900); }
+.term .bar i { width: 11px; height: 11px; border-radius: 0; display: block; }
+.term .bar span { font-family: var(--font-mono); font-size: 12px; color: var(--fg3); margin-left: 6px; white-space: nowrap; }
+.term .body { padding: 22px 22px 26px; font-family: var(--font-mono); font-size: 15px; line-height: 1.7; position: relative; }
+.term .body .p { color: var(--seagreen-300); }
+.term .body .cmd { color: var(--fg1); }
+.term .body .out { color: var(--fg2); }
+.term .body .k { color: var(--accent); }
+.term .body .cursor { display: inline-block; width: 9px; height: 18px; background: var(--accent); vertical-align: -3px; animation: blink 1.1s steps(1) infinite; }
+@keyframes blink { 50% { opacity: 0; } }
+
+/* Retro dial 6 — static CRT scanlines over the terminal */
+.scanlines { position: absolute; inset: 0; pointer-events: none; background: repeating-linear-gradient(to bottom, rgba(0,0,0,0) 0, rgba(0,0,0,0) 2px, rgba(0,0,0,0.16) 3px, rgba(0,0,0,0) 4px); mix-blend-mode: multiply; }
+@media (prefers-reduced-motion: no-preference) {
+  .scanlines { animation: none; }
+}
+
+/* ---------- “The other side” cross-link — rendered in the LIGHT palette ---------- */
+.dh-other { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-top: 40px; text-decoration: none; background: var(--paper); color: var(--ink-900); border: 2px solid var(--ink-900); border-radius: 0; box-shadow: 4px 4px 0 var(--punk-lilac); padding: 12px 16px; transition: transform var(--dur-fast) var(--ease-out), box-shadow var(--dur-fast) var(--ease-out); }
+.dh-other:hover { transform: translate(-2px,-2px); box-shadow: 6px 6px 0 var(--punk-lilac); }
+.dh-other .k { font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.06em; color: #6b558f; }
+.dh-other h3 { font-family: var(--font-display); font-size: 18px; font-weight: 700; letter-spacing: -0.02em; margin: 2px 0 1px; color: var(--ink-900); }
+.dh-other p { font-family: var(--font-body); font-size: 12.5px; color: #4b4666; margin: 0; max-width: 52ch; }
+.dh-other .go { font-family: var(--font-mono); font-size: 12px; font-weight: 600; color: #1f7fb4; white-space: nowrap; }
+.dh-other .pips { display: none; }
+
+/* ---------- Magazine hero (Layout C) ---------- */
+.mag { display: grid; grid-template-columns: 1.5fr 1fr; gap: 44px; align-items: center; }
+.mag h1 { font-family: var(--font-display); font-size: clamp(44px, 6vw, 76px); line-height: 1; letter-spacing: -0.03em; margin: 14px 0 0; color: var(--fg1); }
+.mag h1 .a { color: var(--accent); }
+.mag p { font-size: 17px; color: var(--fg2); margin: 20px 0 0; max-width: 42ch; }
+.mag .ctas { display: flex; gap: 12px; margin-top: 26px; }
+.mag .logo { display: flex; justify-content: center; }
+.mag .logo img { height: 230px; filter: drop-shadow(8px 8px 0 rgba(0,0,0,0.5)); }
+
+/* ---------- Buttons ---------- */
+.dh-btn { font-family: var(--font-body); font-size: 14px; font-weight: 600; border: 0; padding: 11px 18px; border-radius: 10px; cursor: pointer; text-decoration: none; display: inline-flex; align-items: center; gap: 8px; transition: transform var(--dur-fast) var(--ease-out), background var(--dur-fast); }
+.dh-btn.primary { background: var(--accent); color: var(--fg-on-accent); }
+.dh-btn.primary:hover { transform: translateY(-1px); background: var(--accent-hover); }
+.dh-btn.ghost { background: transparent; color: var(--fg1); border: 1px solid var(--border-strong); }
+.dh-btn.ghost:hover { border-color: var(--accent); color: var(--accent); }
+
+/* ---------- Stat tiles ---------- */
+.dh-stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }
+.dh-tile { background: var(--bg-elevated); border: 3px solid var(--ink-900); box-shadow: 4px 4px 0 #000; padding: 14px; display: flex; flex-direction: column; gap: 6px; }
+.dh-tile .ico { font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; }
+.dh-tile .num { font-family: var(--font-display); font-weight: 800; font-size: 32px; line-height: 1; color: var(--fg1); letter-spacing: -0.02em; }
+.dh-tile .cap { font-family: var(--font-mono); font-size: 11px; color: var(--fg3); }
+
+/* ---------- Repo grid ---------- */
+.dh-repos { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+.dh-repo { background: var(--bg-elevated); border: 2px solid var(--ink-900); border-radius: 4px; padding: 16px 18px; display: flex; flex-direction: column; gap: 8px; cursor: pointer; box-shadow: 4px 4px 0 #000; transition: transform var(--dur-fast) var(--ease-out), box-shadow var(--dur-fast) var(--ease-out); }
+.dh-repo:hover { transform: translate(-2px,-2px); box-shadow: 6px 6px 0 #000; }
+.dh-repo .name { font-family: var(--font-mono); font-size: 14px; color: var(--accent); font-weight: 600; }
+.dh-repo .desc { font-family: var(--font-body); font-size: 13px; color: var(--fg2); line-height: 1.45; margin: 0; flex: 1; }
+.dh-repo .tags { display: flex; gap: 6px; flex-wrap: wrap; }
+.dh-repo .tag { font-family: var(--font-body); font-size: 11px; color: var(--accent-2); background: var(--accent-2-soft); border-radius: 999px; padding: 2px 9px; }
+.dh-repo .meta { display: flex; gap: 14px; align-items: center; font-family: var(--font-mono); font-size: 12px; color: var(--fg3); }
+.dh-repo .lang { display: flex; align-items: center; gap: 6px; }
+.dh-repo .dot { width: 10px; height: 10px; border-radius: 999px; }
+
+/* ---------- Data panel ---------- */
+.dh-data { display: grid; grid-template-columns: 1.3fr 1fr; gap: 16px; }
+.dh-panel { background: var(--bg-elevated); border: 2px solid var(--ink-900); border-radius: 4px; padding: 18px; box-shadow: 4px 4px 0 #000; }
+.dh-panel h3 { font-family: var(--font-mono); font-size: 13px; color: var(--fg2); margin: 0 0 14px; font-weight: 500; letter-spacing: 0.04em; }
+.dh-bars { display: flex; align-items: flex-end; gap: 10px; height: 150px; }
+.dh-bars .b { flex: 1; border-radius: 5px 5px 0 0; position: relative; }
+.dh-bars .b span { position: absolute; bottom: -20px; left: 0; right: 0; text-align: center; font-family: var(--font-mono); font-size: 10px; color: var(--fg3); }
+.dh-legend { display: flex; flex-direction: column; gap: 12px; }
+.dh-legend .row { display: flex; align-items: center; gap: 10px; }
+.dh-legend .sw { width: 12px; height: 12px; border-radius: 3px; }
+.dh-legend .lbl { font-family: var(--font-body); font-size: 13px; color: var(--fg1); flex: 1; }
+.dh-legend .val { font-family: var(--font-mono); font-size: 13px; color: var(--fg2); }
+.spark { width: 100%; height: 54px; display: block; }
+
+/* ---------- Reading + now playing ---------- */
+.dh-two { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.dh-shelf { display: flex; flex-direction: column; gap: 10px; }
+.dh-book { display: flex; gap: 12px; align-items: center; background: var(--bg-elevated); border: 1px solid var(--border); border-radius: 12px; padding: 10px 12px; }
+.dh-book .spine { width: 34px; height: 48px; border-radius: 3px; flex-shrink: 0; }
+.dh-book .ti { font-family: var(--font-display); font-size: 16px; color: var(--fg1); margin: 0; font-weight: 600; }
+.dh-book .au { font-family: var(--font-mono); font-size: 11px; color: var(--fg3); }
+.dh-now { background: var(--bg-elevated); border: 1px solid var(--border); border-radius: 12px; padding: 16px; display: flex; flex-direction: column; gap: 14px; }
+.dh-now .label { font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--accent-3); }
+.dh-now .game { display: flex; gap: 12px; align-items: center; }
+.dh-now .art { width: 52px; height: 52px; border-radius: 8px; background: linear-gradient(135deg, var(--purple-500), var(--cerulean-600)); }
+.dh-now .game .ti { font-family: var(--font-display); font-size: 18px; color: var(--fg1); font-weight: 600; }
+.dh-now .game .meta { font-family: var(--font-mono); font-size: 11px; color: var(--fg3); }
+.dh-now .heart { height: 26px; }
+
+/* ---------- Footer ---------- */
+.dh-foot { border-top: 1px solid var(--border); padding: 26px 28px 44px; display: flex; justify-content: space-between; align-items: center; gap: 20px; font-family: var(--font-mono); font-size: 12px; color: var(--fg3); flex-wrap: wrap; }
+.dh-foot a { color: var(--accent); text-decoration: none; }
+.dh-foot .sig { font-family: var(--font-display); font-style: italic; font-size: 22px; color: var(--fg2); }
+
+/* ---------- plain toggle button ---------- */
+.dh-plain { font-family: var(--font-mono); font-size: 12px; background: transparent; color: var(--fg2); border: 1px solid var(--border-strong); border-radius: 8px; padding: 6px 11px; cursor: pointer; white-space: nowrap; }
+.dh-plain:hover { border-color: var(--accent); color: var(--accent); }
+
+/* ---------- writing: post list + article ---------- */
+.dh-posts { display: flex; flex-direction: column; gap: 12px; }
+.dh-post { display: grid; grid-template-columns: 110px 1fr; gap: 4px 18px; background: var(--bg-elevated); border: 2px solid var(--ink-900); border-radius: 4px; padding: 14px 18px; cursor: pointer; box-shadow: 4px 4px 0 #000; text-decoration: none; transition: transform var(--dur-fast) var(--ease-out), box-shadow var(--dur-fast) var(--ease-out); }
+.dh-post:hover { transform: translate(-2px,-2px); box-shadow: 6px 6px 0 #000; }
+.dh-post .date { grid-row: 1 / 3; font-family: var(--font-mono); font-size: 12px; color: var(--fg3); }
+.dh-post .title { font-family: var(--font-display); font-size: 18px; font-weight: 700; color: var(--accent); letter-spacing: -0.01em; }
+.dh-post .blurb { font-family: var(--font-body); font-size: 13px; color: var(--fg2); margin: 0; }
+.dh-post .tags { grid-column: 2; display: flex; gap: 6px; flex-wrap: wrap; }
+.dh-post .tag { font-family: var(--font-body); font-size: 11px; color: var(--accent-2); background: var(--accent-2-soft); border-radius: 999px; padding: 2px 9px; }
+.dh-empty { font-family: var(--font-mono); font-size: 13px; color: var(--fg3); }
+.dh-article { max-width: 68ch; margin: 0 auto; }
+.dh-article .meta { display: flex; gap: 12px; align-items: center; font-family: var(--font-mono); font-size: 12px; color: var(--fg3); margin-bottom: 10px; }
+.dh-article .meta .tag { color: var(--accent-2); }
+.dh-article h1 { font-family: var(--font-display); font-size: clamp(32px, 4vw, 52px); line-height: 1.05; letter-spacing: -0.02em; margin: 0 0 24px; }
+.dh-article .prose { font-family: var(--font-body); font-size: 17px; line-height: 1.7; color: var(--fg2); }
+.dh-article .prose h2 { font-family: var(--font-display); font-size: 28px; color: var(--fg1); margin: 34px 0 12px; }
+.dh-article .prose h3 { font-family: var(--font-display); font-size: 21px; color: var(--fg1); margin: 26px 0 10px; }
+.dh-article .prose p { margin: 0 0 18px; }
+.dh-article .prose a { color: var(--accent); }
+.dh-article .prose pre { background: var(--bg-sunken); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 16px; overflow-x: auto; font-family: var(--font-mono); font-size: 14px; color: var(--fg1); }
+.dh-article .prose pre code { background: none; border: 0; padding: 0; border-radius: 0; color: inherit; font-size: inherit; }
+.dh-article .prose :where(p, li) code { font-family: var(--font-mono); background: var(--accent-soft); color: var(--accent); border-radius: var(--radius-sm); padding: 0.08em 0.4em; }
+.dh-article .prose blockquote { border-left: 3px solid var(--accent); margin: 18px 0; padding-left: 16px; color: var(--fg2); font-style: italic; }
+.dh-article .prose ul, .dh-article .prose ol { padding-left: 22px; margin: 0 0 18px; }
+.dh-back { font-family: var(--font-mono); font-size: 13px; color: var(--accent); cursor: pointer; }
+
+/* ---------- plain view (data-view="plain") — bare HTML, borderless table, no visible lines ---------- */
+html[data-view="plain"] body { background: #fff; color: #111; font-family: Georgia, "Times New Roman", serif; }
+.plain-root { max-width: 720px; margin: 0 auto; padding: 28px 18px 60px; }
+.plain-root a { color: #0645ad; cursor: pointer; }
+.plain-root table { border-collapse: collapse; border: 0; }
+.plain-root td, .plain-root th { border: 0; vertical-align: top; padding: 6px 14px 6px 0; }
+.plain-root h1 { font-size: 1.8rem; margin: 0 0 .3rem; }
+.plain-root h2 { font-size: 1.3rem; margin: 1rem 0 .5rem; }
+.plain-root hr { border: 0; border-top: 1px solid #ccc; margin: .8rem 0; }
+.plain-root pre { white-space: pre-wrap; background: #f4f4f4; padding: 10px; color: #111; }
+html[data-view="plain"] .plain-root,
+html[data-view="plain"] .plain-root :where(h1,h2,h3,h4,h5,p,li,td,th,strong,em,b,blockquote,figcaption) { color: #111; }

@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+  <rect width="32" height="32" rx="7" fill="#edece4"></rect>
+  <rect x="3.5" y="9" width="25" height="14.5" rx="3" fill="#bfe6e1"></rect>
+  <text x="16" y="22.6" font-family="Unreal T, Fraunces, serif" font-weight="800" font-size="16.5" fill="#15131c" text-anchor="middle" letter-spacing="-1">AK</text>
+</svg>
