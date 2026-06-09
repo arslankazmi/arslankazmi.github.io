@@ -71,14 +71,8 @@ const ENTRIES = [
   },
 ];
 
-const PROJECTS = [
-  { id: "mixtape", kicker: "2024 — ongoing", title: "Mixtape Letters", blurb: "A monthly mixtape mailed (yes, mailed) to fourteen friends.", color: "t-blue" },
-  { id: "paperdesk", kicker: "2023", title: "Paperdesk", blurb: "A writing app that hides itself when you stop typing.", color: "t-purple" },
-  { id: "field-notes", kicker: "2024", title: "Field Notes Atlas", blurb: "Geo-tagged voice memos from a year of walking.", color: "t-green" },
-  { id: "thrift-fonts", kicker: "2022", title: "Thrift Fonts", blurb: "Specimens of free typefaces I found and actually used.", color: "t-cream" },
-  { id: "weeknotes", kicker: "2020 — 2023", title: "Weeknotes", blurb: "Three years of Friday-evening reflection, archived.", color: "t-lilac" },
-  { id: "404-club", kicker: "evergreen", title: "404 Club", blurb: "A directory of beautifully broken websites.", color: "t-ink" },
-];
+// Personal/creative projects — add your own here (id, kicker, title, blurb, color: t-blue|t-purple|t-green|t-cream|t-lilac|t-ink).
+const PROJECTS = [];
 
 const NOW_PLAYING = "Slowdive — Souvlaki Space Station";
 

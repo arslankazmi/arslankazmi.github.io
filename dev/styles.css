@@ -133,6 +133,8 @@ body { margin: 0; background: var(--bg); color: var(--fg1); font-family: var(--f
 .dh-now .game .ti { font-family: var(--font-display); font-size: 18px; color: var(--fg1); font-weight: 600; }
 .dh-now .game .meta { font-family: var(--font-mono); font-size: 11px; color: var(--fg3); }
 .dh-now .heart { height: 26px; }
+.dh-queue { display: flex; flex-direction: column; gap: 4px; font-family: var(--font-mono); font-size: 11px; color: var(--fg3); }
+.dh-queue b { color: var(--accent-2); font-weight: 600; }
 
 /* ---------- Footer ---------- */
 .dh-foot { border-top: 1px solid var(--border); padding: 26px 28px 44px; display: flex; justify-content: space-between; align-items: center; gap: 20px; font-family: var(--font-mono); font-size: 12px; color: var(--fg3); flex-wrap: wrap; }

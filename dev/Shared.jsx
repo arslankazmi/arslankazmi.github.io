@@ -1,10 +1,11 @@
 /** Shared hub sections: stat tiles, repo grid, data panel, reading + now-playing, footer. */
 const { useState: useStateShared } = React;
 
-function StatTiles() {
+function StatTiles({ stats }) {
+  const tiles = (stats && stats.length) ? stats : window.DH.stats;
   return (
     <div className="dh-stats">
-      {window.DH.stats.map((s, i) => (
+      {tiles.map((s, i) => (
         <div className="dh-tile" key={i} style={{ borderColor: "var(--ink-900)" }}>
           <span className="ico" style={{ color: s.color }}>{s.ico}</span>
           <span className="num">{s.num}</span>
@@ -38,50 +39,44 @@ function RepoGrid({ repos, limit }) {
   return <div className="dh-repos">{list.map(r => <RepoCard key={r.name} repo={r} />)}</div>;
 }
 
-function DataPanel() {
-  const { commits, months, languages } = window.DH;
-  const max = Math.max(...commits);
-  // sparkline points
-  const w = 280, h = 54, pad = 4;
-  const pts = commits.map((v, i) => {
-    const x = pad + (i / (commits.length - 1)) * (w - pad * 2);
-    const y = h - pad - (v / max) * (h - pad * 2);
-    return `${x.toFixed(1)},${y.toFixed(1)}`;
-  }).join(" ");
+function DataPanel({ byYear, langs }) {
+  const years = byYear || [];
+  const ls = (langs && langs.length) ? langs : (window.DH.languages || []);
+  const max = Math.max(1, ...years.map(y => y.count));
   return (
     <div className="dh-data">
       <div className="dh-panel">
-        <h3>commits / month · 2025</h3>
+        <h3>repos created / year</h3>
         <div className="dh-bars">
-          {commits.map((v, i) => (
-            <div className="b" key={i}
-                 style={{ height: `${(v / max) * 100}%`, background: i === 9 ? "var(--viz-1)" : "var(--cerulean-700)" }}>
-              <span>{months[i]}</span>
+          {years.map((y, i) => (
+            <div className="b" key={y.year} title={`${y.year}: ${y.count}`}
+                 style={{ height: `${(y.count / max) * 100}%`, background: i === years.length - 1 ? "var(--viz-1)" : "var(--cerulean-700)" }}>
+              <span>{String(y.year).slice(2)}</span>
             </div>
           ))}
+          {!years.length && <span className="dh-empty" style={{ alignSelf: "center" }}>loading…</span>}
         </div>
       </div>
       <div className="dh-panel">
         <h3>language split</h3>
         <div className="dh-legend">
-          {languages.map(l => (
+          {ls.map(l => (
             <div className="row" key={l.lbl}>
               <span className="sw" style={{ background: l.color }}></span>
               <span className="lbl">{l.lbl}</span>
               <span className="val">{l.val}%</span>
             </div>
           ))}
+          {!ls.length && <span className="dh-empty">loading…</span>}
         </div>
-        <svg className="spark" viewBox={`0 0 ${w} ${h}`} preserveAspectRatio="none" style={{ marginTop: 14 }}>
-          <polyline points={pts} fill="none" stroke="var(--seagreen-300)" strokeWidth="2" />
-        </svg>
       </div>
     </div>
   );
 }
 
 function ReadingAndPlaying() {
-  const { books, game } = window.DH;
+  const { books, games } = window.DH;
+  const now = (games && games.now) || { ti: "—", meta: "" };
   return (
     <div className="dh-two">
       <div className="dh-shelf">
@@ -100,10 +95,16 @@ function ReadingAndPlaying() {
         <div className="game">
           <span className="art"></span>
           <div>
-            <div className="ti">{game.ti}</div>
-            <div className="meta">{game.meta}</div>
+            <div className="ti">{now.ti}</div>
+            <div className="meta">{now.meta}</div>
           </div>
         </div>
+        {games && (games.next || games.again) && (
+          <div className="dh-queue">
+            {games.next && <span><b>up next</b> · {games.next}</span>}
+            {games.again && <span><b>replaying</b> · {games.again}</span>}
+          </div>
+        )}
         <img className="heart" src="../assets/heart-pin.svg" alt="loved" style={{ alignSelf: "flex-start" }} />
       </div>
     </div>

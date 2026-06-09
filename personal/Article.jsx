@@ -17,6 +17,15 @@ function useMd(path) {
 
 function Article({ entry, onBack }) {
   const html = useMd(entry && entry.path);
+  const proseRef = React.useRef(null);
+  React.useEffect(() => {
+    if (html == null || !proseRef.current) return;
+    const p = proseRef.current.querySelector("p");
+    if (!p) return;
+    p.classList.add("article-opening");
+    const ch = (p.textContent.trim()[0] || "").toUpperCase();
+    if (/[A-Z]/.test(ch)) proseRef.current.setAttribute("data-dropcap", ch);
+  }, [html]);
   if (!entry) return null;
   return (
     <article className="article">
@@ -30,7 +39,7 @@ function Article({ entry, onBack }) {
       <div className="asterism">✻ ✺ ✻</div>
       {html == null
         ? <p>Loading…</p>
-        : <div className="prose" dangerouslySetInnerHTML={{ __html: html }} />}
+        : <div className="prose" ref={proseRef} dangerouslySetInnerHTML={{ __html: html }} />}
       <div style={{ marginTop: 56, display: "flex", gap: 12, alignItems: "center" }}>
         <button className="btn btn-stamp" onClick={onBack}>← Take me back</button>
         <button className="btn btn-stamp btn-stamp-pink">♥ Favorite</button>

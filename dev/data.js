@@ -31,7 +31,12 @@ const DH = {
     { ti: "Thinking in Systems", au: "Donella Meadows",   spine: "var(--seagreen-500)" },
   ],
 
-  game: { ti: "Tunic", meta: "Switch · 41 hrs · 100%" },
+  // Manually maintained — edit as your rotation changes.
+  games: {
+    now:   { ti: "Metroid Prime 4", meta: "now playing" },
+    next:  "Subnautica 2",
+    again: "Slay the Spire 2",
+  },
 };
 
 window.DH = DH;

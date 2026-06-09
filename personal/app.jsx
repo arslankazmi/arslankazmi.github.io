@@ -36,7 +36,7 @@ function App() {
 
   return (
     <div className="app">
-      <TopNav route={route} onNavigate={navigate} plain={plain} onPlain={togglePlain} hasWriting={entries.length > 0} />
+      <TopNav route={route} onNavigate={navigate} plain={plain} onPlain={togglePlain} hasWriting={entries.length > 0} hasProjects={(window.AK.PROJECTS || []).length > 0} />
       <NowPlaying track={window.AK.NOW_PLAYING} />
       <main className="page">
         {route === "home" && (
@@ -51,11 +51,15 @@ function App() {
                 <FeaturedPair entries={entries} onOpen={openEntry} />
               </>
             )}
-            <div className="section-h">
-              <h2>Projects</h2>
-              <a className="more" onClick={() => navigate("projects")}>The full shelf →</a>
-            </div>
-            <ProjectGrid projects={window.AK.PROJECTS} />
+            {(window.AK.PROJECTS || []).length > 0 && (
+              <>
+                <div className="section-h">
+                  <h2>Projects</h2>
+                  <a className="more" onClick={() => navigate("projects")}>The full shelf →</a>
+                </div>
+                <ProjectGrid projects={window.AK.PROJECTS} />
+              </>
+            )}
           </>
         )}
         {route === "writing" && (
