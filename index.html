@@ -6,60 +6,105 @@
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="description" content="Arslan Kazmi — two sides of one site: arslan.dev (the workshop) and arslan.land (the writing)."/>
   <link rel="icon" type="image/svg+xml" href="./assets/favicon.svg"/>
-  <!-- tokens + fonts from the design system (dev/dark palette for the splash) -->
+  <!-- tokens + fonts from the design system -->
   <link rel="stylesheet" href="https://arslankazmi.github.io/ak-design/dist/dev.css"/>
   <style>
-    body { min-height:100vh; margin:0; display:flex; flex-direction:column; align-items:center; justify-content:center;
-           gap:40px; padding:48px 20px; background:var(--bg); color:var(--fg1); font-family:var(--font-body); }
-    .top { text-align:center; }
-    .top img { height:74px; filter: drop-shadow(5px 5px 0 rgba(0,0,0,.5)); }
-    .top h1 { font-family:var(--font-display); font-size:clamp(30px,6vw,52px); letter-spacing:-0.03em; margin:18px 0 6px; }
-    .top p { font-family:var(--font-mono); font-size:13px; color:var(--fg3); margin:0; letter-spacing:.04em; }
-    .coins { display:grid; grid-template-columns:repeat(2,minmax(0,300px)); gap:22px; width:100%; max-width:680px; }
-    @media (max-width:620px){ .coins { grid-template-columns:1fr; } }
-    .coin { display:block; text-decoration:none; border-radius:4px; padding:30px 26px; border:2px solid var(--ink-900);
-            box-shadow:6px 6px 0 #000; transition:transform .15s var(--ease-out), box-shadow .15s var(--ease-out); }
-    .coin:hover { transform:translate(-3px,-3px); box-shadow:9px 9px 0 #000; }
-    .coin .k { font-family:var(--font-mono); font-size:11px; letter-spacing:.08em; text-transform:uppercase; }
-    .coin h2 { font-family:var(--font-display); font-size:26px; letter-spacing:-0.02em; margin:8px 0 6px; }
-    .coin p { font-size:13.5px; line-height:1.5; margin:0; }
-    .coin .go { font-family:var(--font-mono); font-size:12px; font-weight:600; display:inline-block; margin-top:14px; }
-    /* dev coin — dark, cerulean */
-    .dev { background:var(--bg-elevated); }
-    .dev .k { color:var(--accent); } .dev h2 { color:var(--fg1); } .dev p { color:var(--fg2); } .dev .go { color:var(--accent); }
-    /* personal coin — previews the paper side */
-    .land { background:#edece4; border-color:#211d2c; box-shadow:6px 6px 0 #b06bff; }
-    .land:hover { box-shadow:9px 9px 0 #b06bff; }
-    .land .k { color:#5d4b85; } .land h2 { color:#15131c; } .land p { color:#4b4666; } .land .go { color:#178e8b; }
-    footer { font-family:var(--font-mono); font-size:12px; color:var(--fg3); text-align:center; }
-    footer a { color:var(--accent-2); text-decoration:none; }
+    html, body { margin: 0; height: 100%; }
+    body { overflow: hidden; font-family: var(--font-body); }
+
+    .split { display: flex; height: 100vh; width: 100vw; }
+    .half {
+      position: relative; flex: 1 1 0; min-width: 0; overflow: hidden;
+      display: flex; align-items: center; justify-content: center;
+      text-decoration: none; cursor: pointer;
+      transition: flex-grow 0.55s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+    /* Hover a half → it grows to fill; the other shrinks to a thin sliver. */
+    .split:hover .half { flex-grow: 0.5; }
+    .split .half:hover { flex-grow: 8; }
+
+    .inner {
+      max-width: 460px; padding: 0 6vw; text-align: left;
+      transition: opacity 0.4s ease, transform 0.55s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+    .split:hover .half:not(:hover) .inner { opacity: 0; transform: scale(0.96); }
+
+    .half .mark { height: 56px; margin-bottom: 22px; display: block; }
+    .half .k { font-family: var(--font-mono); font-size: 12px; letter-spacing: 0.1em; text-transform: uppercase; }
+    .half h2 { font-family: var(--font-display); font-size: clamp(34px, 5vw, 64px); letter-spacing: -0.03em; margin: 10px 0 12px; line-height: 1; }
+    .half p { font-size: 16px; line-height: 1.5; margin: 0 0 22px; max-width: 34ch; }
+    .half .go { font-family: var(--font-mono); font-size: 13px; font-weight: 600; }
+
+    /* dev — dark, cerulean */
+    .dev { background: var(--bg); color: var(--fg1); }
+    .dev::after { /* faint scanline texture */
+      content: ""; position: absolute; inset: 0; pointer-events: none;
+      background: repeating-linear-gradient(to bottom, rgba(0,0,0,0) 0 3px, rgba(0,0,0,0.13) 3px 4px); mix-blend-mode: multiply;
+    }
+    .dev .k { color: var(--accent); } .dev p { color: var(--fg2); } .dev .go { color: var(--accent); }
+
+    /* land — warm paper, newsprint dots */
+    .land {
+      background-color: #edece4; color: #15131c;
+      background-image: radial-gradient(rgba(33,29,44,0.06) 1px, transparent 1.6px);
+      background-size: 6px 6px;
+    }
+    .land .k { color: #5d4b85; } .land h2 { color: #15131c; } .land p { color: #4b4666; } .land .go { color: #178e8b; }
+
+    /* center seam + monogram */
+    .seam {
+      position: fixed; top: 0; left: 50%; transform: translateX(-50%);
+      height: 100vh; width: 0; border-left: 1px solid rgba(124,140,255,0.25); z-index: 5; pointer-events: none;
+      transition: opacity 0.4s ease;
+    }
+    .split:hover .seam { opacity: 0; }
+    .brand {
+      position: fixed; top: 22px; left: 50%; transform: translateX(-50%); z-index: 6; pointer-events: none;
+      font-family: var(--font-mono); font-size: 12px; letter-spacing: 0.12em; text-transform: uppercase;
+      color: #fff; mix-blend-mode: difference;
+    }
+    .disclaimer {
+      position: fixed; bottom: 16px; left: 50%; transform: translateX(-50%); z-index: 6;
+      font-family: var(--font-mono); font-size: 11px; color: #fff; mix-blend-mode: difference; text-align: center; white-space: nowrap;
+    }
+    .disclaimer a { color: inherit; text-decoration: underline; pointer-events: auto; }
+
+    /* stacked on small screens — no hover-expand on touch */
+    @media (max-width: 700px) {
+      body { overflow: auto; }
+      .split { flex-direction: column; height: auto; }
+      .half { min-height: 50vh; }
+      .split:hover .half, .split .half:hover { flex-grow: 1; }
+      .split:hover .half:not(:hover) .inner { opacity: 1; transform: none; }
+      .seam { display: none; }
+      .disclaimer { white-space: normal; width: 90%; }
+    }
   </style>
 </head>
 <body>
-  <div class="top">
-    <img src="./assets/logo-ak-blue.png" alt="Arslan Kazmi"/>
-    <h1>Arslan Kazmi</h1>
-    <p>two coins · one site · pick a side</p>
-  </div>
-
-  <div class="coins">
-    <a class="coin dev" href="./dev/">
-      <span class="k">// the workshop</span>
-      <h2>arslan.dev</h2>
-      <p>Programmer &amp; data scientist. Projects, signal, reading, and dev writing. Dark, monospace, a little 8-bit.</p>
-      <span class="go">Enter the dev hub →</span>
+  <div class="brand">Arslan Kazmi</div>
+  <div class="split">
+    <a class="half dev" href="./dev/">
+      <div class="inner">
+        <img class="mark" src="./assets/logo-ak-blue.png" alt=""/>
+        <span class="k">// the workshop</span>
+        <h2>arslan.dev</h2>
+        <p>Programmer &amp; data scientist. Projects, signal, reading, and dev writing — dark, monospace, a little 8-bit.</p>
+        <span class="go">Enter the dev hub →</span>
+      </div>
     </a>
-    <a class="coin land" href="./personal/">
-      <span class="k">// the quiet side</span>
-      <h2>arslan.land</h2>
-      <p>Essays, a notebook, half-formed notes. Warm paper, slower, weirder. The writing half of the coin.</p>
-      <span class="go">Read the writing →</span>
+    <a class="half land" href="./personal/">
+      <div class="inner">
+        <span class="k">// the quiet side</span>
+        <h2>arslan.land</h2>
+        <p>Essays, a notebook, half-formed notes. Warm paper, slower, weirder — the writing half of the coin.</p>
+        <span class="go">Read the writing →</span>
+      </div>
     </a>
+    <div class="seam"></div>
   </div>
-
-  <footer>
-    <a href="./portfolio/">project catalog ↗</a> · built on the <a href="https://arslankazmi.github.io/ak-design/">Arslan Kazmi design system</a><br/>
-    <span style="opacity:.7">Written by hand · AI may have been used to fix the code.</span>
-  </footer>
+  <div class="disclaimer">
+    <a href="./portfolio/">project catalog ↗</a> · written by hand · AI may have been used to fix the code.
+  </div>
 </body>
 </html>
