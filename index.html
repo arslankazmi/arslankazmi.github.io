@@ -37,6 +37,22 @@
     }
     .split:hover .half:not(:hover) .inner { opacity: 0; transform: scale(0.96); transition-delay: 0.22s; }
 
+    /* "pick me" CTA — shows on the half that collapses, pointing to that side. */
+    .peek {
+      position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+      display: flex; flex-direction: column; align-items: center; gap: 14px;
+      opacity: 0; pointer-events: none; transition: opacity 0.3s ease;
+    }
+    .peek .hand { font-size: 28px; line-height: 1; }
+    .peek .peek-txt {
+      writing-mode: vertical-rl; text-orientation: mixed;
+      font-family: var(--font-mono); font-size: 13px; letter-spacing: 0.16em; text-transform: uppercase;
+    }
+    .dev .peek .peek-txt { color: var(--accent); }
+    .land .peek .peek-txt { color: #5d4b85; }
+    .split:hover .half:not(:hover) .peek { opacity: 1; transition-delay: 0.22s; animation: beckon 1.15s ease-in-out 0.22s infinite; }
+    @keyframes beckon { 0%, 100% { transform: translate(-50%, -50%); } 50% { transform: translate(-50%, -62%); } }
+
     .half .mark { height: 56px; margin-bottom: 22px; display: block; }
     .half .k { font-family: var(--font-mono); font-size: 12px; letter-spacing: 0.1em; text-transform: uppercase; }
     .half h2 { font-family: var(--font-display); font-size: clamp(34px, 5vw, 64px); letter-spacing: -0.03em; margin: 10px 0 12px; line-height: 1; }
@@ -106,6 +122,7 @@
         <p>Programmer &amp; data scientist. Projects, signal, reading, and dev writing — dark, monospace, a little 8-bit.</p>
         <span class="go">Enter the dev hub →</span>
       </div>
+      <span class="peek"><span class="hand">👈</span><span class="peek-txt">the dev side · pick me</span></span>
     </a>
     <a class="half land" href="./personal/">
       <div class="inner">
@@ -114,6 +131,7 @@
         <p>Essays, a notebook, half-formed notes. Warm paper, slower, weirder — the writing half of the coin.</p>
         <span class="go">Read the writing →</span>
       </div>
+      <span class="peek"><span class="hand">👉</span><span class="peek-txt">the fun side · pick me</span></span>
     </a>
     <div class="seam"></div>
   </div>

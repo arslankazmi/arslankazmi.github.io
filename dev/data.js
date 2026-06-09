@@ -25,15 +25,14 @@ const DH = {
     { lbl: "Other",      val: 17, color: "var(--viz-8)" },
   ],
 
+  // Manually maintained — what's on the nightstand right now.
   books: [
-    { ti: "The Information",      au: "James Gleick",      spine: "var(--cerulean-500)" },
-    { ti: "Pattern Recognition", au: "William Gibson",    spine: "var(--purple-500)"   },
-    { ti: "Thinking in Systems", au: "Donella Meadows",   spine: "var(--seagreen-500)" },
+    { ti: "The Wee Free Men", au: "Terry Pratchett · re-reading", spine: "var(--seagreen-500)" },
   ],
 
   // Manually maintained — edit as your rotation changes.
   games: {
-    now:   { ti: "Metroid Prime 4", meta: "now playing" },
+    now:   { ti: "Metroid Prime 4", meta: "now playing", art: "../assets/metroid-prime.png" },
     next:  "Subnautica 2",
     again: "Slay the Spire 2",
   },

@@ -93,7 +93,7 @@ function ReadingAndPlaying() {
       <div className="dh-now">
         <span className="label">Now playing</span>
         <div className="game">
-          <span className="art"></span>
+          {now.art ? <img className="art" src={now.art} alt="" /> : <span className="art"></span>}
           <div>
             <div className="ti">{now.ti}</div>
             <div className="meta">{now.meta}</div>

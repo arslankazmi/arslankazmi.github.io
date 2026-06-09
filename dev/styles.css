@@ -213,6 +213,7 @@ body { margin: 0; background: var(--bg); color: var(--fg1); font-family: var(--f
 .dh-now .label { font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--accent-3); }
 .dh-now .game { display: flex; gap: 12px; align-items: center; }
 .dh-now .art { width: 52px; height: 52px; border-radius: 8px; background: linear-gradient(135deg, var(--purple-500), var(--cerulean-600)); }
+.dh-now img.art { width: auto; height: 34px; max-width: 110px; border-radius: 0; background: none; object-fit: contain; }
 .dh-now .game .ti { font-family: var(--font-display); font-size: 18px; color: var(--fg1); font-weight: 600; }
 .dh-now .game .meta { font-family: var(--font-mono); font-size: 11px; color: var(--fg3); }
 .dh-now .heart { height: 26px; }
