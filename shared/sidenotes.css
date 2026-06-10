@@ -26,6 +26,14 @@
   line-height: 1.5;
   color: var(--fg2, #555);
 }
+/* Left-margin column: mirror to the left of the text, hugging the column edge (gwern-style). */
+.prose aside.sidenote--left {
+  left: auto;
+  right: 100%;
+  margin-left: 0;
+  margin-right: 2rem;
+  text-align: right;
+}
 .prose aside.sidenote p { margin: 0 0 0.5em; }
 .prose aside.sidenote p:last-child { margin-bottom: 0; }
 .prose aside.sidenote .sidenote-num {

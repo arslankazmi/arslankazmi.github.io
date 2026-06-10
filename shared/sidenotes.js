@@ -1,19 +1,30 @@
-/* sidenotes.js — progressive-enhancement margin sidenotes for marked-footnote output.
+/* sidenotes.js — two-column margin sidenotes for marked-footnote output (progressive enhancement).
 
-   Pattern (Tufte / R. Nystrom, the same idea gwern's sidenotes.js is built on, minus gwern's
-   GW/Pandoc coupling): footnotes render normally at the bottom of the article (works with JS off /
-   on narrow screens). When the viewport is wide enough that there's real room in the right gutter,
-   we float each footnote into the margin next to its reference and hide the bottom list. Reflows on
-   resize; re-runs when the SPA swaps article content. Targets marked-footnote's DOM:
+   The behaviour follows gwern.net's sidenotes (gwern.net/sidenote, after Tufte-CSS): each footnote is
+   placed in the page margin *next to its reference*. Gwern's own sidenotes.js is a ~1300-line engine
+   fused to its Notes model / transclude / page-toolbar / hash-routing, so this is a small self-contained
+   implementation of the part that matters — the key trick we were missing is using BOTH margins, which
+   lets clustered references each sit beside their mention instead of stacking in one column.
+
+   Degrades fully: with JS off, on narrow screens, or when there isn't gutter room, the footnotes stay a
+   normal <section data-footnotes> list at the bottom. Targets marked-footnote's DOM:
      ref:  <sup><a data-footnote-ref id="footnote-ref-N" href="#footnote-N">N</a></sup>
      body: <section data-footnotes><ol><li id="footnote-N"><p>… <a data-footnote-backref>↩</a></p></li></ol></section>
 */
 (function () {
-  var MIN_VIEWPORT = 1200;   // below this: leave footnotes inline at the bottom
-  var GUTTER_MIN = 260;      // px of right-margin room required to float sidenotes
-  var SIDENOTE_W = 240;      // px
-  var GAP = 14;              // px min vertical gap between stacked sidenotes
-  var raf, timer;
+  var MIN_VIEWPORT = 1000;  // below this: leave footnotes inline at the bottom
+  var GUTTER_MIN = 230;     // px of margin room required for a sidenote column
+  var GAP = 16;             // px min vertical gap between stacked sidenotes in a column
+  var raf, timer, observer;
+
+  function buildAside(li, ref, side) {
+    var clone = li.cloneNode(true);
+    clone.querySelectorAll("[data-footnote-backref]").forEach(function (b) { b.remove(); });
+    var aside = document.createElement("aside");
+    aside.className = "sidenote" + (side === "left" ? " sidenote--left" : "");
+    aside.innerHTML = '<span class="sidenote-num">' + (ref.textContent || "") + "</span> " + clone.innerHTML.trim();
+    return aside;
+  }
 
   function layout(prose) {
     var section = prose.querySelector("section[data-footnotes]");
@@ -23,39 +34,42 @@
 
     var rect = prose.getBoundingClientRect();
     var rightRoom = window.innerWidth - rect.right;
-    if (window.innerWidth < MIN_VIEWPORT || rightRoom < GUTTER_MIN) return; // keep bottom footnotes
+    var leftRoom = rect.left;
+    var canRight = rightRoom >= GUTTER_MIN;
+    var canLeft = leftRoom >= GUTTER_MIN;
+    if (window.innerWidth < MIN_VIEWPORT || (!canRight && !canLeft)) return; // keep bottom footnotes
 
     prose.classList.add("has-sidenotes");
+    var twoCol = canLeft && canRight;
+    var bottom = { left: 0, right: 0 };           // running bottom of each column (for collision)
     var items = section.querySelectorAll("ol > li");
-    var prevBottom = 0;
+    var i = 0;
     items.forEach(function (li) {
       var ref = prose.querySelector('a[data-footnote-ref][href="#' + li.id + '"]');
       if (!ref) return;
-      var clone = li.cloneNode(true);
-      clone.querySelectorAll("[data-footnote-backref]").forEach(function (b) { b.remove(); });
-      var aside = document.createElement("aside");
-      aside.className = "sidenote";
-      aside.innerHTML = '<span class="sidenote-num">' + (ref.textContent || "") + "</span> " + clone.innerHTML.trim();
+      // Alternate columns when both margins are available; otherwise use whichever has room.
+      var side = !canLeft ? "right" : !canRight ? "left" : (i % 2 === 0 ? "right" : "left");
+      var aside = buildAside(li, ref, side);
       prose.appendChild(aside);
-      // align top with the reference (relative to the positioned .prose), avoiding overlap
-      var refTop = ref.getBoundingClientRect().top - rect.top;
-      var top = Math.max(refTop, prevBottom + GAP);
+      var refTop = ref.getBoundingClientRect().top - rect.top;     // align to the reference
+      var top = Math.max(refTop, bottom[side] + GAP);              // …but never overlap the prior note
       aside.style.top = top + "px";
-      prevBottom = top + aside.offsetHeight;
+      bottom[side] = top + aside.offsetHeight;
+      i++;
     });
   }
 
   function relayout() {
     if (observer) observer.disconnect();
     document.querySelectorAll(".prose").forEach(layout);
-    if (observer) observe();
+    observe();
   }
   function schedule() { cancelAnimationFrame(raf); raf = requestAnimationFrame(relayout); }
   function scheduleDebounced() { clearTimeout(timer); timer = setTimeout(schedule, 150); }
 
   // SPA: the rich app mounts articles into #root after load — re-run when that subtree changes.
   var root = document.getElementById("root");
-  var observer = root ? new MutationObserver(scheduleDebounced) : null;
+  observer = root ? new MutationObserver(scheduleDebounced) : null;
   function observe() { if (observer) observer.observe(root, { childList: true, subtree: true }); }
 
   window.addEventListener("resize", schedule);
