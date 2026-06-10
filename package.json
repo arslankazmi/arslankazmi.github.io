@@ -1,0 +1,15 @@
+{
+  "name": "arslankazmi-github-io",
+  "version": "1.0.0",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "index": "node scripts/build-index.mjs",
+    "build": "node scripts/build.mjs",
+    "serve": "python3 -m http.server --directory _public 8080"
+  },
+  "devDependencies": {
+    "esbuild": "^0.28.0",
+    "marked": "^18.0.5"
+  }
+}

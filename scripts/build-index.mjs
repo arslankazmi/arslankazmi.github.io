@@ -6,15 +6,15 @@
    No dependencies (Node 18+). Run: `node scripts/build-index.mjs`.
    ============================================================ */
 import { readdirSync, readFileSync, writeFileSync, existsSync } from "node:fs";
-import { fileURLToPath } from "node:url";
+import { fileURLToPath, pathToFileURL } from "node:url";
 import { dirname, join } from "node:path";
 
 const here = dirname(fileURLToPath(import.meta.url));
-const repo = join(here, "..");
+const REPO = join(here, "..");
 const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
 function parseFront(raw) {
-  const m = raw.match(/^---\s*\n([\s\S]*?)\n---\s*/);
+  const m = raw.match(/^---\s*\r?\n([\s\S]*?)\r?\n---\s*/);
   const fm = {};
   if (!m) return fm;
   for (const line of m[1].split("\n")) {
@@ -34,7 +34,7 @@ function parseFront(raw) {
 const short = (iso) => { const [y, mo] = iso.split("-"); return `${MONTHS[+mo - 1]} ${y}`; };
 const long = (iso) => { const [y, mo, d] = iso.split("-"); return `${MONTHS[+mo - 1]} ${+d}, ${y}`; };
 
-function collect(side) {
+function collect(repo, side) {
   const dir = join(repo, "posts", side);
   if (!existsSync(dir)) return [];
   return readdirSync(dir)
@@ -59,6 +59,14 @@ function collect(side) {
     .sort((a, b) => (a.iso < b.iso ? 1 : -1));
 }
 
-const out = { dev: collect("dev"), personal: collect("personal") };
-writeFileSync(join(repo, "posts.json"), JSON.stringify(out, null, 2) + "\n");
-console.log(`posts.json — ${out.dev.length} dev, ${out.personal.length} personal`);
+/** Scan posts/{dev,personal}/*.md under `repo` and return { dev:[…], personal:[…] }. */
+export function buildIndex(repo = REPO) {
+  return { dev: collect(repo, "dev"), personal: collect(repo, "personal") };
+}
+
+// CLI: write posts.json to the repo root.
+if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
+  const out = buildIndex(REPO);
+  writeFileSync(join(REPO, "posts.json"), JSON.stringify(out, null, 2) + "\n");
+  console.log(`posts.json — ${out.dev.length} dev, ${out.personal.length} personal`);
+}
