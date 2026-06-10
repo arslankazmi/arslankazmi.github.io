@@ -97,7 +97,7 @@ function DHFooter() {
   return (
     <footer className="dh-foot">
       <div>
-        Written by hand · built on the Arslan Kazmi design system · <a href="../personal/">the personal side ↗</a><br/>
+        Written by hand · built on the Arslan Kazmi design system · <a href="/acknowledgements/">acknowledgements</a> · <a href="../personal/">the personal side ↗</a><br/>
         <span className="ai-note">AI may have been used to fix the code.</span>
       </div>
       <span className="sig">— A.K.</span>

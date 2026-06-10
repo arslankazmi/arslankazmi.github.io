@@ -1,0 +1,96 @@
+{
+  "repos": [
+    {
+      "name": "Receipt OCR",
+      "desc": "A full ML/AI suite for receipt OCR: data prep with WebDataset sharding (200 images → 550 GB), a multi-model evaluation harness (Donut, Qwen2-VL, TrOCR, Claude), a Donut finetune, and a FastAPI inference service.",
+      "lang": "Python",
+      "url": "https://github.com/arslankazmi/receipt-ocr",
+      "docs": "https://arslankazmi.github.io/receipt-ocr/"
+    },
+    {
+      "name": "Jedi Council",
+      "desc": "A multi-agent Jedi Council deliberation system built on LangGraph — persona agents debate in public and private rounds, orchestrated through a shared graph, with a retro RPG overlay on top.",
+      "lang": "Python",
+      "url": "https://github.com/arslankazmi/jedi-council",
+      "docs": "https://arslankazmi.github.io/jedi-council/"
+    },
+    {
+      "name": "Research Radar",
+      "desc": "A custom OpenClaw plugin: a conversational, multi-source ML research radar with LLM-judged relevance that learns from your in-chat 👍/👎 feedback over time.",
+      "lang": "TypeScript",
+      "url": "https://github.com/arslankazmi/research-radar",
+      "docs": "https://arslankazmi.github.io/research-radar/"
+    },
+    {
+      "name": "Document AI Pipeline",
+      "desc": "End-to-end Document AI pipeline for handwritten form extraction, with a human-in-the-loop feedback loop that turns corrections into better models.",
+      "lang": "Python",
+      "url": "https://github.com/arslankazmi/doc-ai-pipeline",
+      "docs": "https://arslankazmi.github.io/doc-ai-pipeline/"
+    },
+    {
+      "name": "LangGraph Research Agent",
+      "desc": "Multi-agent equity-research system with verification gates and citation tracking, built on LangGraph + Postgres + LangSmith and served via FastAPI.",
+      "lang": "Python",
+      "url": "https://github.com/arslankazmi/langgraph-research-agent",
+      "docs": ""
+    },
+    {
+      "name": "StarCraft II Player Skill Classification",
+      "desc": "Classifies StarCraft II players by skill tier from gameplay telemetry — feature engineering and supervised modelling on behavioural data.",
+      "lang": "Python",
+      "url": "https://github.com/arslankazmi/StarCraft-II-Player-Skill-Classification",
+      "docs": ""
+    },
+    {
+      "name": "FastAPI ML Template",
+      "desc": "Production-ready FastAPI + ML template: versioned routers, per-version Swagger docs, uv dependency management, and Docker out of the box.",
+      "lang": "Python",
+      "url": "https://github.com/arslankazmi/fastapi-ml-template",
+      "docs": ""
+    },
+    {
+      "name": "Git Scrub — Visual History Explorer",
+      "desc": "An interactive visual git-history explorer with sliders to scrub through commits — built entirely with Claude Code.",
+      "lang": "JavaScript",
+      "url": "https://github.com/arslankazmi/ai-coded-git-scrub",
+      "docs": "https://arslankazmi.github.io/ai-coded-git-scrub/"
+    },
+    {
+      "name": "ak-ai — Claude Code Skills & Tools",
+      "desc": "Open-source Claude Code skills, agents, and AI tooling — reusable building blocks for agent-driven engineering.",
+      "lang": "",
+      "url": "https://github.com/arslankazmi/ak-ai",
+      "docs": ""
+    },
+    {
+      "name": "AI Poetry",
+      "desc": "Poems written by AI models, presented in the namesake forms of the models that wrote them.",
+      "lang": "HTML",
+      "url": "https://github.com/arslankazmi/ai-poetry",
+      "docs": "https://arslankazmi.github.io/ai-poetry/"
+    }
+  ],
+  "stats": [
+    {
+      "ico": "◆ repos",
+      "num": "29",
+      "cap": "public"
+    },
+    {
+      "ico": "✦ stars",
+      "num": "1",
+      "cap": "across repos"
+    },
+    {
+      "ico": "❂ followers",
+      "num": "4",
+      "cap": "on github"
+    },
+    {
+      "ico": "⌁ since",
+      "num": "9y",
+      "cap": "est. 2017"
+    }
+  ]
+}

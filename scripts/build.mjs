@@ -37,6 +37,15 @@ const PROJECTS_URL = "https://arslankazmi.github.io/portfolio/data/projects.json
 
 const log = (...a) => console.log("[build]", ...a);
 
+// Build-time data snapshot caching. Default builds reuse data/snapshot.cache.json (no network — fast,
+// like Hugo); the rich view still fetches GitHub live client-side, so the cached snapshot only feeds the
+// no-JS baseline. Refresh with `npm run build:refresh` (REFRESH=1); `--no-fetch`/NO_FETCH never hits the network.
+const SNAPSHOT_CACHE = join(REPO, "data", "snapshot.cache.json");
+const OFFLINE = !!process.env.NO_FETCH || process.argv.includes("--no-fetch");
+const REFRESH = !!process.env.REFRESH || process.argv.includes("--refresh");
+function readCache(file) { try { return existsSync(file) ? JSON.parse(readFileSync(file, "utf8")) : null; } catch { return null; } }
+function writeCache(file, obj) { try { mkdirSync(dirname(file), { recursive: true }); writeFileSync(file, JSON.stringify(obj, null, 2) + "\n"); } catch (e) { log("cache write failed:", e.message); } }
+
 /** Evaluate a browser data file (which assigns window.X = …) and return the populated window. */
 function loadWindowGlobals(file) {
   try {
@@ -59,8 +68,19 @@ function pruneFiles(dir, pred) {
   }
 }
 
-/** Build-time data snapshot for the dev hub (repos + GitHub stats), with graceful fallbacks. */
+/** Cache-aware dev snapshot: reuse data/snapshot.cache.json unless --refresh; --no-fetch stays offline. */
 async function devSnapshot(dh) {
+  const cached = readCache(SNAPSHOT_CACHE);
+  if (OFFLINE) { log(`snapshot: offline → ${cached ? "cache" : "sample stats"}`); return cached || { repos: [], stats: dh.stats || [] }; }
+  if (cached && !REFRESH) { log(`snapshot: from cache (${cached.repos.length} repos) — \`npm run build:refresh\` to update`); return cached; }
+  const fresh = await fetchSnapshot(dh);
+  writeCache(SNAPSHOT_CACHE, fresh);
+  log(`snapshot: fetched live (${fresh.repos.length} repos, ${fresh.stats.length} tiles) → cached`);
+  return fresh;
+}
+
+/** Fetch the live dev-hub data (portfolio repos + GitHub stats), with graceful fallbacks. */
+async function fetchSnapshot(dh) {
   let repos = [];
   try {
     const d = await (await fetch(PROJECTS_URL)).json();
@@ -184,7 +204,7 @@ async function main() {
   log(`snapshot: ${repos.length} repos, ${stats.length} stat tiles`);
 
   // 3. copy served tree
-  for (const item of ["assets", "shared", "dev", "personal", "posts"]) {
+  for (const item of ["assets", "shared", "dev", "personal", "posts", "acknowledgements"]) {
     if (existsSync(join(REPO, item))) cpSync(join(REPO, item), join(OUT, item), { recursive: true });
   }
   for (const f of ["index.html", ".nojekyll"]) {

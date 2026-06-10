@@ -7,6 +7,8 @@
     "index": "node scripts/build-index.mjs",
     "build": "node scripts/build.mjs",
     "build:drafts": "DRAFTS=1 node scripts/build.mjs",
+    "build:refresh": "REFRESH=1 node scripts/build.mjs",
+    "bench": "node scripts/bench.mjs",
     "serve": "python3 -m http.server --directory _public 8080"
   },
   "devDependencies": {
