@@ -1,0 +1,53 @@
+{
+  "https://en.wikipedia.org/wiki/Hypertext": {
+    "type": "wikipedia",
+    "title": "Hypertext",
+    "excerpt": "Hypertext is text displayed on a computer display or other electronic devices with references (hyperlinks) to other text that the reader can immediately access. Hypertext documents are interconnected by hyperlinks, which are typically activated by a mouse click, keypress set, or screen touch. Apart from text, the term \"hypertext\" is also used to describe tables, images, and other presentational materials with integrated hyperlinks. Hypertext is one of the key underlying concepts of the World Wide Web, where Web pages are often written in the Hypertext Markup Language (HTML). As implemented on the Web, hypertext enables the easy-to-use publication of information over the Internet.",
+    "thumb": "https://upload.wikimedia.org/wikipedia/commons/thumb/1/19/Hyperlinks_scheme.svg/330px-Hyperlinks_scheme.svg.png",
+    "url": "https://en.wikipedia.org/wiki/Hypertext"
+  },
+  "https://arxiv.org/abs/1706.03762": {
+    "type": "arxiv",
+    "title": "Attention Is All You Need",
+    "author": "Ashish Vaswani, Noam Shazeer, Niki Parmar, Jakob Uszkoreit, Llion Jones, Aidan N. Gomez, Lukasz Kaiser, Illia Polosukhin",
+    "excerpt": "The dominant sequence transduction models are based on complex recurrent or convolutional neural networks in an encoder-decoder configuration. The best performing models also connect the encoder and decoder through an attention mechanism. We propose a new simple network architecture, the Transformer, based solely on attention mechanisms, dispensing with recurrence and convolutions entirely. Experiments on two machine translation tasks show these models to be superior in quality while being more parallelizable and requiring significantly less time to train. Our model achieves 28.4 BLEU on the WMT 2014 English-to-German translation task, improving over the existing best results, including ensembles by over 2 BLEU. On the WMT 2014 English-to-French translation task, our model establishes a new single-model state-of-the-art BLEU score of 41.8 after training for 3.5 days on eight GPUs, a small fraction of the training costs of the best models from the literature. We show that the Transformer generalizes well to other tasks by applying it successfully to English constituency parsing both with large and limited training data.",
+    "url": "https://arxiv.org/abs/1706.03762"
+  },
+  "/personal/p/a-quiet-demo/": {
+    "type": "post",
+    "title": "A quiet demo",
+    "excerpt": "The same reading machinery, on the paper side — sidenotes that know when to stay out of the way.",
+    "date": "Jun 10, 2026",
+    "tags": [
+      "notebook"
+    ],
+    "read": "3 min",
+    "url": "/personal/p/a-quiet-demo/"
+  },
+  "https://en.wikipedia.org/wiki/Webring": {
+    "type": "wikipedia",
+    "title": "Webring",
+    "excerpt": "A webring is a collection of websites linked together in a circular structure, usually organized around a specific theme, and often educational or social. They were popular in the 1990s and early 2000s, particularly among amateur websites.",
+    "thumb": "https://upload.wikimedia.org/wikipedia/commons/thumb/9/97/Webringwork.png/330px-Webringwork.png",
+    "url": "https://en.wikipedia.org/wiki/Webring"
+  },
+  "/dev/p/sidenotes-and-previews/": {
+    "type": "post",
+    "title": "Sidenotes, previews, and other quiet machinery",
+    "excerpt": "A demo post wiring up margin sidenotes and hover previews — and a note on why both degrade to plain text.",
+    "date": "Jun 10, 2026",
+    "tags": [
+      "meta",
+      "web",
+      "typography"
+    ],
+    "read": "4 min",
+    "url": "/dev/p/sidenotes-and-previews/"
+  },
+  "/assets/metroid-prime.png": {
+    "type": "image",
+    "title": "The Metroid Prime logo",
+    "src": "/assets/metroid-prime.png",
+    "url": "/assets/metroid-prime.png"
+  }
+}

@@ -11,5 +11,8 @@
   "devDependencies": {
     "esbuild": "^0.28.0",
     "marked": "^18.0.5"
+  },
+  "dependencies": {
+    "marked-footnote": "^1.4.0"
   }
 }

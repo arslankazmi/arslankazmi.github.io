@@ -18,11 +18,16 @@ import { readFileSync, writeFileSync, rmSync, mkdirSync, cpSync, existsSync, rea
 import { fileURLToPath } from "node:url";
 import { dirname, join, relative } from "node:path";
 import { marked } from "marked";
+import markedFootnote from "marked-footnote";
 import * as esbuild from "esbuild";
 import { buildIndex } from "./build-index.mjs";
+import { buildAnnotations } from "./annotations.mjs";
 import { devBlocks } from "../dev/blocks.mjs";
 import { personalBlocks } from "../personal/blocks.mjs";
 import { toStaticHTML, he } from "../shared/render.mjs";
+
+// Footnotes (sidenotes.js enhances these into margin notes; degrade to bottom-footnotes no-JS).
+marked.use(markedFootnote());
 
 const HERE = dirname(fileURLToPath(import.meta.url));
 const REPO = join(HERE, "..");
@@ -136,6 +141,8 @@ function postPage(side, post, bodyHtml) {
   ${post.blurb ? `<meta name="description" content="${he(post.blurb)}"/>` : ""}
   <link rel="icon" type="image/svg+xml" href="../../../assets/favicon.svg"/>
   <link rel="stylesheet" href="${css}"/>
+  <link rel="stylesheet" href="/shared/sidenotes.css"/>
+  <link rel="stylesheet" href="/shared/previews.css"/>
   <style>
     .post { max-width: 42rem; margin: 0 auto; padding: 56px 20px 96px; }
     .post .meta { font-family: var(--font-mono, monospace); font-size: 13px; opacity: .7; margin-bottom: 10px; }
@@ -154,6 +161,8 @@ function postPage(side, post, bodyHtml) {
     <div class="prose">${bodyHtml}</div>
     <a class="back" href="../../">← all writing</a>
   </main>
+  <script src="/shared/sidenotes.js" defer></script>
+  <script src="/shared/previews.js" defer></script>
 </body>
 </html>
 `;
@@ -206,9 +215,11 @@ async function main() {
   emitShell("personal/index.html",
     personalBlocks({ route: "home", entries: personalEntries, rp: RP, projects: AK.PROJECTS || [] }), personalNav);
 
-  // 6. per-post static pages
+  // 6. per-post static pages (+ per-side image dir for absolute /<side>/img/... refs)
   let postCount = 0;
   for (const side of ["dev", "personal"]) {
+    const imgSrc = join(REPO, "posts", side, "img");
+    if (existsSync(imgSrc)) cpSync(imgSrc, join(OUT, side, "img"), { recursive: true });
     for (const post of index[side] || []) {
       const raw = readFileSync(join(REPO, post.path), "utf8").replace(/^---[\s\S]*?\r?\n---\r?\n?\s*/, "");
       const dir = join(OUT, side, "p", post.slug);
@@ -218,6 +229,15 @@ async function main() {
     }
   }
   log(`per-post pages: ${postCount}`);
+
+  // 7. build-time link/doc/image preview annotations (internal · wikipedia · arxiv · file · image · OG)
+  await buildAnnotations({
+    repo: REPO,
+    posts: index,
+    outFile: join(OUT, "annotations.json"),
+    cacheFile: join(REPO, "data", "annotations.cache.json"),
+  });
+
   log(`done -> ${relative(REPO, OUT)}/`);
 }
 
