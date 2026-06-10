@@ -6,6 +6,7 @@
   "scripts": {
     "index": "node scripts/build-index.mjs",
     "build": "node scripts/build.mjs",
+    "build:drafts": "DRAFTS=1 node scripts/build.mjs",
     "serve": "python3 -m http.server --directory _public 8080"
   },
   "devDependencies": {
