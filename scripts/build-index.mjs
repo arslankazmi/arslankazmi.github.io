@@ -34,6 +34,10 @@ function parseFront(raw) {
 const short = (iso) => { const [y, mo] = iso.split("-"); return `${MONTHS[+mo - 1]} ${y}`; };
 const long = (iso) => { const [y, mo, d] = iso.split("-"); return `${MONTHS[+mo - 1]} ${+d}, ${y}`; };
 
+// Posts with `draft: true` front-matter are excluded from the build (no index entry, page, or
+// listing) — unless DRAFTS=1 is set, which includes them for local preview (cf. Hugo --buildDrafts).
+const INCLUDE_DRAFTS = !!process.env.DRAFTS;
+
 function collect(repo, side) {
   const dir = join(repo, "posts", side);
   if (!existsSync(dir)) return [];
@@ -53,9 +57,11 @@ function collect(repo, side) {
         blurb: fm.blurb || "",
         read: fm.read || "",
         featured: fm.featured === "true",
+        draft: fm.draft === "true",
         path: `posts/${side}/${f}`,
       };
     })
+    .filter((p) => INCLUDE_DRAFTS || !p.draft)
     .sort((a, b) => (a.iso < b.iso ? 1 : -1));
 }
 

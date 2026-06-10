@@ -1,5 +1,20 @@
 # Asset credits
 
+> Site-wide acknowledgements & inspirations (gwern.net, Tufte, libraries) live on the
+> [`/acknowledgements/`](acknowledgements/index.html) page. This file is the per-asset / per-code license detail.
+
+## Code & patterns
+
+- **Sidenotes** (`shared/sidenotes.{js,css}`) — the margin-note behaviour reuses the *pattern* of
+  [gwern.net's `sidenotes.js`](https://gwern.net/static/js/sidenotes.js) (Said Achmiz, MIT), which itself
+  builds on [Tufte-CSS](https://edwardtufte.github.io/tufte-css/#sidenotes). Reimplemented self-contained
+  (gwern's file is coupled to its larger site engine); not a copy of the source.
+- **Link/document previews** (`scripts/annotations.mjs`, `shared/previews.{js,css}`) — UX inspired by
+  gwern's popups (`popups.js` / `extracts.js`); implementation is original.
+- **`marked-footnote`** (MIT) — Markdown footnote extension, used in the build and in-browser.
+
+## Assets
+
 - **`assets/metroid-prime.png`** — Metroid Prime logo. © Nintendo; in the **public domain**
   (below the threshold of originality — text logo), via
   [Wikimedia Commons](https://commons.wikimedia.org/wiki/File:Metroid-Prime-Logo.png).

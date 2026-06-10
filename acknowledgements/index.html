@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <title>Acknowledgements & Inspirations · arslan</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="description" content="The people, projects, and ideas this site borrows from — with thanks. Sidenotes and link-preview UX after gwern.net; sidenotes pattern after Tufte."/>
+  <link rel="icon" type="image/svg+xml" href="/assets/favicon.svg"/>
+  <!-- Paper theme for a colophon feel. -->
+  <link rel="stylesheet" href="https://arslankazmi.github.io/ak-design/dist/personal.css"/>
+  <style>
+    .ack { max-width: 44rem; margin: 0 auto; padding: 64px 22px 110px; line-height: 1.62; }
+    .ack .kicker { font-family: var(--font-mono, monospace); font-size: 12px; letter-spacing: 0.12em; text-transform: uppercase; opacity: 0.65; }
+    .ack h1 { font-family: var(--font-display, Georgia, serif); line-height: 1.1; margin: 0.2em 0 0.5em; }
+    .ack .lede { font-size: 1.12rem; opacity: 0.9; }
+    .ack h2 { font-family: var(--font-display, Georgia, serif); margin: 2.2rem 0 0.4rem; }
+    .ack h3 { margin: 1.4rem 0 0.2rem; font-size: 1.02rem; }
+    .ack ul { padding-left: 1.1rem; }
+    .ack li { margin: 0.35rem 0; }
+    .ack .note { font-size: 0.92rem; opacity: 0.75; }
+    .ack a { color: var(--accent, #178e8b); }
+    .ack hr { border: 0; border-top: 1px solid var(--border, rgba(0,0,0,0.12)); margin: 2.4rem 0; }
+    .ack .back { font-family: var(--font-mono, monospace); font-size: 13px; }
+  </style>
+</head>
+<body>
+  <main class="ack">
+    <p class="kicker">Colophon</p>
+    <h1>Acknowledgements &amp; inspirations</h1>
+    <p class="lede">This site is built on other people's good ideas and good code. Where something was
+      borrowed, adapted, or learned from, it's named here — and, where it matters, in the piece that uses it.</p>
+
+    <h2><a href="https://gwern.net/design">gwern.net</a> — Gwern Branwen (&amp; Said Achmiz)</h2>
+    <p>The largest influence by far. The reading experience here is an homage to gwern.net's:</p>
+    <ul>
+      <li><strong>Sidenotes.</strong> The margin-note behaviour follows
+        <a href="https://gwern.net/static/js/sidenotes.js">gwern's <code>sidenotes.js</code></a>
+        (by Said Achmiz, MIT). gwern's file is coupled to its larger site engine, so this site reuses the
+        <em>pattern</em> — a small self-contained reimplementation — rather than the file itself. Demonstrated in
+        <a href="/dev/p/sidenotes-and-previews/">“Sidenotes, previews, and other quiet machinery”</a>.</li>
+      <li><strong>Link / document previews.</strong> The hover-preview cards are inspired by gwern's
+        <a href="https://gwern.net/design#popups">popups</a> (<code>popups.js</code> / <code>extracts.js</code>):
+        annotations compiled at build time, shown on hover. This implementation is custom.</li>
+      <li><strong>The whole philosophy</strong> — static HTML rendered at build time, aggressive
+        <a href="https://gwern.net/design#abstract">progressive enhancement</a> (the site is fully readable with
+        JavaScript off), speed, and a “semantic zoom” approach to links.</li>
+      <li><strong><a href="https://gwern.net/gwtar">gwtar</a></strong> — gwern's single-file self-extracting HTML
+        archive format, on the roadmap here for link archiving.</li>
+    </ul>
+
+    <h2>Sidenotes lineage</h2>
+    <ul>
+      <li><a href="https://edwardtufte.github.io/tufte-css/#sidenotes">Tufte-CSS</a> / <strong>Edward Tufte</strong>
+        — sidenotes as a form originate here; gwern's version (and therefore this one) build on it.</li>
+    </ul>
+
+    <h2>Tools &amp; libraries</h2>
+    <ul>
+      <li><a href="https://marked.js.org/">marked</a> + <a href="https://github.com/bent10/marked-extensions/tree/main/packages/footnote">marked-footnote</a> — Markdown → HTML, and footnotes.</li>
+      <li><a href="https://esbuild.github.io/">esbuild</a> — fast bundling of the browser glue.</li>
+      <li><a href="https://react.dev/">React</a> — the interactive views.</li>
+      <li>Hosting: <a href="https://pages.github.com/">GitHub Pages</a>.</li>
+    </ul>
+
+    <h2>Type &amp; assets</h2>
+    <ul>
+      <li><strong>Goudy Initialen</strong> dropcaps — public-domain initial-letter fonts (used on the personal side).</li>
+      <li><strong>Metroid Prime</strong> logo — public domain, via Wikimedia Commons (Nintendo wordmark; used editorially).</li>
+      <li><a href="https://arslankazmi.github.io/ak-design/">ak-design</a> — this site's own shared design system.</li>
+      <li>Lofi streams on the now-playing strip: <a href="https://www.youtube.com/@HenrikoMagnifico">Henriko Magnifico</a>,
+        <a href="https://www.youtube.com/@nestalgiamusic">Nestalgia</a>, and
+        <a href="https://www.youtube.com/@LofiGirl">Lofi Girl</a>.</li>
+    </ul>
+
+    <hr/>
+    <p class="note">Per-asset licensing detail lives in <code>ASSET_CREDITS.md</code> in the repository. If you see
+      something of yours here that should be credited differently — or not at all — please get in touch.</p>
+    <p class="back"><a href="/">← home</a> · <a href="/dev/">arslan.dev</a> · <a href="/personal/">arslan.land</a></p>
+  </main>
+</body>
+</html>

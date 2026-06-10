@@ -1,4 +1,40 @@
 {
-  "dev": [],
-  "personal": []
+  "dev": [
+    {
+      "slug": "sidenotes-and-previews",
+      "side": "dev",
+      "title": "Sidenotes, previews, and other quiet machinery",
+      "date": "Jun 2026",
+      "dateLong": "Jun 10, 2026",
+      "iso": "2026-06-10",
+      "tags": [
+        "meta",
+        "web",
+        "typography"
+      ],
+      "blurb": "A demo post wiring up margin sidenotes and hover previews — and a note on why both degrade to plain text.",
+      "read": "4 min",
+      "featured": true,
+      "draft": false,
+      "path": "posts/dev/2026-06-10-sidenotes-and-previews.md"
+    }
+  ],
+  "personal": [
+    {
+      "slug": "a-quiet-demo",
+      "side": "personal",
+      "title": "A quiet demo",
+      "date": "Jun 2026",
+      "dateLong": "Jun 10, 2026",
+      "iso": "2026-06-10",
+      "tags": [
+        "notebook"
+      ],
+      "blurb": "The same reading machinery, on the paper side — sidenotes that know when to stay out of the way.",
+      "read": "3 min",
+      "featured": false,
+      "draft": false,
+      "path": "posts/personal/2026-06-10-a-quiet-demo.md"
+    }
+  ]
 }

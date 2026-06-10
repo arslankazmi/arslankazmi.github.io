@@ -18,11 +18,16 @@ import { readFileSync, writeFileSync, rmSync, mkdirSync, cpSync, existsSync, rea
 import { fileURLToPath } from "node:url";
 import { dirname, join, relative } from "node:path";
 import { marked } from "marked";
+import markedFootnote from "marked-footnote";
 import * as esbuild from "esbuild";
 import { buildIndex } from "./build-index.mjs";
+import { buildAnnotations } from "./annotations.mjs";
 import { devBlocks } from "../dev/blocks.mjs";
 import { personalBlocks } from "../personal/blocks.mjs";
 import { toStaticHTML, he } from "../shared/render.mjs";
+
+// Footnotes (sidenotes.js enhances these into margin notes; degrade to bottom-footnotes no-JS).
+marked.use(markedFootnote());
 
 const HERE = dirname(fileURLToPath(import.meta.url));
 const REPO = join(HERE, "..");
@@ -31,6 +36,15 @@ const USER = "arslankazmi";
 const PROJECTS_URL = "https://arslankazmi.github.io/portfolio/data/projects.json";
 
 const log = (...a) => console.log("[build]", ...a);
+
+// Build-time data snapshot caching. Default builds reuse data/snapshot.cache.json (no network — fast,
+// like Hugo); the rich view still fetches GitHub live client-side, so the cached snapshot only feeds the
+// no-JS baseline. Refresh with `npm run build:refresh` (REFRESH=1); `--no-fetch`/NO_FETCH never hits the network.
+const SNAPSHOT_CACHE = join(REPO, "data", "snapshot.cache.json");
+const OFFLINE = !!process.env.NO_FETCH || process.argv.includes("--no-fetch");
+const REFRESH = !!process.env.REFRESH || process.argv.includes("--refresh");
+function readCache(file) { try { return existsSync(file) ? JSON.parse(readFileSync(file, "utf8")) : null; } catch { return null; } }
+function writeCache(file, obj) { try { mkdirSync(dirname(file), { recursive: true }); writeFileSync(file, JSON.stringify(obj, null, 2) + "\n"); } catch (e) { log("cache write failed:", e.message); } }
 
 /** Evaluate a browser data file (which assigns window.X = …) and return the populated window. */
 function loadWindowGlobals(file) {
@@ -54,8 +68,19 @@ function pruneFiles(dir, pred) {
   }
 }
 
-/** Build-time data snapshot for the dev hub (repos + GitHub stats), with graceful fallbacks. */
+/** Cache-aware dev snapshot: reuse data/snapshot.cache.json unless --refresh; --no-fetch stays offline. */
 async function devSnapshot(dh) {
+  const cached = readCache(SNAPSHOT_CACHE);
+  if (OFFLINE) { log(`snapshot: offline → ${cached ? "cache" : "sample stats"}`); return cached || { repos: [], stats: dh.stats || [] }; }
+  if (cached && !REFRESH) { log(`snapshot: from cache (${cached.repos.length} repos) — \`npm run build:refresh\` to update`); return cached; }
+  const fresh = await fetchSnapshot(dh);
+  writeCache(SNAPSHOT_CACHE, fresh);
+  log(`snapshot: fetched live (${fresh.repos.length} repos, ${fresh.stats.length} tiles) → cached`);
+  return fresh;
+}
+
+/** Fetch the live dev-hub data (portfolio repos + GitHub stats), with graceful fallbacks. */
+async function fetchSnapshot(dh) {
   let repos = [];
   try {
     const d = await (await fetch(PROJECTS_URL)).json();
@@ -136,6 +161,8 @@ function postPage(side, post, bodyHtml) {
   ${post.blurb ? `<meta name="description" content="${he(post.blurb)}"/>` : ""}
   <link rel="icon" type="image/svg+xml" href="../../../assets/favicon.svg"/>
   <link rel="stylesheet" href="${css}"/>
+  <link rel="stylesheet" href="/shared/sidenotes.css"/>
+  <link rel="stylesheet" href="/shared/previews.css"/>
   <style>
     .post { max-width: 42rem; margin: 0 auto; padding: 56px 20px 96px; }
     .post .meta { font-family: var(--font-mono, monospace); font-size: 13px; opacity: .7; margin-bottom: 10px; }
@@ -154,6 +181,8 @@ function postPage(side, post, bodyHtml) {
     <div class="prose">${bodyHtml}</div>
     <a class="back" href="../../">← all writing</a>
   </main>
+  <script src="/shared/sidenotes.js" defer></script>
+  <script src="/shared/previews.js" defer></script>
 </body>
 </html>
 `;
@@ -175,7 +204,7 @@ async function main() {
   log(`snapshot: ${repos.length} repos, ${stats.length} stat tiles`);
 
   // 3. copy served tree
-  for (const item of ["assets", "shared", "dev", "personal", "posts"]) {
+  for (const item of ["assets", "shared", "dev", "personal", "posts", "acknowledgements"]) {
     if (existsSync(join(REPO, item))) cpSync(join(REPO, item), join(OUT, item), { recursive: true });
   }
   for (const f of ["index.html", ".nojekyll"]) {
@@ -206,9 +235,11 @@ async function main() {
   emitShell("personal/index.html",
     personalBlocks({ route: "home", entries: personalEntries, rp: RP, projects: AK.PROJECTS || [] }), personalNav);
 
-  // 6. per-post static pages
+  // 6. per-post static pages (+ per-side image dir for absolute /<side>/img/... refs)
   let postCount = 0;
   for (const side of ["dev", "personal"]) {
+    const imgSrc = join(REPO, "posts", side, "img");
+    if (existsSync(imgSrc)) cpSync(imgSrc, join(OUT, side, "img"), { recursive: true });
     for (const post of index[side] || []) {
       const raw = readFileSync(join(REPO, post.path), "utf8").replace(/^---[\s\S]*?\r?\n---\r?\n?\s*/, "");
       const dir = join(OUT, side, "p", post.slug);
@@ -218,6 +249,15 @@ async function main() {
     }
   }
   log(`per-post pages: ${postCount}`);
+
+  // 7. build-time link/doc/image preview annotations (internal · wikipedia · arxiv · file · image · OG)
+  await buildAnnotations({
+    repo: REPO,
+    posts: index,
+    outFile: join(OUT, "annotations.json"),
+    cacheFile: join(REPO, "data", "annotations.cache.json"),
+  });
+
   log(`done -> ${relative(REPO, OUT)}/`);
 }
 
