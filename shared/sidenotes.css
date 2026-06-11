@@ -5,6 +5,10 @@
 /* The article column must be a positioning context so absolute sidenotes anchor to it. */
 .prose { position: relative; }
 
+/* Constrain article images to the text column — never wider than the article (static pages + both
+   SPA article contexts all use .prose, and this file is loaded in all of them). */
+.prose img { max-width: 100%; height: auto; }
+
 /* Footnote reference markers (marked-footnote: <sup><a data-footnote-ref>). */
 .prose a[data-footnote-ref] {
   text-decoration: none;
