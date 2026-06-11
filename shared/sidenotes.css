@@ -5,6 +5,10 @@
 /* The article column must be a positioning context so absolute sidenotes anchor to it. */
 .prose { position: relative; }
 
+/* Constrain article images to the text column — never wider than the article (static pages + both
+   SPA article contexts all use .prose, and this file is loaded in all of them). */
+.prose img { max-width: 100%; height: auto; }
+
 /* Footnote reference markers (marked-footnote: <sup><a data-footnote-ref>). */
 .prose a[data-footnote-ref] {
   text-decoration: none;
@@ -25,6 +29,14 @@
   font-size: 0.82rem;
   line-height: 1.5;
   color: var(--fg2, #555);
+}
+/* Left-margin column: mirror to the left of the text, hugging the column edge (gwern-style). */
+.prose aside.sidenote--left {
+  left: auto;
+  right: 100%;
+  margin-left: 0;
+  margin-right: 2rem;
+  text-align: right;
 }
 .prose aside.sidenote p { margin: 0 0 0.5em; }
 .prose aside.sidenote p:last-child { margin-bottom: 0; }
