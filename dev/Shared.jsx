@@ -46,41 +46,6 @@ function RepoGrid({ repos, limit }) {
   return <div className="dh-repos">{list.map(r => <RepoCard key={r.name} repo={r} />)}</div>;
 }
 
-function DataPanel({ byYear, langs }) {
-  const years = byYear || [];
-  const ls = (langs && langs.length) ? langs : (window.DH.languages || []);
-  const max = Math.max(1, ...years.map(y => y.count));
-  return (
-    <div className="dh-data">
-      <div className="dh-panel">
-        <h3>repos created / year</h3>
-        <div className="dh-bars">
-          {years.map((y, i) => (
-            <div className="b" key={y.year} title={`${y.year}: ${y.count}`}
-                 style={{ height: `${(y.count / max) * 100}%`, background: i === years.length - 1 ? "var(--viz-1)" : "var(--cerulean-700)" }}>
-              <span>{String(y.year).slice(2)}</span>
-            </div>
-          ))}
-          {!years.length && <span className="dh-empty" style={{ alignSelf: "center" }}>loading…</span>}
-        </div>
-      </div>
-      <div className="dh-panel">
-        <h3>language split</h3>
-        <div className="dh-legend">
-          {ls.map(l => (
-            <div className="row" key={l.lbl}>
-              <span className="sw" style={{ background: l.color }}></span>
-              <span className="lbl">{l.lbl}</span>
-              <span className="val">{l.val}%</span>
-            </div>
-          ))}
-          {!ls.length && <span className="dh-empty">loading…</span>}
-        </div>
-      </div>
-    </div>
-  );
-}
-
 function OtherSide() {
   return (
     <a className="dh-other" href="../personal/">
@@ -112,4 +77,4 @@ function DHFooter() {
   );
 }
 
-Object.assign(window, { StatTiles, RepoGrid, DataPanel, OtherSide, DHFooter });
+Object.assign(window, { StatTiles, RepoGrid, OtherSide, DHFooter });

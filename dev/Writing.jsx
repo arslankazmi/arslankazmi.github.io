@@ -55,44 +55,4 @@ function Article({ post, onBack }) {
   );
 }
 
-/** Plain view: bare HTML 1 elements + a borderless table. No design-system CSS. */
-function PlainView({ posts, route, post, onNavigate, onOpen, onPlain }) {
-  const html = useMarkdown(route === "article" && post ? post.path : null);
-  return (
-    <div className="plain-root">
-      <h1>arslan.dev</h1>
-      <p>
-        <a onClick={() => onNavigate("home")}>Home</a> |{" "}
-        <a onClick={() => onNavigate("writing")}>Writing</a> |{" "}
-        <a href="../portfolio/">Projects</a> |{" "}
-        <a href="../personal/">arslan.land</a> |{" "}
-        <a onClick={onPlain}>rich view</a>
-      </p>
-      <hr />
-      {route === "article" && post ? (
-        <>
-          <h2>{post.title}</h2>
-          <p><i>{post.dateLong || post.date}</i></p>
-          {html == null ? <p>Loading…</p> : <div dangerouslySetInnerHTML={{ __html: html }} />}
-          <p><a onClick={() => onNavigate("writing")}>&larr; all writing</a></p>
-        </>
-      ) : (
-        <>
-          <h2>Writing</h2>
-          <table border="0" cellSpacing="0" cellPadding="6">
-            <tbody>
-              {posts.map(p => (
-                <tr key={p.slug}>
-                  <td valign="top"><i>{p.date}</i></td>
-                  <td><a onClick={() => onOpen(p)}>{p.title}</a><br />{p.blurb}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </>
-      )}
-    </div>
-  );
-}
-
-Object.assign(window, { PostList, Article, PlainView });
+Object.assign(window, { PostList, Article });

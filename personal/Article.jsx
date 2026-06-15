@@ -48,45 +48,4 @@ function Article({ entry, onBack }) {
   );
 }
 
-/** Plain view: bare HTML 1 elements + a borderless table. No design-system CSS. */
-function PersonalPlainView({ entries, route, entry, onNavigate, onOpen, onPlain }) {
-  const html = useMd(route === "article" && entry ? entry.path : null);
-  return (
-    <div className="plain-root">
-      <h1>arslan.land</h1>
-      <p>
-        <a onClick={() => onNavigate("home")}>Home</a> |{" "}
-        <a onClick={() => onNavigate("writing")}>Writing</a> |{" "}
-        <a onClick={() => onNavigate("about")}>About</a> |{" "}
-        <a href="../dev/">arslan.dev</a> |{" "}
-        <a onClick={onPlain}>rich view</a>
-      </p>
-      <hr />
-      {route === "article" && entry ? (
-        <>
-          <h2>{entry.title}</h2>
-          <p><i>{entry.dateLong || entry.date}</i></p>
-          {html == null ? <p>Loading…</p> : <div dangerouslySetInnerHTML={{ __html: html }} />}
-          <p><a onClick={() => onNavigate("writing")}>&larr; back to writing</a></p>
-        </>
-      ) : (
-        <>
-          <h2>Writing</h2>
-          <table border="0" cellSpacing="0" cellPadding="6">
-            <tbody>
-              {entries.map(e => (
-                <tr key={e.slug}>
-                  <td valign="top"><i>{e.date}</i></td>
-                  <td><a onClick={() => onOpen(e)}>{e.title}</a><br />{e.blurb}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </>
-      )}
-    </div>
-  );
-}
-
 window.Article = Article;
-window.PersonalPlainView = PersonalPlainView;
