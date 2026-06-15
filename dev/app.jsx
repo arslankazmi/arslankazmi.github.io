@@ -1,6 +1,6 @@
-/** Dev hub root — home (3 layouts) + writing (posts.json) + article + plain view.
-    Pinned repos come from the portfolio's curated projects.json; the stat tiles and the
-    data panel (language split, repos/year) are computed live from the GitHub REST API. */
+/** Dev hub root — home (terminal) + writing (posts.json) + article + plain view.
+    Projects come from the portfolio's curated projects.json; the stat tiles are computed
+    live from the GitHub REST API. */
 const { useState, useEffect } = React;
 
 const LANG_VAR = {
@@ -13,11 +13,10 @@ const CATEGORY_VAR = {
   "AI Agents & LLMs": "--viz-1", "ML & Modeling": "--viz-2", "Computer Vision / Document AI": "--viz-5",
   "MLOps & Templates": "--viz-4", "Developer Tools": "--viz-6", "Creative AI": "--viz-7",
 };
-const VIZ = ["--viz-1", "--viz-2", "--viz-3", "--viz-4", "--viz-5", "--viz-6", "--viz-7", "--viz-8"];
 const USER = "arslankazmi";
 const PROJECTS_URL = "https://arslankazmi.github.io/portfolio/data/projects.json";
 
-function HomeLayouts({ layout, posts, repos, stats, langs, byYear, onMore }) {
+function HomeLayouts({ posts, repos, stats, onMore }) {
   const writing = posts.length > 0 && (
     <>
       <div className="dh-sec"><h2>Latest writing</h2><span className="hint"><a onClick={onMore}>all posts →</a></span></div>
@@ -26,30 +25,15 @@ function HomeLayouts({ layout, posts, repos, stats, langs, byYear, onMore }) {
   );
   return (
     <>
-      {layout === "terminal" && (
-        <>
-          <HeroTerminal />
-          <div className="dh-sec"><h2>On GitHub</h2><span className="hint">live · @{USER}</span></div>
-          <StatTiles stats={stats} />
-          <div className="dh-sec"><h2>Pinned</h2><span className="hint">{repos.length} repos · <a href="../portfolio/">full catalog ↗</a></span></div>
-          <RepoGrid repos={repos} />
-          {writing}
-          <div className="dh-sec"><h2>Reading &amp; playing</h2></div>
-          <ReadingPlaying />
-          <OtherSide />
-        </>
-      )}
-      {layout === "dashboard" && (
-        <>
-          <HeroDashboard />
-          <div className="dh-sec"><h2>Signal</h2><span className="hint">repos &amp; languages · live</span></div>
-          <DataPanel byYear={byYear} langs={langs} />
-          <div className="dh-sec"><h2>Pinned</h2><span className="hint">{repos.length} repos</span></div>
-          <RepoGrid repos={repos} />
-          <div className="dh-sec"><h2>Reading &amp; playing</h2></div>
-          <ReadingPlaying />
-        </>
-      )}
+      <HeroTerminal />
+      {writing}
+      <div className="dh-sec"><h2>Projects</h2><span className="hint">{repos.length} repos · <a href="../portfolio/">full catalog ↗</a></span></div>
+      <RepoGrid repos={repos} />
+      <div className="dh-sec"><h2>On GitHub</h2><span className="hint">live · @{USER}</span></div>
+      <StatTiles stats={stats} />
+      <div className="dh-sec"><h2>Reading &amp; playing</h2></div>
+      <ReadingPlaying />
+      <OtherSide />
     </>
   );
 }
@@ -58,13 +42,11 @@ function HomeLayouts({ layout, posts, repos, stats, langs, byYear, onMore }) {
     of truth shared with the Node static build. */
 function App() {
   const [route, setRoute] = useState("home");
-  const [layout, setLayout] = useState("terminal");
   const [slug, setSlug] = useState(null);
   const [posts, setPosts] = useState([]);
   const [repos, setRepos] = useState([]);
   const [stats, setStats] = useState([]);
-  const [langs, setLangs] = useState([]);
-  const [byYear, setByYear] = useState([]);
+  const [articleMd, setArticleMd] = useState(null); // raw markdown of the open post, for plain view
   const [plain, setPlain] = useState(document.documentElement.getAttribute("data-view") === "plain");
 
   useEffect(() => {
@@ -78,7 +60,7 @@ function App() {
       category: p.category || "", catVar: CATEGORY_VAR[p.category] || "--accent",
     })))).catch(() => {});
 
-    // Live GitHub metrics — repos/stars/followers/age + language split + repos-per-year.
+    // Live GitHub metrics — repos / stars / followers / account age.
     Promise.all([
       fetch(`https://api.github.com/users/${USER}`).then(r => r.ok ? r.json() : null).catch(() => null),
       fetch(`https://api.github.com/users/${USER}/repos?per_page=100&type=owner`).then(r => r.ok ? r.json() : null).catch(() => null),
@@ -93,17 +75,6 @@ function App() {
         { ico: "❂ followers", color: "var(--lavender-300)", num: String(user.followers),    cap: "on github" },
         { ico: "⌁ since",     color: "var(--punk-lilac)",   num: `${years}y`,               cap: `est. ${new Date(user.created_at).getFullYear()}` },
       ]);
-      const lc = {};
-      owned.forEach(r => { if (r.language) lc[r.language] = (lc[r.language] || 0) + 1; });
-      const total = Object.values(lc).reduce((a, b) => a + b, 0) || 1;
-      const sorted = Object.entries(lc).sort((a, b) => b[1] - a[1]);
-      const arr = sorted.slice(0, 6).map(([lbl, n], i) => ({ lbl, val: Math.round((n / total) * 100), color: `var(${VIZ[i % VIZ.length]})` }));
-      const other = sorted.slice(6).reduce((a, [, n]) => a + n, 0);
-      if (other) arr.push({ lbl: "Other", val: Math.round((other / total) * 100), color: "var(--viz-8)" });
-      setLangs(arr);
-      const yc = {};
-      owned.forEach(r => { const y = new Date(r.created_at).getFullYear(); yc[y] = (yc[y] || 0) + 1; });
-      setByYear(Object.keys(yc).map(Number).sort((a, b) => a - b).map(y => ({ year: y, count: yc[y] })));
     });
 
     const onHash = () => {
@@ -115,6 +86,18 @@ function App() {
     return () => window.removeEventListener("hashchange", onHash);
   }, []);
 
+  // Plain view: load the open post's raw markdown so its body renders (not a placeholder).
+  useEffect(() => {
+    if (!plain || route !== "article" || !slug) { setArticleMd(null); return; }
+    const post = posts.find(p => p.slug === slug);
+    if (!post || !post.path) { setArticleMd(null); return; }
+    let live = true;
+    fetch("../" + post.path).then(r => r.text())
+      .then(t => { if (live) setArticleMd(t.replace(/^---[\s\S]*?\n---\s*/, "")); })
+      .catch(() => { if (live) setArticleMd(null); });
+    return () => { live = false; };
+  }, [plain, route, slug, posts]);
+
   const navigate = (r) => { if (r !== "article" && location.hash) location.hash = ""; setRoute(r); setSlug(null); window.scrollTo(0, 0); };
   const openPost = (p) => { location.hash = `#/p/${p.slug}`; setSlug(p.slug); setRoute("article"); window.scrollTo(0, 0); };
   const togglePlain = () => {
@@ -125,7 +108,7 @@ function App() {
   };
 
   const current = slug ? posts.find(p => p.slug === slug) : null;
-  const buildBlocks = () => window.devBlocks({ route, posts, repos, stats, current, dh: window.DH, rp: window.RP });
+  const buildBlocks = () => window.devBlocks({ route, posts, repos, stats, current, currentMd: articleMd, dh: window.DH, rp: window.RP });
 
   if (plain) return (
     <>
@@ -143,9 +126,9 @@ function App() {
 
   return (
     <div className="app">
-      <DHNav route={route} onNavigate={navigate} layout={layout} onLayout={setLayout} plain={plain} onPlain={togglePlain} hasWriting={posts.length > 0} />
+      <DHNav route={route} onNavigate={navigate} plain={plain} onPlain={togglePlain} hasWriting={posts.length > 0} />
       <main className="dh-page">
-        {route === "home" && <HomeLayouts layout={layout} posts={posts} repos={repos} stats={stats} langs={langs} byYear={byYear} onMore={() => navigate("writing")} />}
+        {route === "home" && <HomeLayouts posts={posts} repos={repos} stats={stats} onMore={() => navigate("writing")} />}
         {route === "writing" && (
           <>
             <div className="dh-sec"><h2>Writing</h2><span className="hint">{posts.length} post{posts.length === 1 ? "" : "s"}</span></div>

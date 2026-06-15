@@ -7,6 +7,7 @@ function App() {
   const [route, setRoute] = useState("home");
   const [slug, setSlug] = useState(null);
   const [entries, setEntries] = useState([]);
+  const [articleMd, setArticleMd] = useState(null); // raw markdown of the open piece, for plain view
   const [plain, setPlain] = useState(document.documentElement.getAttribute("data-view") === "plain");
 
   useEffect(() => {
@@ -22,6 +23,18 @@ function App() {
     return () => window.removeEventListener("hashchange", onHash);
   }, []);
 
+  // Plain view: load the open piece's raw markdown so its body renders (not a placeholder).
+  useEffect(() => {
+    if (!plain || route !== "article" || !slug) { setArticleMd(null); return; }
+    const entry = entries.find(e => e.slug === slug);
+    if (!entry || !entry.path) { setArticleMd(null); return; }
+    let live = true;
+    fetch("../" + entry.path).then(r => r.text())
+      .then(t => { if (live) setArticleMd(t.replace(/^---[\s\S]*?\n---\s*/, "")); })
+      .catch(() => { if (live) setArticleMd(null); });
+    return () => { live = false; };
+  }, [plain, route, slug, entries]);
+
   const navigate = (next) => { if (next !== "article" && location.hash) location.hash = ""; setRoute(next); setSlug(null); window.scrollTo({ top: 0, behavior: "instant" }); };
   const openEntry = (entry) => { location.hash = `#/p/${entry.slug}`; setSlug(entry.slug); setRoute("article"); window.scrollTo({ top: 0, behavior: "instant" }); };
   const togglePlain = () => {
@@ -31,9 +44,11 @@ function App() {
     try { localStorage.setItem("ak-view", next ? "plain" : ""); } catch (_) {}
   };
 
-  const notebookEntries = entries.filter(e => (e.tags || []).some(t => t === "notebook" || t === "music"));
+  const isNotebook = (e) => (e.tags || []).some(t => t === "notebook" || t === "music");
+  const notebookEntries = entries.filter(isNotebook);
+  const writingEntries = entries.filter(e => !isNotebook(e));
   const current = slug ? entries.find(e => e.slug === slug) : null;
-  const buildBlocks = () => window.personalBlocks({ route, entries, current, rp: window.RP, projects: (window.AK || {}).PROJECTS || [] });
+  const buildBlocks = () => window.personalBlocks({ route, entries, current, currentMd: articleMd, rp: window.RP, projects: (window.AK || {}).PROJECTS || [] });
 
   if (plain) return (
     <>
@@ -51,19 +66,19 @@ function App() {
 
   return (
     <div className="app">
-      <TopNav route={route} onNavigate={navigate} plain={plain} onPlain={togglePlain} hasWriting={entries.length > 0} hasProjects={(window.AK.PROJECTS || []).length > 0} />
+      <TopNav route={route} onNavigate={navigate} plain={plain} onPlain={togglePlain} hasWriting={writingEntries.length > 0} hasNotebook={notebookEntries.length > 0} hasProjects={(window.AK.PROJECTS || []).length > 0} />
       <NowPlaying track={window.AK.NOW_PLAYING} />
       <main className="page">
         {route === "home" && (
           <>
             <Hero onNavigate={navigate} />
-            {entries.length > 0 && (
+            {writingEntries.length > 0 && (
               <>
                 <div className="section-h">
                   <h2>Latest writing</h2>
-                  <a className="more" onClick={() => navigate("writing")}>See all {entries.length} →</a>
+                  <a className="more" onClick={() => navigate("writing")}>See all {writingEntries.length} →</a>
                 </div>
-                <FeaturedPair entries={entries} onOpen={openEntry} />
+                <FeaturedPair entries={writingEntries} onOpen={openEntry} />
               </>
             )}
             {(window.AK.PROJECTS || []).length > 0 && (
@@ -81,8 +96,8 @@ function App() {
         )}
         {route === "writing" && (
           <>
-            <div className="section-h"><h2>Writing</h2><span className="more">{entries.length} pieces</span></div>
-            <WritingList entries={entries} onOpen={openEntry} />
+            <div className="section-h"><h2>Writing</h2><span className="more">{writingEntries.length} piece{writingEntries.length === 1 ? "" : "s"}</span></div>
+            <WritingList entries={writingEntries} onOpen={openEntry} />
           </>
         )}
         {route === "notebook" && (

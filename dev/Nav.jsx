@@ -1,10 +1,6 @@
-/** Dark hub nav: brand, Home/Writing routes, layout switcher (home only),
-    Portfolio link, cross-link to the personal side, and the plain toggle. */
-function DHNav({ route, onNavigate, layout, onLayout, plain, onPlain, hasWriting }) {
-  const layouts = [
-    { id: "terminal",  label: "Terminal"  },
-    { id: "dashboard", label: "Dashboard" },
-  ];
+/** Dark hub nav: brand, Home/Writing routes, Portfolio link, cross-link to the
+    personal side, and the plain toggle. */
+function DHNav({ route, onNavigate, plain, onPlain, hasWriting }) {
   return (
     <nav className="dh-nav">
       <div className="dh-brand">
@@ -17,14 +13,6 @@ function DHNav({ route, onNavigate, layout, onLayout, plain, onPlain, hasWriting
         <a href="../portfolio/">Projects ↗</a>
       </div>
       <div className="right">
-        {route === "home" && (
-          <div className="dh-switch">
-            {layouts.map(l => (
-              <button key={l.id} className={layout === l.id ? "on" : ""}
-                      onClick={() => onLayout(l.id)}>{l.label}</button>
-            ))}
-          </div>
-        )}
         <button className="dh-plain" onClick={onPlain} title="Plain text view" aria-pressed={plain}>▢ plain</button>
         <a className="dh-personal" href="../personal/">arslan.land ↗</a>
       </div>
