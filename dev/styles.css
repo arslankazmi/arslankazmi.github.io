@@ -174,7 +174,7 @@ body { margin: 0; background: var(--bg); color: var(--fg1); font-family: var(--f
 
 /* ---------- Repo grid ---------- */
 .dh-repos { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
-.dh-repo { background: var(--bg-elevated); border: 2px solid var(--ink-900); border-radius: 4px; padding: 16px 18px; display: flex; flex-direction: column; gap: 8px; cursor: pointer; box-shadow: 4px 4px 0 #000; transition: transform var(--dur-fast) var(--ease-out), box-shadow var(--dur-fast) var(--ease-out); }
+.dh-repo { background: var(--bg-elevated); border: 2px solid var(--ink-900); border-left: 5px solid var(--cat-color, var(--accent)); border-radius: 4px; padding: 16px 18px; display: flex; flex-direction: column; gap: 8px; cursor: pointer; box-shadow: 4px 4px 0 #000; transition: transform var(--dur-fast) var(--ease-out), box-shadow var(--dur-fast) var(--ease-out); }
 .dh-repo:hover { transform: translate(-2px,-2px); box-shadow: 6px 6px 0 #000; }
 .dh-repo .name { font-family: var(--font-mono); font-size: 14px; color: var(--accent); font-weight: 600; text-decoration: none; }
 .dh-repo .name:hover { text-decoration: underline; }
@@ -187,10 +187,14 @@ body { margin: 0; background: var(--bg); color: var(--fg1); font-family: var(--f
 .dh-repo .meta { display: flex; gap: 14px; align-items: center; font-family: var(--font-mono); font-size: 12px; color: var(--fg3); }
 .dh-repo .lang { display: flex; align-items: center; gap: 6px; }
 .dh-repo .dot { width: 10px; height: 10px; border-radius: 999px; }
-/* private client work (case study, no public repo) */
-.dh-repo.is-private { border-color: var(--accent-2); }
+/* private client work (case study, no public repo): dashed border as a STYLE cue, so the
+   category-coloured left stripe stays the dominant colour signal. */
+.dh-repo.is-private { border-top-style: dashed; border-right-style: dashed; border-bottom-style: dashed; }
 .dh-repo .client-tag { font-family: var(--font-mono); font-size: 10px; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase; color: var(--accent-2); background: var(--accent-2-soft); border-radius: 999px; padding: 2px 8px; align-self: flex-start; }
 .dh-repo span.name { font-family: var(--font-mono); font-size: 14px; color: var(--accent); font-weight: 600; }
+/* category colour chip (hue from ak-design --viz-* via --cat-color) */
+.dh-repo .cat-chip { display: inline-flex; align-items: center; gap: 5px; font-family: var(--font-mono); font-size: 10px; font-weight: 600; letter-spacing: 0.03em; color: var(--fg3); align-self: flex-start; }
+.dh-repo .cat-dot { width: 8px; height: 8px; border-radius: 999px; background: var(--cat-color, var(--accent)); }
 
 /* ---------- Data panel ---------- */
 .dh-data { display: grid; grid-template-columns: 1.3fr 1fr; gap: 16px; }

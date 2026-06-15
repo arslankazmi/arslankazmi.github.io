@@ -7,6 +7,12 @@ const LANG_VAR = {
   JavaScript: "--lang-js", TypeScript: "--lang-ts", Python: "--lang-py", Rust: "--lang-rust",
   Go: "--lang-go", CSS: "--lang-css", HTML: "--lang-css", Shell: "--lang-shell", "Jupyter Notebook": "--lang-py",
 };
+// Project category -> ak-design categorical palette token (--viz-1..8, same in both themes).
+// Keep in sync with the portfolio's CATEGORY_VAR (portfolio/app.js). Unmapped -> --accent.
+const CATEGORY_VAR = {
+  "AI Agents & LLMs": "--viz-1", "ML & Modeling": "--viz-2", "Computer Vision / Document AI": "--viz-5",
+  "MLOps & Templates": "--viz-4", "Developer Tools": "--viz-6", "Creative AI": "--viz-7",
+};
 const VIZ = ["--viz-1", "--viz-2", "--viz-3", "--viz-4", "--viz-5", "--viz-6", "--viz-7", "--viz-8"];
 const USER = "arslankazmi";
 const PROJECTS_URL = "https://arslankazmi.github.io/portfolio/data/projects.json";
@@ -69,6 +75,7 @@ function App() {
       // private client work has no public repo — link the title to the write-up/docs instead
       url: p.repo || p.writeup || p.docs || "", repo: p.repo || "", docs: p.docs || "",
       writeup: p.writeup || "", priv: (p.source === "private"), client: p.client || "",
+      category: p.category || "", catVar: CATEGORY_VAR[p.category] || "--accent",
     })))).catch(() => {});
 
     // Live GitHub metrics — repos/stars/followers/age + language split + repos-per-year.

@@ -89,6 +89,7 @@ async function fetchSnapshot(dh) {
       // private client work has no public repo — fall back to write-up/docs for the no-JS baseline
       url: p.repo || p.writeup || p.docs || "", repo: p.repo || "", docs: p.docs || "",
       writeup: p.writeup || "", priv: (p.source === "private"), client: p.client || "",
+      category: p.category || "",
     }));
   } catch (e) { log("repos fetch failed, baseline omits pinned repos:", e.message); }
 

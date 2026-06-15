@@ -18,11 +18,13 @@ function StatTiles({ stats }) {
 
 function RepoCard({ repo }) {
   return (
-    <div className={"dh-repo" + (repo.priv ? " is-private" : "")}>
+    <div className={"dh-repo" + (repo.priv ? " is-private" : "")} data-category={repo.category || ""}
+         style={{ "--cat-color": `var(${repo.catVar || "--accent"})` }}>
       {repo.url
         ? <a className="name" href={repo.url} target="_blank" rel="noopener">{repo.name}</a>
         : <span className="name">{repo.name}</span>}
       {repo.priv && <span className="client-tag">{repo.client ? "client work" : "private"}</span>}
+      {repo.category && <span className="cat-chip"><span className="cat-dot"></span>{repo.category}</span>}
       <p className="desc">{repo.desc}</p>
       {repo.tags && repo.tags.length > 0 &&
         <div className="tags">{repo.tags.map(t => <span className="tag" key={t}>{t}</span>)}</div>}
