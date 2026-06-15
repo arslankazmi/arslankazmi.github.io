@@ -26,9 +26,7 @@ export function devBlocks({ route, posts = [], repos = [], stats = [], current, 
     { t: "h2", text: "Projects" },
     // 3-up grid of repo tiles, like the rich grid.
     { t: "grid", cols: 3, cells: (repos || []).map(r => ({ title: r.name, href: r.url, lines: [r.desc, ...(r.category ? [r.category] : []), r.priv ? (r.client ? "client work" : "private") : r.lang, ...(r.docs ? [{ text: "docs ↗", href: r.docs }] : []), ...((!r.repo && r.writeup) ? [{ text: "case study ↗", href: r.writeup }] : [])] })) },
-    { t: "h2", text: "On GitHub" },
-    // 4 stat tiles across, like the rich row.
-    { t: "grid", cols: 4, cells: (stats || []).map(s => ({ title: s.num, lines: [s.ico, s.cap] })) },
+    // "On GitHub" stat tiles hidden for now — re-enable alongside the rich view's StatTiles.
   );
   const playLines = [now.ti, games.next ? `up next · ${games.next}` : null, games.again ? `replaying · ${games.again}` : null].filter(Boolean);
   b.push(

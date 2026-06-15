@@ -29,8 +29,9 @@ function HomeLayouts({ posts, repos, stats, onMore }) {
       {writing}
       <div className="dh-sec"><h2>Projects</h2><span className="hint">{repos.length} repos · <a href="../portfolio/">full catalog ↗</a></span></div>
       <RepoGrid repos={repos} />
+      {/* GitHub stats hidden for now — re-enable by uncommenting:
       <div className="dh-sec"><h2>On GitHub</h2><span className="hint">live · @{USER}</span></div>
-      <StatTiles stats={stats} />
+      <StatTiles stats={stats} /> */}
       <div className="dh-sec"><h2>Reading &amp; playing</h2></div>
       <ReadingPlaying />
       <OtherSide />
