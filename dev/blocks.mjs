@@ -24,7 +24,7 @@ export function devBlocks({ route, posts = [], repos = [], stats = [], current, 
     { t: "grid", cols: 4, cells: (stats || []).map(s => ({ title: s.num, lines: [s.ico, s.cap] })) },
     { t: "h2", text: "Pinned repos" },
     // 3-up grid of repo tiles, like the rich grid.
-    { t: "grid", cols: 3, cells: (repos || []).map(r => ({ title: r.name, href: r.url, lines: [r.desc, r.lang, ...(r.docs ? [{ text: "docs ↗", href: r.docs }] : [])] })) },
+    { t: "grid", cols: 3, cells: (repos || []).map(r => ({ title: r.name, href: r.url, lines: [r.desc, r.priv ? (r.client ? "client work" : "private") : r.lang, ...(r.docs ? [{ text: "docs ↗", href: r.docs }] : []), ...((!r.repo && r.writeup) ? [{ text: "case study ↗", href: r.writeup }] : [])] })) },
   ];
   if (posts.length) b.push({ t: "h2", text: "Writing" }, { t: "table", head: ["post", "date"], rows: posts.map(p => [{ text: p.title, href: `#/p/${p.slug}` }, p.date]) });
   const playLines = [now.ti, games.next ? `up next · ${games.next}` : null, games.again ? `replaying · ${games.again}` : null].filter(Boolean);

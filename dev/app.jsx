@@ -66,7 +66,9 @@ function App() {
     fetch(PROJECTS_URL).then(r => r.json()).then(d => setRepos((d.projects || []).map(p => ({
       name: p.name, desc: p.description || "", tags: (p.keywords || []).slice(0, 3),
       lang: p.language || "", langVar: LANG_VAR[p.language] || "--lang-other",
-      url: p.repo, docs: p.docs || "",
+      // private client work has no public repo — link the title to the write-up/docs instead
+      url: p.repo || p.writeup || p.docs || "", repo: p.repo || "", docs: p.docs || "",
+      writeup: p.writeup || "", priv: (p.source === "private"), client: p.client || "",
     })))).catch(() => {});
 
     // Live GitHub metrics — repos/stars/followers/age + language split + repos-per-year.

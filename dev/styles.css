@@ -187,6 +187,10 @@ body { margin: 0; background: var(--bg); color: var(--fg1); font-family: var(--f
 .dh-repo .meta { display: flex; gap: 14px; align-items: center; font-family: var(--font-mono); font-size: 12px; color: var(--fg3); }
 .dh-repo .lang { display: flex; align-items: center; gap: 6px; }
 .dh-repo .dot { width: 10px; height: 10px; border-radius: 999px; }
+/* private client work (case study, no public repo) */
+.dh-repo.is-private { border-color: var(--accent-2); }
+.dh-repo .client-tag { font-family: var(--font-mono); font-size: 10px; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase; color: var(--accent-2); background: var(--accent-2-soft); border-radius: 999px; padding: 2px 8px; align-self: flex-start; }
+.dh-repo span.name { font-family: var(--font-mono); font-size: 14px; color: var(--accent); font-weight: 600; }
 
 /* ---------- Data panel ---------- */
 .dh-data { display: grid; grid-template-columns: 1.3fr 1fr; gap: 16px; }
