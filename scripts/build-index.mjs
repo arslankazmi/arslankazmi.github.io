@@ -2,7 +2,8 @@
 /* ============================================================
    build-index.mjs — scan posts/{dev,personal}/*.md and write posts.json.
    Folder = side. Front-matter (between --- lines): title, date (YYYY-MM-DD),
-   tags [a, b], blurb, read, featured. Slug = filename minus date prefix + .md.
+   tags [a, b], blurb, read, featured, type ("case-study" for client write-ups).
+   Slug = filename minus date prefix + .md.
    No dependencies (Node 18+). Run: `node scripts/build-index.mjs`.
    ============================================================ */
 import { readdirSync, readFileSync, writeFileSync, existsSync } from "node:fs";
@@ -58,6 +59,7 @@ function collect(repo, side) {
         read: fm.read || "",
         featured: fm.featured === "true",
         draft: fm.draft === "true",
+        type: fm.type || "post",            // "case-study" for client write-ups; "post" otherwise
         path: `posts/${side}/${f}`,
       };
     })

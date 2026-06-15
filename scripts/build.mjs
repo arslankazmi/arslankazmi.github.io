@@ -85,7 +85,10 @@ async function fetchSnapshot(dh) {
   try {
     const d = await (await fetch(PROJECTS_URL)).json();
     repos = (d.projects || []).map(p => ({
-      name: p.name, desc: p.description || "", lang: p.language || "", url: p.repo, docs: p.docs || "",
+      name: p.name, desc: p.description || "", lang: p.language || "",
+      // private client work has no public repo — fall back to write-up/docs for the no-JS baseline
+      url: p.repo || p.writeup || p.docs || "", repo: p.repo || "", docs: p.docs || "",
+      writeup: p.writeup || "", priv: (p.source === "private"), client: p.client || "",
     }));
   } catch (e) { log("repos fetch failed, baseline omits pinned repos:", e.message); }
 

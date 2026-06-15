@@ -18,15 +18,20 @@ function StatTiles({ stats }) {
 
 function RepoCard({ repo }) {
   return (
-    <div className="dh-repo">
-      <a className="name" href={repo.url} target="_blank" rel="noopener">{repo.name}</a>
+    <div className={"dh-repo" + (repo.priv ? " is-private" : "")}>
+      {repo.url
+        ? <a className="name" href={repo.url} target="_blank" rel="noopener">{repo.name}</a>
+        : <span className="name">{repo.name}</span>}
+      {repo.priv && <span className="client-tag">{repo.client ? "client work" : "private"}</span>}
       <p className="desc">{repo.desc}</p>
       {repo.tags && repo.tags.length > 0 &&
         <div className="tags">{repo.tags.map(t => <span className="tag" key={t}>{t}</span>)}</div>}
       <div className="meta">
         {repo.lang && <span className="lang"><span className="dot" style={{ background: `var(${repo.langVar})` }}></span>{repo.lang}</span>}
         {repo.docs && <a className="docs" href={repo.docs} target="_blank" rel="noopener">docs ↗</a>}
-        <a className="repo" href={repo.url} target="_blank" rel="noopener">code ↗</a>
+        {repo.repo
+          ? <a className="repo" href={repo.repo} target="_blank" rel="noopener">code ↗</a>
+          : (repo.writeup && <a className="repo" href={repo.writeup} target="_blank" rel="noopener">case study ↗</a>)}
       </div>
     </div>
   );
