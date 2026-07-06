@@ -25,6 +25,7 @@ import { buildAnnotations } from "./annotations.mjs";
 import { devBlocks } from "../dev/blocks.mjs";
 import { personalBlocks } from "../personal/blocks.mjs";
 import { toStaticHTML, he } from "../shared/render.mjs";
+import { ENHANCEMENTS } from "../shared/enhancements.js";
 
 // Footnotes (sidenotes.js enhances these into margin notes; degrade to bottom-footnotes no-JS).
 marked.use(markedFootnote());
@@ -156,6 +157,9 @@ function postPage(side, post, bodyHtml) {
     : "https://arslankazmi.github.io/ak-design/dist/personal.css";
   const site = side === "dev" ? "arslan.dev" : "arslan.land";
   const meta = he([post.dateLong || post.date, (post.tags || []).join(", ")].filter(Boolean).join(" · "));
+  const enhCss = ENHANCEMENTS.filter(n => existsSync(join(REPO, "shared", `${n}.css`)))
+    .map(n => `  <link rel="stylesheet" href="/shared/${n}.css"/>`).join("\n");
+  const enhJs = ENHANCEMENTS.map(n => `  <script src="/shared/${n}.js" defer></script>`).join("\n");
   return `<!doctype html>
 <html lang="en"${theme}>
 <head>
@@ -165,9 +169,7 @@ function postPage(side, post, bodyHtml) {
   ${post.blurb ? `<meta name="description" content="${he(post.blurb)}"/>` : ""}
   <link rel="icon" type="image/svg+xml" href="../../../assets/favicon.svg"/>
   <link rel="stylesheet" href="${css}"/>
-  <link rel="stylesheet" href="/shared/sidenotes.css"/>
-  <link rel="stylesheet" href="/shared/previews.css"/>
-  <link rel="stylesheet" href="/shared/ascii-asterisk.css"/>
+${enhCss}
   <style>
     .post { max-width: 42rem; margin: 0 auto; padding: 56px 20px 96px; }
     .post .meta { font-family: var(--font-mono, monospace); font-size: 13px; opacity: .7; margin-bottom: 10px; }
@@ -186,9 +188,7 @@ function postPage(side, post, bodyHtml) {
     <div class="prose">${bodyHtml}</div>
     <a class="back" href="../../">← all writing</a>
   </main>
-  <script src="/shared/sidenotes.js" defer></script>
-  <script src="/shared/previews.js" defer></script>
-  <script src="/shared/ascii-asterisk.js" defer></script>
+${enhJs}
 </body>
 </html>
 `;
