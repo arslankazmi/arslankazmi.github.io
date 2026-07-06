@@ -1,6 +1,26 @@
 {
   "dev": [
     {
+      "slug": "ascii-asterisk",
+      "side": "dev",
+      "title": "A spinning ASCII asterisk, no dependencies",
+      "date": "Jul 2026",
+      "dateLong": "Jul 6, 2026",
+      "iso": "2026-07-06",
+      "tags": [
+        "javascript",
+        "ascii-art",
+        "animation",
+        "graphics"
+      ],
+      "blurb": "A from-scratch 3D renderer — rotation matrices, perspective, a z-buffer, luminance shading — pointed at a six-point starburst and drawn entirely in text characters.",
+      "read": "5 min",
+      "featured": true,
+      "draft": false,
+      "type": "post",
+      "path": "posts/dev/2026-07-06-ascii-asterisk.md"
+    },
+    {
       "slug": "sidenotes-and-previews",
       "side": "dev",
       "title": "Sidenotes, previews, and other quiet machinery",
@@ -16,6 +36,7 @@
       "read": "4 min",
       "featured": true,
       "draft": false,
+      "type": "post",
       "path": "posts/dev/2026-06-10-sidenotes-and-previews.md"
     }
   ],
@@ -34,6 +55,7 @@
       "read": "3 min",
       "featured": false,
       "draft": false,
+      "type": "post",
       "path": "posts/personal/2026-06-10-a-quiet-demo.md"
     }
   ]
