@@ -1,0 +1,20 @@
+/* ascii-asterisk.css — container for the spinning ASCII Claude-asterisk (see ascii-asterisk.js). */
+.ascii-asterisk {
+  display: flex;
+  justify-content: center;
+  margin: 28px 0;
+  padding: 18px;
+  border-radius: var(--radius-md, 8px);
+  background: var(--bg-sunken, rgba(127, 127, 127, 0.08));
+  overflow: hidden;
+}
+.ascii-asterisk pre {
+  margin: 0;
+  font-family: var(--font-mono, monospace);
+  font-size: clamp(6px, 1.1vw, 10px);
+  line-height: 1.05;
+  letter-spacing: 0;
+  white-space: pre;
+  color: #d97757; /* Claude coral/orange accent */
+  text-shadow: 0 0 10px rgba(217, 119, 87, 0.35);
+}

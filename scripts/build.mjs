@@ -167,6 +167,7 @@ function postPage(side, post, bodyHtml) {
   <link rel="stylesheet" href="${css}"/>
   <link rel="stylesheet" href="/shared/sidenotes.css"/>
   <link rel="stylesheet" href="/shared/previews.css"/>
+  <link rel="stylesheet" href="/shared/ascii-asterisk.css"/>
   <style>
     .post { max-width: 42rem; margin: 0 auto; padding: 56px 20px 96px; }
     .post .meta { font-family: var(--font-mono, monospace); font-size: 13px; opacity: .7; margin-bottom: 10px; }
@@ -187,6 +188,7 @@ function postPage(side, post, bodyHtml) {
   </main>
   <script src="/shared/sidenotes.js" defer></script>
   <script src="/shared/previews.js" defer></script>
+  <script src="/shared/ascii-asterisk.js" defer></script>
 </body>
 </html>
 `;

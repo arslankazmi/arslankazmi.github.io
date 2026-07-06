@@ -49,5 +49,11 @@
     "title": "The Metroid Prime logo",
     "src": "/assets/metroid-prime.png",
     "url": "/assets/metroid-prime.png"
+  },
+  "https://www.a1k0n.net/2011/07/20/donut-math.html": {
+    "type": "link",
+    "title": "www.a1k0n.net",
+    "source": "www.a1k0n.net",
+    "url": "https://www.a1k0n.net/2011/07/20/donut-math.html"
   }
 }
