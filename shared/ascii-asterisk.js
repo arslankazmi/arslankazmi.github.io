@@ -1,12 +1,14 @@
 /* ascii-asterisk.js — a spinning 3D spiky-starburst, rendered as text characters only.
 
-   No canvas, no WebGL, no Three.js: a random number of tapered "spikes" (15-30, a fresh count
+   No canvas, no WebGL, no Three.js: a random number of cylindrical "shafts" (15-30, a fresh count
    and layout each page load) are modeled as points in 3D space (with analytic surface normals),
    shooting out from the center in random directions across all axes — not confined to one plane.
-   Every frame they're rotated, perspective-projected, and rasterized onto a fixed character grid
-   with a z-buffer for occlusion — the classic "ASCII donut" shading technique (luminance ramp
-   driven by normal·light), applied to a starburst instead of a torus. Output is plain textContent
-   on a <pre>, never innerHTML.
+   Each shaft has a constant radius (tapering only right at its tip to a point) and pulses its own
+   length independently over time, so the whole thing looks like it's breathing. Every frame the
+   current point cloud is rebuilt for that instant, rotated, perspective-projected, and rasterized
+   onto a fixed character grid with a z-buffer for occlusion — the classic "ASCII donut" shading
+   technique (luminance ramp driven by normal·light), applied to a starburst instead of a torus.
+   Output is plain textContent on a <pre>, never innerHTML.
 
    Loaded once globally (like shared/sidenotes.js) rather than as an inline <script> in the post
    body: the SPA article view injects post HTML via dangerouslySetInnerHTML, which never executes
@@ -18,51 +20,71 @@
   var COLS = 64, ROWS = 32;
   var RAMP = " .:-=+*#%@";
   var FRAME_MS = 1000 / 24;
+  var U_STEPS = 22, V_STEPS = 8;
+  var SHAFT_WIDTH = 0.09;   // constant shaft radius (thin, cylindrical rather than a tapered lens)
+  var TIP_TAPER = 0.18;     // fraction of the shaft's current length that tapers down to a point
 
   function cross(a, b) { return { x: a.y * b.z - a.z * b.y, y: a.z * b.x - a.x * b.z, z: a.x * b.y - a.y * b.x }; }
   function normalizeVec(v) { var m = Math.sqrt(v.x * v.x + v.y * v.y + v.z * v.z) || 1; return { x: v.x / m, y: v.y / m, z: v.z / m }; }
 
-  // A random number of spikes (15-30), each shooting out from the center in a random direction
-  // across all 3 axes (uniformly sampled on the unit sphere, not just one plane), tapered lens-
-  // shaped (thick at mid-shaft, pointed at both the tip and the hub).
-  function buildPoints() {
-    var pts = [];
-    var arms = 15 + Math.floor(Math.random() * 16); // 15..30 inclusive
-    var uSteps = 22, vSteps = 8;
-    for (var a = 0; a < arms; a++) {
+  // A random number of shafts (15-30), each shooting out from the center in a random direction
+  // across all 3 axes (uniformly sampled on the unit sphere, not just one plane). Each gets its own
+  // random pulse speed/phase/length range so they breathe in and out independently, out of sync.
+  function buildArms() {
+    var arms = [];
+    var count = 15 + Math.floor(Math.random() * 16); // 15..30 inclusive
+    for (var a = 0; a < count; a++) {
       // uniformly random direction on the unit sphere (avoids pole-clustering from naive angles)
       var zc = 1 - 2 * Math.random();
       var r = Math.sqrt(Math.max(0, 1 - zc * zc));
       var phi0 = Math.random() * Math.PI * 2;
       var dir = { x: r * Math.cos(phi0), y: r * Math.sin(phi0), z: zc };
-      // orthonormal basis for this arm's tube cross-section, since it can point anywhere in 3D
+      // orthonormal basis for this shaft's tube cross-section, since it can point anywhere in 3D
       var upHint = Math.abs(dir.y) < 0.99 ? { x: 0, y: 1, z: 0 } : { x: 1, y: 0, z: 0 };
       var perp1 = normalizeVec(cross(dir, upHint));
       var perp2 = cross(dir, perp1); // already unit length: cross of two orthonormal unit vectors
+      arms.push({
+        dir: dir, perp1: perp1, perp2: perp2,
+        phase: Math.random() * Math.PI * 2,
+        freq: 0.4 + Math.random() * 0.5,     // per-arm pulse speed
+        minLen: 0.45 + Math.random() * 0.2,  // shortest reach of the pulse
+        maxLen: 0.9 + Math.random() * 0.3    // longest reach of the pulse
+      });
+    }
+    return arms;
+  }
+  var ARMS = buildArms();
 
-      for (var i = 0; i <= uSteps; i++) {
-        var u = i / uSteps;             // 0 (hub) .. 1 (tip), along the arm
-        var len = u * 1.0;
-        // taper profile: narrow at the hub, widest a third of the way out, pointed at the tip
-        var width = 0.16 * Math.sin(Math.pow(1 - u, 0.6) * Math.PI) * (1 - Math.pow(u, 3));
-        if (width < 0.004 && u > 0.15) continue; // let the tip actually come to a point
-        for (var j = 0; j < vSteps; j++) {
-          var phi = (j / vSteps) * Math.PI * 2;
+  // Rebuild the point cloud for a given instant `t`: each shaft's length oscillates on its own
+  // sine wave, then gets sampled hub-to-tip at a constant radius with a short tapered tip.
+  function buildPoints(t) {
+    var pts = [];
+    for (var a = 0; a < ARMS.length; a++) {
+      var arm = ARMS[a];
+      var pulse = (Math.sin(t * arm.freq + arm.phase) + 1) / 2; // 0..1
+      var armLen = arm.minLen + (arm.maxLen - arm.minLen) * pulse;
+      var taperStart = 1 - TIP_TAPER;
+      for (var i = 0; i <= U_STEPS; i++) {
+        var u = i / U_STEPS;            // 0 (hub) .. 1 (tip), along the shaft's current length
+        var len = u * armLen;
+        var width = u <= taperStart ? SHAFT_WIDTH : SHAFT_WIDTH * (1 - u) / TIP_TAPER;
+        if (width < 0.004 && u > taperStart) continue; // let the tip actually come to a point
+        for (var j = 0; j < V_STEPS; j++) {
+          var phi = (j / V_STEPS) * Math.PI * 2;
           var rx = Math.cos(phi) * width;
           var rz = Math.sin(phi) * width;
-          var x = dir.x * len + perp1.x * rx + perp2.x * rz;
-          var y = dir.y * len + perp1.y * rx + perp2.y * rz;
-          var z = dir.z * len + perp1.z * rx + perp2.z * rz;
-          var nx = perp1.x * Math.cos(phi) + perp2.x * Math.sin(phi);
-          var ny = perp1.y * Math.cos(phi) + perp2.y * Math.sin(phi);
-          var nz = perp1.z * Math.cos(phi) + perp2.z * Math.sin(phi);
+          var x = arm.dir.x * len + arm.perp1.x * rx + arm.perp2.x * rz;
+          var y = arm.dir.y * len + arm.perp1.y * rx + arm.perp2.y * rz;
+          var z = arm.dir.z * len + arm.perp1.z * rx + arm.perp2.z * rz;
+          var nx = arm.perp1.x * Math.cos(phi) + arm.perp2.x * Math.sin(phi);
+          var ny = arm.perp1.y * Math.cos(phi) + arm.perp2.y * Math.sin(phi);
+          var nz = arm.perp1.z * Math.cos(phi) + arm.perp2.z * Math.sin(phi);
           pts.push({ x: x, y: y, z: z, nx: nx, ny: ny, nz: nz });
         }
       }
     }
     return pts;
   }
-  var BASE_POINTS = buildPoints();
 
   function rotated(pts, ax, ay) {
     var cosY = Math.cos(ay), sinY = Math.sin(ay);
@@ -84,8 +106,8 @@
   var LIGHT = normalize(-0.4, 0.5, 1);
   function normalize(x, y, z) { var m = Math.sqrt(x * x + y * y + z * z) || 1; return { x: x / m, y: y / m, z: z / m }; }
 
-  function renderFrame(ax, ay) {
-    var pts = rotated(BASE_POINTS, ax, ay);
+  function renderFrame(ax, ay, t) {
+    var pts = rotated(buildPoints(t), ax, ay);
     var buf = new Array(COLS * ROWS).fill(" ");
     var zbuf = new Array(COLS * ROWS).fill(-Infinity);
     var K = 3.4;         // camera distance
@@ -110,7 +132,7 @@
   }
 
   function staticFrame() {
-    return renderFrame(0.28, 0.4);
+    return renderFrame(0.28, 0.4, 0);
   }
 
   var mounted = new WeakSet();
@@ -131,7 +153,7 @@
       if (t - last >= FRAME_MS) {
         last = t;
         var elapsed = (t - t0) / 1000;
-        pre.textContent = renderFrame(0.35 * Math.sin(elapsed * 0.5), elapsed * 0.6);
+        pre.textContent = renderFrame(0.35 * Math.sin(elapsed * 0.5), elapsed * 0.6, elapsed);
       }
       raf = requestAnimationFrame(tick);
     }
