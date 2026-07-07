@@ -28,7 +28,7 @@
   var SPHERE_RADIUS = 1.0;      // every shaft is bounded within this radius at all times
   var MIN_LEN = SPHERE_RADIUS * 0.5;  // shortest pulse reach: half the sphere's radius
   var MAX_LEN = SPHERE_RADIUS;        // longest pulse reach: exactly the sphere's radius
-  var ARM_COUNT = 40;       // fixed (not randomized) so the sphere is densely, evenly covered
+  var ARM_COUNT = 50;       // fixed (not randomized) so the sphere is densely, evenly covered
 
   function cross(a, b) { return { x: a.y * b.z - a.z * b.y, y: a.z * b.x - a.x * b.z, z: a.x * b.y - a.y * b.x }; }
   function normalizeVec(v) { var m = Math.sqrt(v.x * v.x + v.y * v.y + v.z * v.z) || 1; return { x: v.x / m, y: v.y / m, z: v.z / m }; }
