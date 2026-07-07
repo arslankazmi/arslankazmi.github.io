@@ -1,10 +1,11 @@
 /* ascii-asterisk.js — a spinning 3D spiky-starburst, rendered as text characters only.
 
-   No canvas, no WebGL, no Three.js: a random number of thin cylindrical "shafts" (15-30, a fresh
-   count and scatter each page load) are modeled as points in 3D space (with analytic surface
-   normals), shooting out from the center in random directions across all axes — not confined to
-   one plane. Origins and directions are fixed once chosen at load; only a refresh re-randomizes
-   them. Each shaft stays bounded within a fixed sphere, pulsing its length between half that
+   No canvas, no WebGL, no Three.js: a fixed number of thin cylindrical "shafts" (enough of them
+   that the overall shape reads as a spiky sphere rather than a sparse starfish) are modeled as
+   points in 3D space (with analytic surface normals), shooting out from the center in random
+   directions across all axes — not confined to one plane, freshly scattered each page load.
+   Origins and directions are fixed once chosen at load; only a refresh re-randomizes them. Each
+   shaft stays bounded within a fixed sphere, pulsing its length between half that
    sphere's radius and the full radius on its own independent sine wave, so the whole thing looks
    like it's breathing. Every frame the current point cloud is rebuilt for that instant, rotated,
    perspective-projected, and rasterized onto a fixed character grid with a z-buffer for occlusion
@@ -27,17 +28,17 @@
   var SPHERE_RADIUS = 1.0;      // every shaft is bounded within this radius at all times
   var MIN_LEN = SPHERE_RADIUS * 0.5;  // shortest pulse reach: half the sphere's radius
   var MAX_LEN = SPHERE_RADIUS;        // longest pulse reach: exactly the sphere's radius
+  var ARM_COUNT = 40;       // fixed (not randomized) so the sphere is densely, evenly covered
 
   function cross(a, b) { return { x: a.y * b.z - a.z * b.y, y: a.z * b.x - a.x * b.z, z: a.x * b.y - a.y * b.x }; }
   function normalizeVec(v) { var m = Math.sqrt(v.x * v.x + v.y * v.y + v.z * v.z) || 1; return { x: v.x / m, y: v.y / m, z: v.z / m }; }
 
-  // A random number of shafts (15-30), scattered uniformly at random around the center in 3D on
-  // page load — origins and directions are fixed once chosen; only a page refresh re-randomizes
+  // A fixed number of shafts (ARM_COUNT), scattered uniformly at random around the center in 3D
+  // on page load — origins and directions are fixed once chosen; only a page refresh re-randomizes
   // them. Each gets its own random pulse speed/phase so they breathe in and out independently.
   function buildArms() {
     var arms = [];
-    var count = 15 + Math.floor(Math.random() * 16); // 15..30 inclusive
-    for (var a = 0; a < count; a++) {
+    for (var a = 0; a < ARM_COUNT; a++) {
       // uniformly random direction on the unit sphere (avoids pole-clustering from naive angles)
       var zc = 1 - 2 * Math.random();
       var r = Math.sqrt(Math.max(0, 1 - zc * zc));

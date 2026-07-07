@@ -13,7 +13,7 @@
         "animation",
         "graphics"
       ],
-      "blurb": "A from-scratch 3D renderer — rotation matrices, perspective, a z-buffer, luminance shading — pointed at a randomized, pulsing starburst (15-30 shafts, a fresh layout each load) and drawn entirely in text characters.",
+      "blurb": "A from-scratch 3D renderer — rotation matrices, perspective, a z-buffer, luminance shading — pointed at a pulsing sphere of 40 shafts, freshly scattered each load, and drawn entirely in text characters.",
       "read": "5 min",
       "featured": true,
       "draft": false,
