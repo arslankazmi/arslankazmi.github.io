@@ -1,14 +1,15 @@
 /* ascii-asterisk.js — a spinning 3D spiky-starburst, rendered as text characters only.
 
-   No canvas, no WebGL, no Three.js: a random number of cylindrical "shafts" (15-30, a fresh count
-   and layout each page load) are modeled as points in 3D space (with analytic surface normals),
-   shooting out from the center in random directions across all axes — not confined to one plane.
-   Each shaft has a constant radius (tapering only right at its tip to a point) and pulses its own
-   length independently over time, so the whole thing looks like it's breathing. Every frame the
-   current point cloud is rebuilt for that instant, rotated, perspective-projected, and rasterized
-   onto a fixed character grid with a z-buffer for occlusion — the classic "ASCII donut" shading
-   technique (luminance ramp driven by normal·light), applied to a starburst instead of a torus.
-   Output is plain textContent on a <pre>, never innerHTML.
+   No canvas, no WebGL, no Three.js: a random number of thin cylindrical "shafts" (15-30, a fresh
+   count and scatter each page load) are modeled as points in 3D space (with analytic surface
+   normals), shooting out from the center in random directions across all axes — not confined to
+   one plane. Origins and directions are fixed once chosen at load; only a refresh re-randomizes
+   them. Each shaft stays bounded within a fixed sphere, pulsing its length between half that
+   sphere's radius and the full radius on its own independent sine wave, so the whole thing looks
+   like it's breathing. Every frame the current point cloud is rebuilt for that instant, rotated,
+   perspective-projected, and rasterized onto a fixed character grid with a z-buffer for occlusion
+   — the classic "ASCII donut" shading technique (luminance ramp driven by normal·light), applied
+   to a starburst instead of a torus. Output is plain textContent on a <pre>, never innerHTML.
 
    Loaded once globally (like shared/sidenotes.js) rather than as an inline <script> in the post
    body: the SPA article view injects post HTML via dangerouslySetInnerHTML, which never executes
@@ -21,15 +22,18 @@
   var RAMP = " .:-=+*#%@";
   var FRAME_MS = 1000 / 24;
   var U_STEPS = 22, V_STEPS = 8;
-  var SHAFT_WIDTH = 0.09;   // constant shaft radius (thin, cylindrical rather than a tapered lens)
+  var SHAFT_WIDTH = 0.05;   // constant shaft radius (thin, cylindrical rather than a tapered lens)
   var TIP_TAPER = 0.18;     // fraction of the shaft's current length that tapers down to a point
+  var SPHERE_RADIUS = 1.0;      // every shaft is bounded within this radius at all times
+  var MIN_LEN = SPHERE_RADIUS * 0.5;  // shortest pulse reach: half the sphere's radius
+  var MAX_LEN = SPHERE_RADIUS;        // longest pulse reach: exactly the sphere's radius
 
   function cross(a, b) { return { x: a.y * b.z - a.z * b.y, y: a.z * b.x - a.x * b.z, z: a.x * b.y - a.y * b.x }; }
   function normalizeVec(v) { var m = Math.sqrt(v.x * v.x + v.y * v.y + v.z * v.z) || 1; return { x: v.x / m, y: v.y / m, z: v.z / m }; }
 
-  // A random number of shafts (15-30), each shooting out from the center in a random direction
-  // across all 3 axes (uniformly sampled on the unit sphere, not just one plane). Each gets its own
-  // random pulse speed/phase/length range so they breathe in and out independently, out of sync.
+  // A random number of shafts (15-30), scattered uniformly at random around the center in 3D on
+  // page load — origins and directions are fixed once chosen; only a page refresh re-randomizes
+  // them. Each gets its own random pulse speed/phase so they breathe in and out independently.
   function buildArms() {
     var arms = [];
     var count = 15 + Math.floor(Math.random() * 16); // 15..30 inclusive
@@ -46,23 +50,22 @@
       arms.push({
         dir: dir, perp1: perp1, perp2: perp2,
         phase: Math.random() * Math.PI * 2,
-        freq: 0.4 + Math.random() * 0.5,     // per-arm pulse speed
-        minLen: 0.45 + Math.random() * 0.2,  // shortest reach of the pulse
-        maxLen: 0.9 + Math.random() * 0.3    // longest reach of the pulse
+        freq: 1.3 + Math.random() * 1.1     // per-arm pulse speed, desynced
       });
     }
     return arms;
   }
   var ARMS = buildArms();
 
-  // Rebuild the point cloud for a given instant `t`: each shaft's length oscillates on its own
-  // sine wave, then gets sampled hub-to-tip at a constant radius with a short tapered tip.
+  // Rebuild the point cloud for a given instant `t`: each shaft's length oscillates between
+  // MIN_LEN and MAX_LEN on its own sine wave (always within SPHERE_RADIUS), then gets sampled
+  // hub-to-tip at a constant radius with a short tapered tip.
   function buildPoints(t) {
     var pts = [];
     for (var a = 0; a < ARMS.length; a++) {
       var arm = ARMS[a];
       var pulse = (Math.sin(t * arm.freq + arm.phase) + 1) / 2; // 0..1
-      var armLen = arm.minLen + (arm.maxLen - arm.minLen) * pulse;
+      var armLen = MIN_LEN + (MAX_LEN - MIN_LEN) * pulse;
       var taperStart = 1 - TIP_TAPER;
       for (var i = 0; i <= U_STEPS; i++) {
         var u = i / U_STEPS;            // 0 (hub) .. 1 (tip), along the shaft's current length
@@ -153,7 +156,7 @@
       if (t - last >= FRAME_MS) {
         last = t;
         var elapsed = (t - t0) / 1000;
-        pre.textContent = renderFrame(0.35 * Math.sin(elapsed * 0.5), elapsed * 0.6, elapsed);
+        pre.textContent = renderFrame(0.35 * Math.sin(elapsed * 0.7), elapsed * 0.85, elapsed);
       }
       raf = requestAnimationFrame(tick);
     }
