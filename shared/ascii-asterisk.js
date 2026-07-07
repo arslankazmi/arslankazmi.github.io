@@ -1,10 +1,12 @@
-/* ascii-asterisk.js — a spinning 3D Claude-style asterisk, rendered as text characters only.
+/* ascii-asterisk.js — a spinning 3D spiky-starburst, rendered as text characters only.
 
-   No canvas, no WebGL, no Three.js: six tapered "spikes" are modeled as points in 3D space
-   (with analytic surface normals), rotated every frame, perspective-projected, and rasterized
-   onto a fixed character grid with a z-buffer for occlusion — the classic "ASCII donut" shading
-   technique (luminance ramp driven by normal·light), applied to a six-point starburst instead
-   of a torus. Output is plain textContent on a <pre>, never innerHTML.
+   No canvas, no WebGL, no Three.js: a random number of tapered "spikes" (15-30, a fresh count
+   and layout each page load) are modeled as points in 3D space (with analytic surface normals),
+   shooting out from the center in random directions across all axes — not confined to one plane.
+   Every frame they're rotated, perspective-projected, and rasterized onto a fixed character grid
+   with a z-buffer for occlusion — the classic "ASCII donut" shading technique (luminance ramp
+   driven by normal·light), applied to a starburst instead of a torus. Output is plain textContent
+   on a <pre>, never innerHTML.
 
    Loaded once globally (like shared/sidenotes.js) rather than as an inline <script> in the post
    body: the SPA article view injects post HTML via dangerouslySetInnerHTML, which never executes
@@ -17,15 +19,27 @@
   var RAMP = " .:-=+*#%@";
   var FRAME_MS = 1000 / 24;
 
-  // Six spikes at 60° increments in the XY plane, each a tapered lens (thick at mid-shaft,
-  // pointed at both the tip and the hub) so the whole thing reads as a six-point asterisk
-  // face-on, then gains real depth as it tumbles in 3D.
+  function cross(a, b) { return { x: a.y * b.z - a.z * b.y, y: a.z * b.x - a.x * b.z, z: a.x * b.y - a.y * b.x }; }
+  function normalizeVec(v) { var m = Math.sqrt(v.x * v.x + v.y * v.y + v.z * v.z) || 1; return { x: v.x / m, y: v.y / m, z: v.z / m }; }
+
+  // A random number of spikes (15-30), each shooting out from the center in a random direction
+  // across all 3 axes (uniformly sampled on the unit sphere, not just one plane), tapered lens-
+  // shaped (thick at mid-shaft, pointed at both the tip and the hub).
   function buildPoints() {
     var pts = [];
-    var arms = 6, uSteps = 22, vSteps = 8;
+    var arms = 15 + Math.floor(Math.random() * 16); // 15..30 inclusive
+    var uSteps = 22, vSteps = 8;
     for (var a = 0; a < arms; a++) {
-      var theta = (a / arms) * Math.PI * 2;
-      var ca = Math.cos(theta), sa = Math.sin(theta);
+      // uniformly random direction on the unit sphere (avoids pole-clustering from naive angles)
+      var zc = 1 - 2 * Math.random();
+      var r = Math.sqrt(Math.max(0, 1 - zc * zc));
+      var phi0 = Math.random() * Math.PI * 2;
+      var dir = { x: r * Math.cos(phi0), y: r * Math.sin(phi0), z: zc };
+      // orthonormal basis for this arm's tube cross-section, since it can point anywhere in 3D
+      var upHint = Math.abs(dir.y) < 0.99 ? { x: 0, y: 1, z: 0 } : { x: 1, y: 0, z: 0 };
+      var perp1 = normalizeVec(cross(dir, upHint));
+      var perp2 = cross(dir, perp1); // already unit length: cross of two orthonormal unit vectors
+
       for (var i = 0; i <= uSteps; i++) {
         var u = i / uSteps;             // 0 (hub) .. 1 (tip), along the arm
         var len = u * 1.0;
@@ -36,11 +50,12 @@
           var phi = (j / vSteps) * Math.PI * 2;
           var rx = Math.cos(phi) * width;
           var rz = Math.sin(phi) * width;
-          // local frame: shaft runs along (ca, sa, 0); the tube cross-section is perpendicular
-          var x = ca * len - sa * rx;
-          var y = sa * len + ca * rx;
-          var z = rz;
-          var nx = -sa * Math.cos(phi), ny = ca * Math.cos(phi), nz = Math.sin(phi);
+          var x = dir.x * len + perp1.x * rx + perp2.x * rz;
+          var y = dir.y * len + perp1.y * rx + perp2.y * rz;
+          var z = dir.z * len + perp1.z * rx + perp2.z * rz;
+          var nx = perp1.x * Math.cos(phi) + perp2.x * Math.sin(phi);
+          var ny = perp1.y * Math.cos(phi) + perp2.y * Math.sin(phi);
+          var nz = perp1.z * Math.cos(phi) + perp2.z * Math.sin(phi);
           pts.push({ x: x, y: y, z: z, nx: nx, ny: ny, nz: nz });
         }
       }
