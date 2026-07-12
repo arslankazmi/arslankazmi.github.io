@@ -1,0 +1,33 @@
+---
+title: AI Dependence and the Deskilling of Developers
+date: 2026-07-25
+tags: [ai, software-engineering, career, opinion]
+blurb: On what a generation of AI-dependent developers might lose — and where I think the durable value still lives.
+read: 7 min
+featured: true
+draft: true
+---
+
+*Part one of a three-part series on AI and craft.*
+
+I've been thinking about the long term impact of adopting tools like Claude Code across the software industry, to facilitate rapid development and reduce time to ship new features. The impact I am talking about will be on the existing developers. Moving forwards, the pool of people with experience from before ChatGPT will keep dwindling, and new developers will be too dependent on these tools to be able to function without them.
+
+Expectation in the industry is already that tasks which used to take a couple days should be done in a few hours or a few minutes, like changing the button on a webpage. The problem here is that not all buttons are created equal, and what seems like a minor change for a non-technical person may in fact involve having to re-write the backend, or even just to create a new function to serve the one button's functionality.
+
+But let us think more broadly. In ages past, whenever an industry-wide shift happened (think industrial revolution, etc.), people's existing jobs were either radically changed or the expectations of that job changed. Some jobs went away, new ones were created. Machinery made some jobs faster and required less expertise in the subject matter. You didn't have to build up years of experience to weave together a base fabric; now you just needed a workforce able to drive the machines. In a more general sense, we were taught that AI and automation would force people to have to reskill or be left behind.
+
+Now AI is here, and it came not for the factory workers (though that may be coming soon, as the larger companies are already moving towards fully automated warehouses, logistics and manufacturing), but for the white-collar jobs. The office worker whose jobs involve writing, typing or managing things, or those in remote service roles like call centers. All easily replaced. The lawyers have managed to keep the AI back for now, as they can simply sue anyone who tries to create an AI lawyer. They need to be able to justify their hours and high hourly rates, which I think they will manage to do for some time. Lawyers have abused AI, sure, to do their work for them, but cases like these have been thrown out of court for not having done the proper due diligence. Hallucinations are a big issue for legal matters, as you can't just make up case law or precedence to please your masters, which current AI has been trained to do.
+
+But back to developers. Developers who are dependent on tools like Claude, on average will never learn how to be truly independent of such tools. They will eventually not be able to write a single line of code without having to ask an LLM to do it for them. This is similar to the Google/Stack Overflow generation, myself included, where we always knew we could find some working code or solutions online, so only built up our own institutional knowledge bit by bit. This is in comparison to developers from before the 2000s, who had only books to learn from while having to work closer to the underlying hardware. Abstractions like programming languages were few and far between (a bit of hyperbole, I know, but there you go), and most people had to code in assembly to get anything usable working. The current and future crop of students and developers will lack human coding knowledge of any kind, and most of the code in production systems will be written by Claude. AI-hallucinated security vulnerabilities will abound, and eventually the speed to development will slow because systems will keep breaking. Codebases will become entirely obtuse without an AI to tell you how to understand it. We are building a dependence on AI at a societal level which will be our undoing. I'm reminded of the plight of the Golgafrinchans in Douglas Adams' Hitchhiker's satire series, where one-third of a planet's population were sent off into space as they were deemed non-essential (like telephone sanitizers). Then a few years later they ended up being wiped out by a disease from a virulent telephone. We will end up getting rid of people and jobs and only realize later that it was a mistake.
+
+As an aside, it's interesting to note that people in upper management roles or c-suite executives are never the ones to have their salaries cut or themselves downsized. It's always the rest of the workforce that gets laid off to boost stock figures and show growth. It could be argued that these are the people whose work could be replaced by AI the easiest. All they do is attend meetings and make decisions. Maybe a company run by an AI CEO would turn out to be better. It would lack that "human touch" though. At least that's what the current crop of CEOs would say.
+
+On a personal note: as a Data Scientist, my job involves understanding and manipulating data. At its core, my strength is knowing, given any situation, what the best probable solution architecture looks like, without having to test a bunch of stuff. I also have years of training in the fundamentals, so I know all the typical algorithms and what to use in which scenario. Now, Claude can probably do a lot of this in spite of me, but it still needs a calm driving intelligence to both give it the proper context and to supervise its outputs to make sure it doesn't go off the rails. My ideas and experiences are what is valuable in my relationship with Claude, even though it may be better at writing SQL and Python code than me.
+
+Also, I can upskill myself or come up with truly novel ideas and solutions, carefully tailored to the given scenario. My capacity for learning, I feel, is greater than any large language model today, as that can only be taught on what is already out there.
+
+So if I feel threatened by Claude, or a junior developer who is faster at using Claude than I am, I am confident that the quality of my ideas and my reasoning process is still superior. But in a few years' time this may change, so I aim to ascend to the next ladder, where I hone my model training skills and solution building skills. I want to be the one in charge of developing the new LLMs, rather than just becoming comfortable with using them.
+
+I also need to invest in using AI to more permanently enhance my own skillset, so I can grow out of this new dependence. I can probably get AI to teach me new skills, as well as provide endless training exercises and variations.
+
+[^when]: First notes on this were written on 9 March 2026.
