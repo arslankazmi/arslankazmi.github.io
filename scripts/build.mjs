@@ -158,16 +158,12 @@ function postPage(side, post, bodyHtml) {
   const site = side === "dev" ? "arslan.dev" : "arslan.land";
   const other = side === "dev" ? { href: "../../../personal/", label: "arslan.land" } : { href: "../../../dev/", label: "arslan.dev" };
   const navBg = side === "dev" ? "var(--bg, #0b0d10)" : "var(--paper, #edece4)";
-  // Ornamental dropcap (personal side): only for letters with an approved Goudy Initialen glyph,
-  // never the accent-font fallback. Mirrors personal/styles.css.
-  const APPROVED_DROPCAPS = "CEIPSTUW";
+  // Ornamental dropcap (personal side): the full Goudy Initialen face covers every capital.
   const firstLetter = (bodyHtml.replace(/<[^>]+>/g, "").trim().match(/[A-Za-z]/) || [""])[0].toUpperCase();
-  const dropcap = (side === "personal" && APPROVED_DROPCAPS.includes(firstLetter)) ? firstLetter : "";
-  const dropcapCss = !dropcap ? "" : [...APPROVED_DROPCAPS].map(L =>
-    `    @font-face { font-family: 'dropcap-${L}'; src: url('../../../assets/dropcaps/GoudyInitialen-${L}.ttf') format('truetype'); font-display: swap; }`).join("\n")
-    + `\n    .post .prose[data-dropcap] > p:first-of-type::first-letter { font-family: var(--font-accent), 'Fraunces', serif; font-size: 5.2em; line-height: 0.72; font-weight: 400; float: left; margin: 0.08em 0.08em -0.05em 0; color: var(--accent); }\n`
-    + [...APPROVED_DROPCAPS].map(L =>
-    `    .post .prose[data-dropcap="${L}"] > p:first-of-type::first-letter { font-family: 'dropcap-${L}', var(--font-accent), serif; }`).join("\n");
+  const dropcap = side === "personal" ? firstLetter : "";
+  const dropcapCss = !dropcap ? "" :
+    `    @font-face { font-family: 'dropcap'; src: url('../../../assets/dropcaps/GoudyInitialen.ttf') format('truetype'); font-display: swap; }\n`
+    + `    .post .prose[data-dropcap] > p:first-of-type::first-letter { font-family: 'dropcap', var(--font-accent), 'Fraunces', serif; font-size: 5.2em; line-height: 0.72; font-weight: 400; float: left; margin: 0.08em 0.08em -0.05em 0; color: var(--accent); }`;
   const meta = he([post.dateLong || post.date, (post.tags || []).join(", ")].filter(Boolean).join(" · "));
   const enhCss = ENHANCEMENTS.filter(n => existsSync(join(REPO, "shared", `${n}.css`)))
     .map(n => `  <link rel="stylesheet" href="/shared/${n}.css"/>`).join("\n");
