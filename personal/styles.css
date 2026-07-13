@@ -386,31 +386,16 @@ body {
 .article .prose pre { background: var(--ink-900); color: var(--paper); padding: 16px; border-radius: var(--radius-md); overflow-x: auto; }
 .article .prose pre code { background: none; padding: 0; }
 
-/* ---------- ai-poetry-style ornamental dropcap (Goudy Initialen, one TTF per letter) ----------
+/* ---------- ornamental dropcap (full Goudy Initialen, covers A–Z) ----------
    The first paragraph gets class .article-opening (set in Article.jsx); the prose container's
-   data-dropcap attr selects the letter-specific font. Letters without a Goudy face fall back to
-   the ornamental accent face (Unreal T). */
-@font-face { font-family: 'dropcap-C'; src: url('../assets/dropcaps/GoudyInitialen-C.ttf') format('truetype'); font-display: swap; }
-@font-face { font-family: 'dropcap-E'; src: url('../assets/dropcaps/GoudyInitialen-E.ttf') format('truetype'); font-display: swap; }
-@font-face { font-family: 'dropcap-I'; src: url('../assets/dropcaps/GoudyInitialen-I.ttf') format('truetype'); font-display: swap; }
-@font-face { font-family: 'dropcap-P'; src: url('../assets/dropcaps/GoudyInitialen-P.ttf') format('truetype'); font-display: swap; }
-@font-face { font-family: 'dropcap-S'; src: url('../assets/dropcaps/GoudyInitialen-S.ttf') format('truetype'); font-display: swap; }
-@font-face { font-family: 'dropcap-T'; src: url('../assets/dropcaps/GoudyInitialen-T.ttf') format('truetype'); font-display: swap; }
-@font-face { font-family: 'dropcap-U'; src: url('../assets/dropcaps/GoudyInitialen-U.ttf') format('truetype'); font-display: swap; }
-@font-face { font-family: 'dropcap-W'; src: url('../assets/dropcaps/GoudyInitialen-W.ttf') format('truetype'); font-display: swap; }
+   data-dropcap attr enables the cap. The full Goudy Initialen face has an ornamental initial for
+   every capital, so any opening letter gets one. */
+@font-face { font-family: 'dropcap'; src: url('../assets/dropcaps/GoudyInitialen.ttf') format('truetype'); font-display: swap; }
 .article .prose[data-dropcap] > p.article-opening::first-letter {
-  font-family: var(--font-accent), 'Fraunces', serif;
+  font-family: 'dropcap', var(--font-accent), 'Fraunces', serif;
   font-size: 5.2em; line-height: 0.72; font-weight: 400;
   float: left; margin: 0.08em 0.08em -0.05em 0; color: var(--accent);
 }
-.article .prose[data-dropcap="C"] > p.article-opening::first-letter { font-family: 'dropcap-C', var(--font-accent), serif; }
-.article .prose[data-dropcap="E"] > p.article-opening::first-letter { font-family: 'dropcap-E', var(--font-accent), serif; }
-.article .prose[data-dropcap="I"] > p.article-opening::first-letter { font-family: 'dropcap-I', var(--font-accent), serif; }
-.article .prose[data-dropcap="P"] > p.article-opening::first-letter { font-family: 'dropcap-P', var(--font-accent), serif; }
-.article .prose[data-dropcap="S"] > p.article-opening::first-letter { font-family: 'dropcap-S', var(--font-accent), serif; }
-.article .prose[data-dropcap="T"] > p.article-opening::first-letter { font-family: 'dropcap-T', var(--font-accent), serif; }
-.article .prose[data-dropcap="U"] > p.article-opening::first-letter { font-family: 'dropcap-U', var(--font-accent), serif; }
-.article .prose[data-dropcap="W"] > p.article-opening::first-letter { font-family: 'dropcap-W', var(--font-accent), serif; }
 
 /* ---------- plain view (data-view="plain") — bare HTML, borderless table, no visible lines ---------- */
 html[data-view="plain"] body { background: #fff; background-image: none; color: #111; font-family: Georgia, "Times New Roman", serif; }

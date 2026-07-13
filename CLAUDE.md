@@ -37,15 +37,13 @@ A personal post is a **notebook** entry if any tag is `notebook` or `music`
 appear under "Latest writing" / "Read the latest"; notebook entries show in the **Notebook** section
 of the one Writing page. So: tag short notes `notebook`; leave essays untagged as such.
 
-## Dropcap rule (personal side)
+## Dropcaps (personal side)
 
-Every **personal** post (essay **and** notebook) must **open with a letter that has an approved
-Goudy Initialen dropcap glyph: `C, E, I, P, S, T, U, W`** (`assets/dropcaps/GoudyInitialen-*.ttf`).
-These render as the ornamental dropcap; any other first letter falls back to the accent font, which
-is **not** allowed. If a piece would open with another letter, **reword the first line** to start
-with an approved letter (preferred), or add the matching `GoudyInitialen-<L>.ttf` to
-`assets/dropcaps/` and wire it into `personal/styles.css` (and the static-page block in
-`scripts/build.mjs postPage()`). The dropcap shows in both the SPA article view and the static page.
+Every **personal** post (essay **and** notebook) opens with an ornamental **Goudy Initialen**
+dropcap. The full face (`assets/dropcaps/GoudyInitialen.ttf`) covers **every capital A–Z**, so any
+opening letter gets one automatically — no restriction, nothing to do. The dropcap renders in both
+the SPA article view (`personal/styles.css`) and the standalone static page
+(`scripts/build.mjs postPage()`).
 
 ## Editorial policy
 
@@ -88,7 +86,7 @@ Readiness: **High** = light-fix · **Med** = needs finishing. Effort: 🟢 copye
 # Content calendar — personal (arslan.land)
 
 **Type:** *essay* (default; under "Latest writing") · *notebook* (tagged `notebook`; Notebook section).
-Remember the **dropcap rule** — each must open with `C/E/I/P/S/T/U/W`.
+Every post gets an ornamental Goudy dropcap automatically (full A–Z face).
 
 | # | Date | Title | Type | Ready | Effort | Note |
 |---|---|---|---|---|---|---|
@@ -96,7 +94,7 @@ Remember the **dropcap rule** — each must open with `C/E/I/P/S/T/U/W`.
 | 2 | Jul 15 | Theoretical Shopping | essay | High | 🟢 | ✅ Drafted (`draft:true`). |
 | 3 | Jul 29 | What Typing Taught Me | essay | High | 🟢 | Skill-acquisition philosophy. |
 | 4 | Aug 5 | My history with Nintendo Handhelds | essay | High | 🟡 | Trim excess model detail. |
-| 5 | Aug 12 | Addicted to Learning | notebook | High | 🟡 | ✅ Drafted — **opens "For…" (F); reword to an approved dropcap letter before publish.** |
+| 5 | Aug 12 | Addicted to Learning | notebook | High | 🟢 | ✅ Drafted. |
 | 6 | Aug 19 | VTIN Speaker: a repair saga | essay | High | 🟢 | Three-act narrative. |
 | 7 | Aug 26 | The Seinfeld Machete Order | notebook | High | 🟢 | ✅ Drafted. |
 | 8 | Sep 2 | Looking Back to Move Forward | essay | High | 🟡 | Memoir; trim personal detail. |
