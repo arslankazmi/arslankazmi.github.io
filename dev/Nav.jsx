@@ -9,7 +9,7 @@ function DHNav({ route, onNavigate, plain, onPlain, hasWriting }) {
       </div>
       <div className="links">
         <a className={route === "home" ? "active" : ""} onClick={() => onNavigate("home")}>Home</a>
-        {hasWriting && <a className={route === "writing" || route === "article" ? "active" : ""} onClick={() => onNavigate("writing")}>Writing</a>}
+        {hasWriting && <a className={route === "writing" || route === "article" ? "active" : ""} onClick={() => onNavigate("writing")}>Posts</a>}
         <a href="../portfolio/">Projects ↗</a>
       </div>
       <div className="right">

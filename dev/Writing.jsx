@@ -50,7 +50,7 @@ function Article({ post, onBack }) {
       {html == null
         ? <p className="dh-empty">Loading…</p>
         : <div className="prose" dangerouslySetInnerHTML={{ __html: html }} />}
-      <p style={{ marginTop: 40 }}><a className="dh-back" onClick={onBack}>← all writing</a></p>
+      <p style={{ marginTop: 40 }}><a className="dh-back" onClick={onBack}>← all posts</a></p>
     </article>
   );
 }

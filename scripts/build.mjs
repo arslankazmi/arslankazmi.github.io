@@ -158,6 +158,8 @@ function postPage(side, post, bodyHtml) {
   const site = side === "dev" ? "arslan.dev" : "arslan.land";
   const other = side === "dev" ? { href: "../../../personal/", label: "arslan.land" } : { href: "../../../dev/", label: "arslan.dev" };
   const navBg = side === "dev" ? "var(--bg, #0b0d10)" : "var(--paper, #edece4)";
+  const writingLabel = side === "dev" ? "Posts" : "Writing";           // dev side calls them "Posts"
+  const navSecondary = side === "dev" ? "" : `\n      <a href="../../#/about">About</a>`;  // dev has no About route
   // Ornamental dropcap (personal side): wrap the first letter in a <span> — NOT ::first-letter, which
   // in Chrome double-paints the fallback glyph + the web-font glyph when the font arrives via
   // font-display:swap after first paint. The full Goudy Initialen face covers every capital A–Z.
@@ -206,8 +208,7 @@ ${dropcapCss}
   <header class="post-nav">
     <a class="brand" href="../../">${site}</a>
     <nav class="links">
-      <a href="../../#/writing">Writing</a>
-      <a href="../../#/about">About</a>
+      <a href="../../#/writing">${writingLabel}</a>${navSecondary}
       <a href="${other.href}">${other.label} ↗</a>
     </nav>
   </header>
@@ -215,7 +216,7 @@ ${dropcapCss}
     <div class="meta">${meta}</div>
     <h1>${he(post.title)}</h1>
     <div class="prose">${bodyOut}</div>
-    <a class="back" href="../../#/writing">← all writing</a>
+    <a class="back" href="../../#/writing">← all ${writingLabel.toLowerCase()}</a>
   </main>
   <footer class="post-footer">Written by hand · <a href="/acknowledgements/">acknowledgements</a> · © ${new Date().getFullYear()} Arslan Kazmi</footer>
 ${enhJs}

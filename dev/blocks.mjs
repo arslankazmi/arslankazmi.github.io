@@ -11,7 +11,7 @@ export function devBlocks({ route, posts = [], repos = [], stats = [], current, 
   }
   if (route === "writing") {
     return [
-      { t: "h1", text: "arslan.dev — writing" },
+      { t: "h1", text: "arslan.dev — posts" },
       { t: "table", head: ["post", "date", "tags"], rows: posts.map(p => [{ text: p.title, href: `#/p/${p.slug}` }, p.date, (p.tags || []).join(", ")]) },
     ];
   }
@@ -21,7 +21,7 @@ export function devBlocks({ route, posts = [], repos = [], stats = [], current, 
     { t: "h1", text: "arslan.dev" },
     { t: "p", text: dh.tagline || "" },
   ];
-  if (posts.length) b.push({ t: "h2", text: "Writing" }, { t: "table", head: ["post", "date"], rows: posts.map(p => [{ text: p.title, href: `#/p/${p.slug}` }, p.date]) });
+  if (posts.length) b.push({ t: "h2", text: "Posts" }, { t: "table", head: ["post", "date"], rows: posts.map(p => [{ text: p.title, href: `#/p/${p.slug}` }, p.date]) });
   b.push(
     { t: "h2", text: "Projects" },
     // 3-up grid of repo tiles, like the rich grid.
