@@ -60,26 +60,33 @@ the SPA article view (`personal/styles.css`) and the standalone static page
 
 Readiness: **High** = light-fix · **Med** = needs finishing. Effort: 🟢 copyedit · 🟡 finish/tighten · 🔴 write/stitch.
 
+Schedule starts today (2026-07-13); **AI & Craft series leads**. Dev posts ~every 4 days.
+
 | # | Date | Title | Ready | Effort | Note |
 |---|---|---|---|---|---|
-| 1 | Jul 14 | Semantic Scholar — a Google Scholar alternative | Med | 🟢 | Quick tool tip. |
-| 2 | Jul 22 | A Structured Approach to Taking Notes on Scientific Papers | High | 🟢 | ✅ Drafted (`draft:true`). |
-| 3 | Jul 25 | **AI & Craft (1):** AI Dependence and the Deskilling of Developers | High | 🟢 | ✅ Drafted. Flagship. |
-| 4 | Aug 1 | **AI & Craft (2):** Losing the Hands-On Feeling | High | 🟢 | ✅ Drafted. |
-| 5 | Aug 8 | **AI & Craft (3):** Three Modes I Want to Use AI In | High | 🟢 | ✅ Drafted. Manifesto. |
-| 6 | Aug 15 | Four Levels of Using an LLM *(→2026)* | High | ✍️ | First pass assembled; with author to personalize. |
-| 7 | Aug 22 | The rise of NLP in my lifetime | High | 🟡 | First-hand field memoir (02-19). |
-| 8 | Aug 29 | Skilled people quietly use Claude to ship | High | 🟡 | Timely; names this blog (07-10). |
+| 1 | Jul 13 | **AI & Craft (1):** AI Dependence and the Deskilling of Developers | High | ✅ | **PUBLISHED & LIVE**. Flagship. |
+| 2 | Jul 17 | **AI & Craft (2):** Losing the Hands-On Feeling | High | 🟢 | ✅ Drafted (`draft:true`). |
+| 3 | Jul 21 | **AI & Craft (3):** Three Modes I Want to Use AI In | High | 🟢 | ✅ Drafted. Manifesto. |
+| 4 | Jul 25 | Four Levels of Using an LLM *(→2026)* — arc capstone | High | ✍️ | First pass assembled; with author to personalize. |
+| 5 | Jul 29 | A Structured Approach to Taking Notes on Scientific Papers | High | 🟢 | ✅ Drafted. |
+| 6 | Aug 2 | The rise of NLP in my lifetime | High | 🟡 | First-hand field memoir (02-19). |
+| 7 | Aug 6 | Semantic Scholar — a Google Scholar alternative | Med | 🟢 | Quick tool tip (not yet drafted). |
+| 8 | Aug 10 | Skilled people quietly use Claude to ship | High | 🟡 | Timely; names this blog (07-10). |
+| 9 | Aug 14 | GPUs: buy vs cloud (and funding them) | High | 🟡 | Infra economics; keep general (02-11). |
+| 10 | Aug 18 | Attention explained (Q/K/V) | Med | 🟡 | Learner's explainer (12-31). |
+| 11 | Aug 22 | Building a bigram → transformer from scratch | Med | 🟡 | Build log; trim the text dumps (01-01). |
+| 12 | Aug 26 | Structuring ML repos for production | Med | 🟡 | Principles from a real setup (02-12). |
+| 13 | Aug 30 | Is it bad that AI writes all my tests? | Med | 🔴 | Stops mid-sentence — needs an ending. |
+| 14 | Sep 3 | From software engineer to AI skeptic | Med | 🔴 | Merge two drafts; cut the tool list. |
 
-**AI & Craft arc** = #3 → #4 → #5 (deskilling → the felt cost → the way forward), capstoned by **#6 Four Levels**.
+**AI & Craft arc** = #1 → #2 → #3 (deskilling → the felt cost → the way forward), capstoned by **#4 Four Levels**.
 
-**Backlog (dev):**
-- *DL/ML technical:* Attention explained (Q/K/V) · Building a bigram → transformer from scratch · GPUs: buy vs cloud · Structuring ML repos for production · Tracing/versioning prompts with Langfuse · Reacting to Anthropic's multi-agent essay.
-- *Needs finishing:* Is it bad that AI writes all my tests? · From software engineer to AI skeptic · My evolving use of AI in development.
+**Backlog (dev, unscheduled):**
+- *DL/ML & workflow:* Tracing/versioning prompts with Langfuse (02-10) · Reacting to Anthropic's multi-agent essay (06-23) · My evolving use of AI in development (two stubs).
 - *MemPalace (2026):* What to remember, and for whom · Document knowledge-graph over RAG · Keyless-safe LLM apps · Lean ML dependencies.
 - *Misc:* Finetuning on a 1660 Ti · Designing the Ideal Blog (sidenotes).
 
-**Four Levels outline (#6):** L1 raw API · L2 chaining · L3 tools/functions-as-tools · L4 agentic · *Interlude* finetuning on a 1660 Ti · *Level Four revisited (2026, written fresh)* eval-not-vibes · provider factory · free/local RAG · feedback loops · *Close.*
+**Four Levels outline (#4):** L1 raw API · L2 chaining · L3 tools/functions-as-tools · L4 agentic · *Interlude* finetuning on a 1660 Ti · *Level Four revisited (2026, written fresh)* eval-not-vibes · provider factory · free/local RAG · feedback loops · *Close.*
 
 ---
 

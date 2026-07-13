@@ -1,6 +1,26 @@
 {
   "dev": [
     {
+      "slug": "ai-dependence-deskilling-developers",
+      "side": "dev",
+      "title": "AI Dependence and the Deskilling of Developers",
+      "date": "Jul 2026",
+      "dateLong": "Jul 13, 2026",
+      "iso": "2026-07-13",
+      "tags": [
+        "ai",
+        "software-engineering",
+        "career",
+        "opinion"
+      ],
+      "blurb": "On what a generation of AI-dependent developers might lose — and where I think the durable value still lives.",
+      "read": "7 min",
+      "featured": true,
+      "draft": false,
+      "type": "post",
+      "path": "posts/dev/2026-07-13-ai-dependence-deskilling-developers.md"
+    },
+    {
       "slug": "ascii-asterisk",
       "side": "dev",
       "title": "A spinning ASCII asterisk, no dependencies",
