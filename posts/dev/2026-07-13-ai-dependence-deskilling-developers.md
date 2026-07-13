@@ -1,11 +1,10 @@
 ---
 title: AI Dependence and the Deskilling of Developers
-date: 2026-07-25
+date: 2026-07-13
 tags: [ai, software-engineering, career, opinion]
 blurb: On what a generation of AI-dependent developers might lose — and where I think the durable value still lives.
 read: 7 min
 featured: true
-draft: true
 ---
 
 *Part one of a three-part series on AI and craft.*
