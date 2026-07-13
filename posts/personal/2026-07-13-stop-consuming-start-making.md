@@ -7,9 +7,7 @@ read: 3 min
 featured: true
 ---
 
-Been a while, eh?[^when]
-
-I've come to realize that I had a ton of opportunities to be creative as a kid, but never actually progressed to making things of my own. Over the years I've had access to a lot of experiences, books, tools and software. I always loved reading about how things are done but always left it at that. I've always loved playing video games, but never tried to make my own (aside from a couple I made during my bachelor's degree). I haven't even been tempted to make my own levels in games that have level creators, like Counter Strike.
+I've come to realize that I had a ton of opportunities to be creative as a kid, but never actually progressed to making things of my own.[^when] Over the years I've had access to a lot of experiences, books, tools and software. I always loved reading about how things are done but always left it at that. I've always loved playing video games, but never tried to make my own (aside from a couple I made during my bachelor's degree). I haven't even been tempted to make my own levels in games that have level creators, like Counter Strike.
 
 This realisation really hit me on watching a Scott's Stash video on YouTube where he shows off his WarioWare D.I.Y microgames that he made as a child on his Nintendo DS. I played that same game as well, went through all the tutorials and stuff, but never actually made my own. I guess I felt that I couldn't draw or make pixel art that well so why bother. The perfectionist in me even back then wanted to be good at everything, but the fear of not being so stopped me from even trying.
 
