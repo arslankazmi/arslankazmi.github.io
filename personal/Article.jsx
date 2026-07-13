@@ -21,10 +21,11 @@ function Article({ entry, onBack }) {
   React.useEffect(() => {
     if (html == null || !proseRef.current) return;
     const p = proseRef.current.querySelector("p");
-    if (!p) return;
-    p.classList.add("article-opening");
-    const ch = (p.textContent.trim()[0] || "").toUpperCase();
-    if (/[A-Z]/.test(ch)) proseRef.current.setAttribute("data-dropcap", ch);
+    if (!p || p.querySelector(".dropcap")) return;
+    const ch = p.textContent.trim()[0] || "";
+    // Wrap the first letter in a span (not ::first-letter — that double-paints with a
+    // font-display:swap web font in Chrome).
+    if (/[A-Za-z]/.test(ch)) p.innerHTML = p.innerHTML.replace(/^(\s*)([A-Za-z])/, '$1<span class="dropcap">$2</span>');
   }, [html]);
   if (!entry) return null;
   return (
