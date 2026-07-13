@@ -21,11 +21,13 @@ export function personalBlocks({ route, entries = [], current, currentMd, rp = {
     ];
   }
   if (route === "writing" || route === "notebook") {
-    const list = route === "notebook" ? entries.filter(isNotebook) : entries.filter(e => !isNotebook(e));
-    return [
-      { t: "h1", text: `arslan.land — ${route}` },
-      { t: "table", head: ["piece", "date", "tag"], rows: list.map(e => [{ text: e.title, href: `#/p/${e.slug}` }, e.date, e.tag || ""]) },
-    ];
+    const essays = entries.filter(e => !isNotebook(e));
+    const notes = entries.filter(isNotebook);
+    const rowsOf = (list) => list.map(e => [{ text: e.title, href: `#/p/${e.slug}` }, e.date, e.tag || ""]);
+    const b = [{ t: "h1", text: "arslan.land — writing" }];
+    if (essays.length) b.push({ t: "h2", text: "Essays" }, { t: "table", head: ["piece", "date", "tag"], rows: rowsOf(essays) });
+    if (notes.length) b.push({ t: "h2", text: "Notebook" }, { t: "table", head: ["piece", "date", "tag"], rows: rowsOf(notes) });
+    return b;
   }
   const books = rp.books || [], games = rp.games || {}, now = games.now || {};
   const b = [

@@ -30,6 +30,7 @@
     var section = prose.querySelector("section[data-footnotes]");
     prose.querySelectorAll("aside.sidenote").forEach(function (n) { n.remove(); });
     prose.classList.remove("has-sidenotes");
+    prose.style.minHeight = "";
     if (!section) return;
 
     var rect = prose.getBoundingClientRect();
@@ -57,6 +58,10 @@
       bottom[side] = top + aside.offsetHeight;
       i++;
     });
+    // Absolutely-positioned sidenotes don't stretch .prose; reserve space for the lowest note so a
+    // tall note near the end of the article can't spill over the footer / following content.
+    var maxBottom = Math.max(bottom.left, bottom.right);
+    if (maxBottom > prose.offsetHeight) prose.style.minHeight = (maxBottom + 8) + "px";
   }
 
   function relayout() {

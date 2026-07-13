@@ -16,7 +16,9 @@ function App() {
     }).catch(() => {});
     const onHash = () => {
       const m = location.hash.match(/^#\/p\/(.+)$/);
-      if (m) { setSlug(decodeURIComponent(m[1])); setRoute("article"); window.scrollTo(0, 0); }
+      if (m) { setSlug(decodeURIComponent(m[1])); setRoute("article"); window.scrollTo(0, 0); return; }
+      const r = location.hash.replace(/^#\/?/, "");
+      if (r === "writing" || r === "about" || r === "projects") { setSlug(null); setRoute(r); window.scrollTo(0, 0); }
     };
     onHash();
     window.addEventListener("hashchange", onHash);
@@ -96,14 +98,14 @@ function App() {
         )}
         {route === "writing" && (
           <>
-            <div className="section-h"><h2>Writing</h2><span className="more">{writingEntries.length} piece{writingEntries.length === 1 ? "" : "s"}</span></div>
+            <div className="section-h"><h2>Essays</h2><span className="more">{writingEntries.length} piece{writingEntries.length === 1 ? "" : "s"}</span></div>
             <WritingList entries={writingEntries} onOpen={openEntry} />
-          </>
-        )}
-        {route === "notebook" && (
-          <>
-            <div className="section-h"><h2>Notebook</h2><span className="more">Short notes, in public</span></div>
-            <WritingList entries={notebookEntries} onOpen={openEntry} />
+            {notebookEntries.length > 0 && (
+              <>
+                <div className="section-h" style={{ marginTop: 64 }}><h2>Notebook</h2><span className="more">Short notes, in public</span></div>
+                <WritingList entries={notebookEntries} onOpen={openEntry} />
+              </>
+            )}
           </>
         )}
         {route === "projects" && (

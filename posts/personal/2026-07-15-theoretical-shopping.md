@@ -1,7 +1,7 @@
 ---
 title: Theoretical Shopping
 date: 2026-07-15
-tags: [gear, philosophy, notebook]
+tags: [gear, philosophy]
 blurb: A habit I call theoretical shopping — doing the research to choose the best product for a purpose, without necessarily buying it.
 read: 3 min
 featured: false

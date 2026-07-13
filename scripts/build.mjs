@@ -156,6 +156,8 @@ function postPage(side, post, bodyHtml) {
     ? "https://arslankazmi.github.io/ak-design/dist/dev.css"
     : "https://arslankazmi.github.io/ak-design/dist/personal.css";
   const site = side === "dev" ? "arslan.dev" : "arslan.land";
+  const other = side === "dev" ? { href: "../../../personal/", label: "arslan.land" } : { href: "../../../dev/", label: "arslan.dev" };
+  const navBg = side === "dev" ? "var(--bg, #0b0d10)" : "var(--paper, #edece4)";
   const meta = he([post.dateLong || post.date, (post.tags || []).join(", ")].filter(Boolean).join(" · "));
   const enhCss = ENHANCEMENTS.filter(n => existsSync(join(REPO, "shared", `${n}.css`)))
     .map(n => `  <link rel="stylesheet" href="/shared/${n}.css"/>`).join("\n");
@@ -179,15 +181,31 @@ ${enhCss}
     .post .prose pre { overflow:auto; padding:14px; border-radius:8px; background:rgba(127,127,127,.12); }
     .post img { max-width: 100%; height: auto; }
     .post .back { font-family: var(--font-mono, monospace); font-size: 13px; display:inline-block; margin-top:40px; }
+    .post-nav { position: sticky; top: 0; z-index: 50; display:flex; align-items:center; justify-content:space-between; gap:16px; padding:14px 24px; border-bottom:1px solid var(--border, rgba(127,127,127,.25)); background:${navBg}; backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px); }
+    .post-nav .brand { font-family: var(--font-display, Georgia, serif); font-weight:700; font-size:18px; color:var(--fg1, inherit); text-decoration:none; }
+    .post-nav .links { display:flex; gap:18px; align-items:center; }
+    .post-nav .links a { font-family: var(--font-body, sans-serif); font-size:14px; color:var(--fg1, inherit); text-decoration:none; }
+    .post-nav .links a:hover { color: var(--accent, #2563eb); }
+    .post-footer { border-top:1px solid var(--border, rgba(127,127,127,.25)); margin-top:64px; padding:28px 24px 40px; font-family: var(--font-mono, monospace); font-size:12px; color:var(--fg2, #666); text-align:center; }
+    .post-footer a { color: inherit; }
   </style>
 </head>
 <body>
+  <header class="post-nav">
+    <a class="brand" href="../../">${site}</a>
+    <nav class="links">
+      <a href="../../#/writing">Writing</a>
+      <a href="../../#/about">About</a>
+      <a href="${other.href}">${other.label} ↗</a>
+    </nav>
+  </header>
   <main class="post">
     <div class="meta">${meta}</div>
     <h1>${he(post.title)}</h1>
     <div class="prose">${bodyHtml}</div>
-    <a class="back" href="../../">← all writing</a>
+    <a class="back" href="../../#/writing">← all writing</a>
   </main>
+  <footer class="post-footer">Written by hand · <a href="/acknowledgements/">acknowledgements</a> · © ${new Date().getFullYear()} Arslan Kazmi</footer>
 ${enhJs}
 </body>
 </html>
