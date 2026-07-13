@@ -19,7 +19,7 @@ const PROJECTS_URL = "https://arslankazmi.github.io/portfolio/data/projects.json
 function HomeLayouts({ posts, repos, stats, onMore }) {
   const writing = posts.length > 0 && (
     <>
-      <div className="dh-sec"><h2>Latest writing</h2><span className="hint"><a onClick={onMore}>all posts →</a></span></div>
+      <div className="dh-sec"><h2>Latest posts</h2><span className="hint"><a onClick={onMore}>all posts →</a></span></div>
       <PostList posts={posts.slice(0, 3)} onOpen={(p) => { location.hash = `#/p/${p.slug}`; }} />
     </>
   );
@@ -51,7 +51,7 @@ function App() {
   const [plain, setPlain] = useState(document.documentElement.getAttribute("data-view") === "plain");
 
   useEffect(() => {
-    fetch("../posts.json").then(r => r.json()).then(d => setPosts(d.dev || [])).catch(() => {});
+    fetch("../posts.json", { cache: "no-cache" }).then(r => r.json()).then(d => setPosts(d.dev || [])).catch(() => {});
     fetch(PROJECTS_URL).then(r => r.json()).then(d => setRepos((d.projects || []).map(p => ({
       name: p.name, desc: p.description || "", tags: (p.keywords || []).slice(0, 3),
       lang: p.language || "", langVar: LANG_VAR[p.language] || "--lang-other",
@@ -80,7 +80,8 @@ function App() {
 
     const onHash = () => {
       const m = location.hash.match(/^#\/p\/(.+)$/);
-      if (m) { setSlug(decodeURIComponent(m[1])); setRoute("article"); window.scrollTo(0, 0); }
+      if (m) { setSlug(decodeURIComponent(m[1])); setRoute("article"); window.scrollTo(0, 0); return; }
+      if (location.hash.replace(/^#\/?/, "") === "writing") { setSlug(null); setRoute("writing"); window.scrollTo(0, 0); }
     };
     onHash();
     window.addEventListener("hashchange", onHash);
@@ -116,7 +117,7 @@ function App() {
       <div className="plain-root">
         <p className="pm-nav">
           <a onClick={togglePlain}>← rich view</a> · <a onClick={() => navigate("home")}>home</a>
-          {posts.length ? <> · <a onClick={() => navigate("writing")}>writing</a></> : null}
+          {posts.length ? <> · <a onClick={() => navigate("writing")}>posts</a></> : null}
           {" "}· <a href="../portfolio/">projects</a> · <a href="../personal/">arslan.land</a>
         </p>
         <PlainBlocks blocks={buildBlocks()} />
@@ -132,7 +133,7 @@ function App() {
         {route === "home" && <HomeLayouts posts={posts} repos={repos} stats={stats} onMore={() => navigate("writing")} />}
         {route === "writing" && (
           <>
-            <div className="dh-sec"><h2>Writing</h2><span className="hint">{posts.length} post{posts.length === 1 ? "" : "s"}</span></div>
+            <div className="dh-sec"><h2>Posts</h2><span className="hint">{posts.length} post{posts.length === 1 ? "" : "s"}</span></div>
             <PostList posts={posts} onOpen={openPost} />
           </>
         )}

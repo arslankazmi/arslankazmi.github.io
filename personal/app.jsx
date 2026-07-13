@@ -11,7 +11,7 @@ function App() {
   const [plain, setPlain] = useState(document.documentElement.getAttribute("data-view") === "plain");
 
   useEffect(() => {
-    fetch("../posts.json").then(r => r.json()).then(d => {
+    fetch("../posts.json", { cache: "no-cache" }).then(r => r.json()).then(d => {
       setEntries((d.personal || []).map(p => ({ ...p, id: p.slug, tag: (p.tags || [])[0] || "" })));
     }).catch(() => {});
     const onHash = () => {
