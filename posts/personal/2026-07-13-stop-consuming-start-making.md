@@ -1,7 +1,7 @@
 ---
 title: Stop Consuming, Start Making
 date: 2026-07-13
-tags: [making, creativity, personal-growth, notebook]
+tags: [making, creativity, personal-growth]
 blurb: A lifetime of consuming without making — and the quick, ugly WarioWare microgame that finally broke the pattern.
 read: 3 min
 featured: true
