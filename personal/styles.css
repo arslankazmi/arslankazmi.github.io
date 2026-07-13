@@ -391,7 +391,7 @@ body {
    data-dropcap attr enables the cap. The full Goudy Initialen face has an ornamental initial for
    every capital, so any opening letter gets one. */
 @font-face { font-family: 'dropcap'; src: url('../assets/dropcaps/GoudyInitialen.ttf') format('truetype'); font-display: swap; }
-.article .prose[data-dropcap] > p.article-opening::first-letter {
+.article .prose .dropcap {
   font-family: 'dropcap', var(--font-accent), 'Fraunces', serif;
   font-size: 5.2em; line-height: 0.72; font-weight: 400;
   float: left; margin: 0.08em 0.08em -0.05em 0; color: var(--accent);

@@ -158,12 +158,17 @@ function postPage(side, post, bodyHtml) {
   const site = side === "dev" ? "arslan.dev" : "arslan.land";
   const other = side === "dev" ? { href: "../../../personal/", label: "arslan.land" } : { href: "../../../dev/", label: "arslan.dev" };
   const navBg = side === "dev" ? "var(--bg, #0b0d10)" : "var(--paper, #edece4)";
-  // Ornamental dropcap (personal side): the full Goudy Initialen face covers every capital.
-  const firstLetter = (bodyHtml.replace(/<[^>]+>/g, "").trim().match(/[A-Za-z]/) || [""])[0].toUpperCase();
-  const dropcap = side === "personal" ? firstLetter : "";
-  const dropcapCss = !dropcap ? "" :
+  // Ornamental dropcap (personal side): wrap the first letter in a <span> — NOT ::first-letter, which
+  // in Chrome double-paints the fallback glyph + the web-font glyph when the font arrives via
+  // font-display:swap after first paint. The full Goudy Initialen face covers every capital A–Z.
+  const firstLetter = (bodyHtml.replace(/<[^>]+>/g, "").trim().match(/[A-Za-z]/) || [""])[0];
+  const useDropcap = side === "personal" && !!firstLetter;
+  const bodyOut = useDropcap
+    ? bodyHtml.replace(/(<p[^>]*>\s*)([A-Za-z])/, '$1<span class="dropcap">$2</span>')
+    : bodyHtml;
+  const dropcapCss = !useDropcap ? "" :
     `    @font-face { font-family: 'dropcap'; src: url('../../../assets/dropcaps/GoudyInitialen.ttf') format('truetype'); font-display: swap; }\n`
-    + `    .post .prose[data-dropcap] > p:first-of-type::first-letter { font-family: 'dropcap', var(--font-accent), 'Fraunces', serif; font-size: 5.2em; line-height: 0.72; font-weight: 400; float: left; margin: 0.08em 0.08em -0.05em 0; color: var(--accent); }`;
+    + `    .post .prose .dropcap { font-family: 'dropcap', var(--font-accent), 'Fraunces', serif; font-size: 5.2em; line-height: 0.72; font-weight: 400; float: left; margin: 0.08em 0.08em -0.05em 0; color: var(--accent); }`;
   const meta = he([post.dateLong || post.date, (post.tags || []).join(", ")].filter(Boolean).join(" · "));
   const enhCss = ENHANCEMENTS.filter(n => existsSync(join(REPO, "shared", `${n}.css`)))
     .map(n => `  <link rel="stylesheet" href="/shared/${n}.css"/>`).join("\n");
@@ -209,7 +214,7 @@ ${dropcapCss}
   <main class="post">
     <div class="meta">${meta}</div>
     <h1>${he(post.title)}</h1>
-    <div class="prose"${dropcap ? ` data-dropcap="${dropcap}"` : ""}>${bodyHtml}</div>
+    <div class="prose">${bodyOut}</div>
     <a class="back" href="../../#/writing">← all writing</a>
   </main>
   <footer class="post-footer">Written by hand · <a href="/acknowledgements/">acknowledgements</a> · © ${new Date().getFullYear()} Arslan Kazmi</footer>
