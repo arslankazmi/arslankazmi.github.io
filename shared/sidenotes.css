@@ -9,6 +9,19 @@
    SPA article contexts all use .prose, and this file is loaded in all of them). */
 .prose img { max-width: 100%; height: auto; }
 
+/* Figures — centered image with a caption below (loaded in every .prose context). The caption is
+   also where a visible credit line goes: wrap it in <cite> for the muted, italicised source. */
+.prose figure { margin: 1.8rem 0; text-align: center; }
+.prose figure img { display: block; margin: 0 auto; }
+.prose figure figcaption {
+  margin-top: 0.6rem;
+  font-family: var(--font-body, inherit);
+  font-size: 0.85rem;
+  line-height: 1.45;
+  color: var(--fg2, #666);
+}
+.prose figure figcaption cite { font-style: italic; }
+
 /* Footnote reference markers (marked-footnote: <sup><a data-footnote-ref>). */
 .prose a[data-footnote-ref] {
   text-decoration: none;

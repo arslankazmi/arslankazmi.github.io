@@ -193,6 +193,10 @@ ${enhCss}
     .post .prose h2, .post .prose h3 { font-family: var(--font-display, Georgia, serif); margin-top: 1.6em; }
     .post .prose pre { overflow:auto; padding:14px; border-radius:8px; background:rgba(127,127,127,.12); }
     .post img { max-width: 100%; height: auto; }
+    .post .prose figure { margin: 1.8rem 0; text-align: center; }
+    .post .prose figure img { display: block; margin: 0 auto; }
+    .post .prose figure figcaption { margin-top: 0.6rem; font-family: var(--font-body, inherit); font-size: 0.85rem; line-height: 1.45; color: var(--fg2, #666); }
+    .post .prose figure figcaption cite { font-style: italic; }
     .post .back { font-family: var(--font-mono, monospace); font-size: 13px; display:inline-block; margin-top:40px; }
     .post-nav { position: sticky; top: 0; z-index: 50; display:flex; align-items:center; justify-content:space-between; gap:16px; padding:14px 24px; border-bottom:1px solid var(--border, rgba(127,127,127,.25)); background:${navBg}; backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px); }
     .post-nav .brand { font-family: var(--font-display, Georgia, serif); font-weight:700; font-size:18px; color:var(--fg1, inherit); text-decoration:none; }
