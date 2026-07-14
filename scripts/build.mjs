@@ -245,7 +245,7 @@ async function main() {
   log(`snapshot: ${repos.length} repos, ${stats.length} stat tiles`);
 
   // 3. copy served tree
-  for (const item of ["assets", "shared", "dev", "personal", "posts", "acknowledgements"]) {
+  for (const item of ["assets", "shared", "dev", "personal", "posts", "acknowledgements", "fun"]) {
     if (existsSync(join(REPO, item))) cpSync(join(REPO, item), join(OUT, item), { recursive: true });
   }
   for (const f of ["index.html", ".nojekyll"]) {

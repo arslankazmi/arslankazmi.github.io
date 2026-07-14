@@ -17,6 +17,7 @@ function TopNav({ route, onNavigate, plain, onPlain, hasWriting, hasNotebook, ha
              className={route === it.id ? "active" : ""}
              onClick={() => onNavigate(it.id)}>{it.label}</a>
         ))}
+        <a href="../fun/">Fun ↗</a>
       </div>
       <div className="right">
         <button className="plain-toggle" onClick={onPlain} aria-pressed={plain} title="Plain text view">▢ plain</button>

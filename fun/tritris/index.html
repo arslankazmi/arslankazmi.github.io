@@ -1,0 +1,211 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <title>Tritris · a T-shaped Tetris · arslan.land</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"/>
+  <meta name="description" content="Tritris — a Tetris twist on a T-shaped playfield. Rotate the whole board, not the piece; fill three arms without jamming the junction. Plays in your browser."/>
+  <link rel="icon" type="image/svg+xml" href="/assets/favicon.svg"/>
+  <!-- Personal (paper) theme: fonts + tokens for the page chrome. The playfield keeps its own dark palette. -->
+  <link rel="stylesheet" href="https://arslankazmi.github.io/ak-design/dist/personal.css"/>
+  <style>
+    :root { --pf: #101218; }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; }
+    body {
+      background: var(--bg, #edece4);
+      color: var(--fg1, #1a1a1a);
+      font-family: var(--font-body, system-ui, sans-serif);
+      min-height: 100vh;
+      -webkit-tap-highlight-color: transparent;
+      touch-action: manipulation;
+    }
+    .wrap { max-width: 1000px; margin: 0 auto; padding: 16px 16px 40px; }
+
+    .topbar { display: flex; align-items: center; gap: 12px; margin-bottom: 14px; flex-wrap: wrap; }
+    .topbar .brand { display: flex; align-items: baseline; gap: 10px; margin-right: auto; }
+    .topbar h1 {
+      font-family: var(--font-display, Georgia, serif);
+      font-size: clamp(24px, 5vw, 34px); margin: 0; letter-spacing: -0.02em; line-height: 1;
+    }
+    .topbar .tag { font-family: var(--font-mono, monospace); font-size: 12px; color: var(--fg2, #666); }
+    .topbar .sp { flex: 0 0 auto; }
+    .iconbtn, .textbtn {
+      font-family: var(--font-mono, monospace); font-size: 13px;
+      border: 1px solid var(--border-strong, #cfc9bb); background: var(--bg-elevated, #fff);
+      color: var(--fg1, #1a1a1a); border-radius: 10px; padding: 8px 12px; cursor: pointer;
+      transition: transform var(--dur-fast, 120ms), background var(--dur-fast, 120ms);
+    }
+    .iconbtn:hover, .textbtn:hover { transform: translateY(-1px); background: var(--accent-soft, #e8f3f2); }
+    .topbar a.textbtn { text-decoration: none; }
+
+    .stage { display: flex; gap: 20px; align-items: flex-start; flex-wrap: wrap; justify-content: center; }
+    .boardbox {
+      position: relative; background: var(--pf); border-radius: 16px; padding: 10px;
+      box-shadow: var(--shadow-lg, 0 12px 40px rgba(0,0,0,0.18));
+      border: 1px solid rgba(0,0,0,0.15);
+      flex: 1 1 460px; max-width: 680px;
+      display: flex; justify-content: center;
+    }
+    canvas#play { display: block; width: 100%; height: auto; border-radius: 8px; }
+    /* Zoomed mode uses a tall portrait canvas; hug it and constrain by height so a
+       single arm fills the frame without exploding the page vertically. */
+    .boardbox.zoomed { flex: 0 0 auto; max-width: 100%; }
+    .boardbox.zoomed canvas#play { width: auto; height: min(76vh, 720px); max-width: 100%; }
+
+    /* HUD */
+    .hud { flex: 0 0 200px; display: flex; flex-direction: column; gap: 14px; min-width: 170px; }
+    .card {
+      background: var(--bg-elevated, #fff); border: 1px solid var(--border, #e2ddd0);
+      border-radius: 14px; padding: 14px 16px; box-shadow: var(--shadow-sm, 0 2px 8px rgba(0,0,0,0.06));
+    }
+    .stat { display: flex; justify-content: space-between; align-items: baseline; margin: 4px 0; }
+    .stat .k { font-family: var(--font-mono, monospace); font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--fg3, #999); }
+    .stat .v { font-family: var(--font-display, Georgia, serif); font-size: 26px; font-weight: 700; }
+    .nextwrap { display: flex; flex-direction: column; align-items: center; gap: 8px; }
+    .nextwrap .k { font-family: var(--font-mono, monospace); font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--fg3, #999); align-self: flex-start; }
+    canvas#next { width: 110px; height: 88px; border-radius: 8px; }
+    .legend { font-family: var(--font-mono, monospace); font-size: 11px; line-height: 1.7; color: var(--fg2, #666); }
+    .legend b { color: var(--fg1, #1a1a1a); font-weight: 600; }
+
+    /* overlays */
+    .overlay {
+      position: absolute; inset: 10px; border-radius: 8px; z-index: 5;
+      display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center;
+      background: rgba(10, 12, 18, 0.9); color: #e1e4eb; padding: 24px; gap: 12px;
+      backdrop-filter: blur(3px);
+    }
+    .overlay.hidden { display: none; }
+    .overlay h2 { font-family: var(--font-display, Georgia, serif); margin: 0; font-size: clamp(28px, 6vw, 44px); color: #fff; }
+    .overlay p { margin: 0; font-family: var(--font-mono, monospace); font-size: 13px; color: #b7bdca; max-width: 30ch; line-height: 1.6; }
+    .overlay .keys { display: grid; grid-template-columns: auto 1fr; gap: 4px 14px; font-family: var(--font-mono, monospace); font-size: 12px; color: #cdd2dd; text-align: left; margin: 4px 0; }
+    .overlay .keys b { color: #fff; }
+    .overlay .start { font-family: var(--font-mono, monospace); font-size: 13px; color: #8ee6c9; margin-top: 6px; }
+    .overlay .primary {
+      font-family: var(--font-mono, monospace); font-size: 14px; border: 0; cursor: pointer;
+      background: #178e8b; color: #fff; border-radius: 10px; padding: 10px 20px; margin-top: 6px;
+    }
+
+    /* touch controls */
+    .controls { margin-top: 18px; display: flex; gap: 16px; justify-content: center; align-items: center; flex-wrap: wrap; }
+    .cluster { display: flex; flex-direction: column; align-items: center; gap: 6px; }
+    .cluster .lab { font-family: var(--font-mono, monospace); font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--fg3, #999); }
+    .cluster .row { display: flex; gap: 8px; }
+    .pad {
+      width: 56px; height: 56px; border-radius: 14px; border: 1px solid var(--border-strong, #cfc9bb);
+      background: var(--bg-elevated, #fff); color: var(--fg1, #1a1a1a); font-size: 22px; cursor: pointer;
+      display: flex; align-items: center; justify-content: center; user-select: none;
+      box-shadow: var(--shadow-sm, 0 2px 8px rgba(0,0,0,0.06)); transition: transform var(--dur-fast, 120ms), background var(--dur-fast, 120ms);
+    }
+    .pad:active { transform: translateY(2px); background: var(--accent-soft, #e8f3f2); }
+    .pad.turn { border-color: var(--accent, #178e8b); color: var(--accent, #178e8b); }
+
+    footer.foot { margin-top: 30px; text-align: center; font-family: var(--font-mono, monospace); font-size: 12px; color: var(--fg2, #666); }
+    footer.foot a { color: var(--accent, #178e8b); }
+
+    @media (max-width: 560px) {
+      .pad { width: 50px; height: 50px; font-size: 20px; }
+      .hud { flex-basis: 100%; flex-direction: row; flex-wrap: wrap; }
+      .card { flex: 1 1 120px; }
+      .legend { display: none; }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="topbar">
+      <div class="brand">
+        <h1>Tritris</h1>
+        <span class="tag">rotate the board, not the piece</span>
+      </div>
+      <button id="viewBtn" class="textbtn" title="Toggle full / zoomed view (V)">▦ full</button>
+      <button id="muteBtn" class="iconbtn" title="Mute (M)" aria-pressed="false">🔊</button>
+      <a class="textbtn" href="../index.html">← Fun</a>
+    </div>
+
+    <div class="stage">
+      <div class="boardbox">
+        <canvas id="play" width="640" height="640"></canvas>
+
+        <div id="titleOverlay" class="overlay">
+          <h2>Tritris</h2>
+          <p>Three arms, one shared junction. Pieces fall into whichever arm points down — <b>rotate the whole field</b> to aim.</p>
+          <div class="keys">
+            <b>← →</b><span>move piece</span>
+            <b>↑ / W</b><span>rotate piece</span>
+            <b>↓ / S</b><span>soft drop</span>
+            <b>Space</b><span>hard drop</span>
+            <b>Shift + ← →</b><span>rotate the field</span>
+            <b>V</b><span>full / zoomed view</span>
+            <b>Tab · M · P</b><span>minimap · mute · pause</span>
+          </div>
+          <div class="start">press any key or tap to start</div>
+        </div>
+
+        <div id="overOverlay" class="overlay hidden">
+          <h2>Pieces crossed</h2>
+          <p>A stack backed up into the junction. Final score <b id="finalScore">0</b>.</p>
+          <button id="restartBtn" class="primary">Play again (R)</button>
+        </div>
+
+        <div id="pauseOverlay" class="overlay hidden">
+          <h2>Paused</h2>
+          <p>Press P to resume.</p>
+        </div>
+      </div>
+
+      <div class="hud">
+        <div class="card">
+          <div class="stat"><span class="k">Score</span><span class="v" id="score">0</span></div>
+          <div class="stat"><span class="k">Level</span><span class="v" id="level">1</span></div>
+          <div class="stat"><span class="k">Lines</span><span class="v" id="lines">0</span></div>
+        </div>
+        <div class="card nextwrap">
+          <span class="k">Next</span>
+          <canvas id="next" width="110" height="88"></canvas>
+        </div>
+        <div class="card legend">
+          <b>Shift + ← →</b> turns the field<br>
+          <b>V</b> full / zoomed &nbsp; <b>Tab</b> minimap<br>
+          <b>↑</b> rotate &nbsp; <b>Space</b> hard drop<br>
+          <b>M</b> mute &nbsp; <b>P</b> pause &nbsp; <b>R</b> restart
+        </div>
+      </div>
+    </div>
+
+    <!-- On-screen controls (touch + click). -->
+    <div class="controls">
+      <div class="cluster">
+        <span class="lab">turn field</span>
+        <div class="row">
+          <button class="pad turn" id="btn-turnL" aria-label="Rotate field counter-clockwise">↺</button>
+          <button class="pad turn" id="btn-turnR" aria-label="Rotate field clockwise">↻</button>
+        </div>
+      </div>
+      <div class="cluster">
+        <span class="lab">move</span>
+        <div class="row">
+          <button class="pad" id="btn-left" aria-label="Move left">◀</button>
+          <button class="pad" id="btn-soft" aria-label="Soft drop">▼</button>
+          <button class="pad" id="btn-right" aria-label="Move right">▶</button>
+        </div>
+      </div>
+      <div class="cluster">
+        <span class="lab">piece</span>
+        <div class="row">
+          <button class="pad" id="btn-rotate" aria-label="Rotate piece">⟳</button>
+          <button class="pad" id="btn-hard" aria-label="Hard drop">⤓</button>
+        </div>
+      </div>
+    </div>
+
+    <footer class="foot">
+      A native HTML5 port of <a href="https://github.com/arslankazmi/tritris">Tritris</a> — the
+      Python/Pygame original. Part of <a href="../index.html">Fun</a>.
+    </footer>
+  </div>
+
+  <script src="engine.js"></script>
+  <script src="main.js"></script>
+</body>
+</html>
