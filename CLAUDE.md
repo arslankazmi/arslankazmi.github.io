@@ -45,6 +45,38 @@ opening letter gets one automatically — no restriction, nothing to do. The dro
 the SPA article view (`personal/styles.css`) and the standalone static page
 (`scripts/build.mjs postPage()`).
 
+## Images & cartoons
+
+**Every new post ships with at least one xkcd-style stick-figure cartoon, drawn or ideated by the
+author.** This is a hard rule — *do not publish a post without one*. At publish time, remind the
+author to draw/add the cartoon before the merge, and offer to ideate: pitch the gag + a
+panel-by-panel breakdown (and optionally a rough SVG storyboard) so they never start from a blank
+page. The author photographs/scans the final drawing and it becomes the post's figure.
+
+**Paths (the one gotcha):** always reference images with a **root-absolute path** —
+`/assets/img/<slug>/name.ext`. Never relative (`../`): static post pages sit 3 dirs deep
+(`/personal/p/<slug>/`) while the hash-routed SPA resolves 1 dir deep (`/personal/`), so only
+`/assets/...` resolves in both. Drop files under `assets/img/<slug>/` (the whole `assets/` tree ships
+to `_public/` automatically). Inline `<svg>` diagrams may be embedded directly in the markdown — they
+render in both contexts too.
+
+**Figure markup** (marked passes raw HTML through; `.prose figure` / `figcaption` are styled in
+`shared/sidenotes.css` + the inline block in `build.mjs postPage()`):
+
+```html
+<figure>
+  <img src="/assets/img/<slug>/panel.png" alt="describe the cartoon">
+  <figcaption>Optional caption. <cite>Credit</cite></figcaption>
+</figure>
+```
+
+Or plain `![alt](/assets/img/<slug>/name.png)` when no caption is needed. Images get gwern-style
+hover-zoom for free.
+
+**Attribution:** the author's own cartoons/drawings need **no** credit line — they're original work.
+Any *sourced* image (public-domain vintage art, openly-licensed photos) must get a `<cite>` credit in
+the caption **and** a line in `ASSET_CREDITS.md` + the acknowledgements page (`acknowledgements/index.html`).
+
 ## Editorial policy
 
 - **Light touch** — the author's exact words; fix spelling/grammar only; strip Obsidian syntax
