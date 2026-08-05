@@ -6,6 +6,7 @@ blurb: A note-taking method built for retrieval and comparison — structure eac
 read: 4 min
 featured: false
 draft: true
+publish: 2026-08-13
 ---
 
 I'll be going over a particular note-taking strategy that I use in reading scientific papers. It was initially developed in conducting the research for the literature review section of my Master's thesis.

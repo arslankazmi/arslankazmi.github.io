@@ -1,0 +1,71 @@
+name: Scheduled publishing
+
+# Flip any post whose front-matter `publish:` date has arrived (see
+# scripts/publish-scheduled.mjs) from draft to live, then deploy. Runs daily on
+# a cron and can be triggered manually. Posts publish on their date even without
+# a cartoon; a reminder issue is opened for each so art can be added later.
+on:
+  schedule:
+    - cron: "0 14 * * *" # daily 14:00 UTC
+  workflow_dispatch:
+
+permissions:
+  contents: write # commit the flipped drafts
+  issues: write # open cartoon-reminder issues
+  actions: write # dispatch deploy.yml
+
+concurrency:
+  group: schedule-publish
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Flip due scheduled drafts
+        run: node scripts/publish-scheduled.mjs
+
+      - name: Count newly published
+        id: result
+        run: echo "count=$(jq 'length' published.json)" >> "$GITHUB_OUTPUT"
+
+      - name: Commit, notify, deploy
+        if: steps.result.outputs.count != '0'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+
+          # Repo-local identity (see CLAUDE.md — never the work email).
+          git config user.name "scheduled-publish[bot]"
+          git config user.email "akazmi.public@gmail.com"
+          git add posts/
+          git commit -m "chore: auto-publish scheduled post(s)"
+          git push
+
+          # One cartoon-reminder issue per newly published post.
+          jq -c '.[]' published.json | while read -r post; do
+            title=$(jq -r '.title' <<<"$post")
+            path=$(jq -r '.path'  <<<"$post")
+            slug=$(jq -r '.slug'  <<<"$post")
+            side=$(jq -r '.side'  <<<"$post")
+            body=$(printf '%s\n' \
+              "Auto-published on schedule without a cartoon yet." \
+              "" \
+              "Add at least one xkcd-style stick-figure cartoon per CLAUDE.md (§ Images & cartoons)." \
+              "" \
+              "- Post: \`$path\`" \
+              "- Live: \`/$side/p/$slug/\`" \
+              "- Drop art under \`assets/img/$slug/\`, referenced with a root-absolute \`/assets/...\` path.")
+            gh issue create --title "🎨 Cartoon needed: $title" --body "$body"
+          done
+
+          # A push made with GITHUB_TOKEN does NOT trigger deploy.yml's on:push,
+          # so dispatch it explicitly. It builds from main HEAD, which now
+          # includes the auto-publish commit above.
+          gh workflow run deploy.yml --ref main

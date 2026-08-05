@@ -2,3 +2,4 @@ node_modules/
 _public/
 .DS_Store
 *.log
+published.json

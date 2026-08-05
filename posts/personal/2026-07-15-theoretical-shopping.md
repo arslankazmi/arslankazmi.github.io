@@ -6,6 +6,7 @@ blurb: A habit I call theoretical shopping — doing the research to choose the 
 read: 3 min
 featured: false
 draft: true
+publish: 2026-08-05
 ---
 
 I've been thinking a lot about something I've taken to calling "theoretical shopping".[^when] There are a lot of things over the years that I might want to buy, or replace versions of things that I'm currently using, like my phone or laptop.

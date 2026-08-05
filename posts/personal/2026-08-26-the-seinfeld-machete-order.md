@@ -6,6 +6,7 @@ blurb: A viewing order for a long sitcom — start from both ends and work towar
 read: 2 min
 featured: false
 draft: true
+publish: 2026-08-26
 ---
 
 I've been re-watching Seinfeld in a certain order. If the episode number is *i*, and there are *n* episodes, I watch in this order:
