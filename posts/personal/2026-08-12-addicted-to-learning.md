@@ -6,6 +6,7 @@ blurb: On the small, specific pleasure of practicing something until it suddenly
 read: 2 min
 featured: false
 draft: true
+publish: 2026-08-13
 ---
 
 For almost a week I'd been doing daily challenges in a drawing app, and it had been going great.

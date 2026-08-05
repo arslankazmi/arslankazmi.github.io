@@ -14,7 +14,7 @@ const here = dirname(fileURLToPath(import.meta.url));
 const REPO = join(here, "..");
 const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
-function parseFront(raw) {
+export function parseFront(raw) {
   const m = raw.match(/^---\s*\r?\n([\s\S]*?)\r?\n---\s*/);
   const fm = {};
   if (!m) return fm;

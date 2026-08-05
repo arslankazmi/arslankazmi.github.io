@@ -6,6 +6,7 @@ blurb: Delegating more of the coding to AI made the output better and the work f
 read: 3 min
 featured: false
 draft: true
+publish: 2026-08-05
 ---
 
 *Part two of a three-part series on AI and craft — after [AI Dependence and the Deskilling of Developers](/dev/p/ai-dependence-deskilling-developers/).*

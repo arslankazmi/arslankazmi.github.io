@@ -6,6 +6,7 @@ blurb: A code monkey, a pair programmer, an instructor — three distinct ways I
 read: 3 min
 featured: true
 draft: true
+publish: 2026-08-09
 ---
 
 *Part three of a three-part series on AI and craft — after [AI Dependence and the Deskilling of Developers](/dev/p/ai-dependence-deskilling-developers/) and [Losing the Hands-On Feeling](/dev/p/losing-the-hands-on-feeling/).*

@@ -23,6 +23,23 @@ no-JS baseline and a standalone HTML page per post.
   GitHub Pages. Publish a post via a branch → PR → merge to `main`.
 - Repo-local git email is `akazmi.public@gmail.com` (don't touch global config).
 
+## Scheduled publishing
+
+A post can be set to publish itself on a date instead of being merged live by hand. Add a
+`publish: YYYY-MM-DD` line to its front-matter **alongside** `draft: true`. A daily cron
+(`.github/workflows/schedule-publish.yml`, 14:00 UTC; also `workflow_dispatch` for a manual/first
+run) invokes `scripts/publish-scheduled.mjs`, which — for every post whose `publish` date has arrived
+— removes the `draft: true` line, sets `date:` to the `publish` value (the post dates to its real
+go-live day), commits, opens a **cartoon-reminder issue** for each, and dispatches `deploy.yml`.
+
+- **Opt-in only**: a post is eligible **only** if it has both `draft: true` and a valid `publish:`
+  date. Drafts without `publish:` (e.g. ones still being written) are never touched.
+- `publish:` stays in the front-matter after flipping as an audit trail; the build ignores it.
+- Don't rely on `date:` or the filename to schedule — they carry stale placeholder dates. `publish:`
+  is the only signal.
+- The GITHUB_TOKEN commit can't re-trigger `deploy.yml` (`on: push`), so the workflow dispatches the
+  deploy itself — don't "fix" that into a plain push.
+
 ## Authoring a post
 
 - File: `posts/{dev,personal}/YYYY-MM-DD-slug.md`.
@@ -48,10 +65,14 @@ the SPA article view (`personal/styles.css`) and the standalone static page
 ## Images & cartoons
 
 **Every new post ships with at least one xkcd-style stick-figure cartoon, drawn or ideated by the
-author.** This is a hard rule — *do not publish a post without one*. At publish time, remind the
-author to draw/add the cartoon before the merge, and offer to ideate: pitch the gag + a
-panel-by-panel breakdown (and optionally a rough SVG storyboard) so they never start from a blank
+author.** For a **manual** publish this is a hard rule — *do not merge a post without one*: at publish
+time, remind the author to draw/add the cartoon before the merge, and offer to ideate: pitch the gag +
+a panel-by-panel breakdown (and optionally a rough SVG storyboard) so they never start from a blank
 page. The author photographs/scans the final drawing and it becomes the post's figure.
+
+For a **scheduled auto-publish** (see § Scheduled publishing) the post goes live on its date even
+without a cartoon, and the workflow opens a "🎨 Cartoon needed" issue so the art is added as a
+follow-up — the reminder becomes that issue rather than a merge blocker.
 
 **Paths (the one gotcha):** always reference images with a **root-absolute path** —
 `/assets/img/<slug>/name.ext`. Never relative (`../`): static post pages sit 3 dirs deep
