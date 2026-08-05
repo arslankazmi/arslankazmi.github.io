@@ -1,6 +1,27 @@
 {
   "dev": [
     {
+      "slug": "losing-the-hands-on-feeling",
+      "side": "dev",
+      "title": "Losing the Hands-On Feeling",
+      "date": "Aug 2026",
+      "dateLong": "Aug 5, 2026",
+      "iso": "2026-08-05",
+      "tags": [
+        "ai",
+        "software-engineering",
+        "craft",
+        "notebook"
+      ],
+      "blurb": "Delegating more of the coding to AI made the output better and the work feel foreign — and what I'm doing about it.",
+      "read": "3 min",
+      "featured": false,
+      "draft": false,
+      "publish": "2026-08-05",
+      "type": "post",
+      "path": "posts/dev/2026-08-01-losing-the-hands-on-feeling.md"
+    },
+    {
       "slug": "ai-dependence-deskilling-developers",
       "side": "dev",
       "title": "AI Dependence and the Deskilling of Developers",
@@ -17,6 +38,7 @@
       "read": "7 min",
       "featured": true,
       "draft": false,
+      "publish": "",
       "type": "post",
       "path": "posts/dev/2026-07-13-ai-dependence-deskilling-developers.md"
     },
@@ -37,6 +59,7 @@
       "read": "5 min",
       "featured": true,
       "draft": false,
+      "publish": "",
       "type": "post",
       "path": "posts/dev/2026-07-06-ascii-asterisk.md"
     },
@@ -56,11 +79,31 @@
       "read": "4 min",
       "featured": true,
       "draft": false,
+      "publish": "",
       "type": "post",
       "path": "posts/dev/2026-06-10-sidenotes-and-previews.md"
     }
   ],
   "personal": [
+    {
+      "slug": "theoretical-shopping",
+      "side": "personal",
+      "title": "Theoretical Shopping",
+      "date": "Aug 2026",
+      "dateLong": "Aug 5, 2026",
+      "iso": "2026-08-05",
+      "tags": [
+        "gear",
+        "philosophy"
+      ],
+      "blurb": "A habit I call theoretical shopping — doing the research to choose the best product for a purpose, without necessarily buying it.",
+      "read": "3 min",
+      "featured": false,
+      "draft": false,
+      "publish": "2026-08-05",
+      "type": "post",
+      "path": "posts/personal/2026-07-15-theoretical-shopping.md"
+    },
     {
       "slug": "stop-consuming-start-making",
       "side": "personal",
@@ -73,10 +116,11 @@
         "creativity",
         "personal-growth"
       ],
-      "blurb": "A lifetime of consuming without making — and the quick, ugly WarioWare microgame that finally broke the pattern.",
+      "blurb": "A lifetime of consuming without making drives an urge to create.",
       "read": "3 min",
       "featured": true,
       "draft": false,
+      "publish": "",
       "type": "post",
       "path": "posts/personal/2026-07-13-stop-consuming-start-making.md"
     },
@@ -94,6 +138,7 @@
       "read": "3 min",
       "featured": false,
       "draft": false,
+      "publish": "",
       "type": "post",
       "path": "posts/personal/2026-06-10-a-quiet-demo.md"
     }

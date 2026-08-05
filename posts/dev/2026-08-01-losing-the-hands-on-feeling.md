@@ -5,7 +5,6 @@ tags: [ai, software-engineering, craft, notebook]
 blurb: Delegating more of the coding to AI made the output better and the work feel foreign — and what I'm doing about it.
 read: 3 min
 featured: false
-draft: true
 publish: 2026-08-05
 ---
 

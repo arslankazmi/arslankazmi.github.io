@@ -5,7 +5,6 @@ tags: [gear, philosophy]
 blurb: A habit I call theoretical shopping — doing the research to choose the best product for a purpose, without necessarily buying it.
 read: 3 min
 featured: false
-draft: true
 publish: 2026-08-05
 ---
 

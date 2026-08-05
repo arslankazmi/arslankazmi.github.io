@@ -5,7 +5,6 @@ tags: [tv, math, notebook]
 blurb: A viewing order for a long sitcom — start from both ends and work toward the middle.
 read: 2 min
 featured: false
-draft: true
 publish: 2026-08-26
 ---
 

@@ -25,26 +25,29 @@ no-JS baseline and a standalone HTML page per post.
 
 ## Scheduled publishing
 
-A post can be set to publish itself on a date instead of being merged live by hand. Add a
-`publish: YYYY-MM-DD` line to its front-matter **alongside** `draft: true`. A daily cron
-(`.github/workflows/schedule-publish.yml`, 14:00 UTC; also `workflow_dispatch` for a manual/first
-run) invokes `scripts/publish-scheduled.mjs`, which — for every post whose `publish` date has arrived
-— removes the `draft: true` line and sets `date:` to the `publish` value (the post dates to its real
-go-live day). The workflow then pushes that flip to a temp branch, **opens and squash-merges a PR**,
-opens a **cartoon-reminder issue** for each post, and dispatches `deploy.yml`.
+Scheduling is **build-time** — CI never writes to the repo. Give a post a `publish: YYYY-MM-DD`
+front-matter field (and **remove** `draft:`). `scripts/build-index.mjs` holds any post with a future
+`publish` date out of the build (no index entry, no page, no listing) and uses `publish` as the post's
+effective date; once a build runs on/after that date, the post simply appears. So "publishing" is just
+**a deploy on/after the date**.
 
-- **Opt-in only**: a post is eligible **only** if it has both `draft: true` and a valid `publish:`
-  date. Drafts without `publish:` (e.g. ones still being written) are never touched.
-- `publish:` stays in the front-matter after flipping as an audit trail; the build ignores it.
-- Don't rely on `date:` or the filename to schedule — they carry stale placeholder dates. `publish:`
-  is the only signal.
-- `main` is protected (the `protect-main` ruleset: changes must go through a PR). The workflow
-  therefore publishes via a temp branch + auto-merged PR — **don't "simplify" it into a direct
-  `git push` to `main`; that push is rejected** (`GH013`).
-- A PR merged by GITHUB_TOKEN can't re-trigger `deploy.yml` (`on: push`), so the workflow dispatches
-  the deploy itself.
-- Repo setting required: Settings → Actions → General → Workflow permissions = **Read and write**
-  (already enabled). Publishing also needs the ruleset's 0-approval PR rule to stay at 0 approvals.
+A daily cron (`.github/workflows/schedule-publish.yml`, 14:00 UTC; also `workflow_dispatch`) runs
+`scripts/published-today.mjs` to find posts whose `publish` date is **today**; if any, it opens a
+**cartoon-reminder issue** for each and dispatches `deploy.yml`. It makes no commits and opens no PRs,
+so `main`'s `protect-main` ruleset (PRs required) is never in the way — the only permissions it needs
+are `issues: write` + `actions: write`.
+
+- **`draft:` vs `publish:`** — `draft: true` = still being written, excluded from every build until
+  removed. `publish: <date>` = finished but scheduled, excluded only until the date. Use one or the
+  other, not both (a `draft: true` post stays hidden regardless of `publish:`).
+- **Effective date** = `publish` when set (not the stale `date:`/filename), so listings and sorting
+  show the real go-live day. `DRAFTS=1 npm run build` ignores the gate and shows everything.
+- **Any deploy reveals all due posts** (the gate is `publish <= today`), so a missed cron day
+  self-heals on the next deploy — nothing gets permanently stuck.
+- The dispatched `deploy.yml` does the actual build; a GITHUB_TOKEN-triggered event can't chain into
+  another workflow, which is why the cron dispatches it explicitly rather than relying on a push.
+- Not secret, just unlisted: like drafts, a scheduled post's raw `.md` is still copied to
+  `_public/posts/…` and fetchable by URL before its date — it's only kept out of the index and pages.
 
 ## Authoring a post
 

@@ -39,6 +39,13 @@ const long = (iso) => { const [y, mo, d] = iso.split("-"); return `${MONTHS[+mo 
 // listing) — unless DRAFTS=1 is set, which includes them for local preview (cf. Hugo --buildDrafts).
 const INCLUDE_DRAFTS = !!process.env.DRAFTS;
 
+// Scheduled publishing: a post with a `publish: YYYY-MM-DD` front-matter field is held out of the
+// build until that date arrives — its effective date becomes `publish`. This lets a post go live on
+// a date purely by being rebuilt that day (no commit flips it), which is how the daily deploy
+// publishes on schedule without CI ever writing to the repo. `publish` is ignored when DRAFTS=1
+// (local preview shows everything). Today is overridable for tests via PUBLISH_TODAY.
+const TODAY = (process.env.PUBLISH_TODAY || new Date().toISOString().slice(0, 10)).trim();
+
 function collect(repo, side) {
   const dir = join(repo, "posts", side);
   if (!existsSync(dir)) return [];
@@ -46,7 +53,8 @@ function collect(repo, side) {
     .filter((f) => f.endsWith(".md"))
     .map((f) => {
       const fm = parseFront(readFileSync(join(dir, f), "utf8"));
-      const iso = fm.date || (f.match(/^\d{4}-\d{2}-\d{2}/) || ["1970-01-01"])[0];
+      // Effective date = `publish` (the real go-live day) when set, else `date`, else the filename.
+      const iso = fm.publish || fm.date || (f.match(/^\d{4}-\d{2}-\d{2}/) || ["1970-01-01"])[0];
       return {
         slug: f.replace(/^\d{4}-\d{2}-\d{2}-/, "").replace(/\.md$/, ""),
         side,
@@ -59,11 +67,13 @@ function collect(repo, side) {
         read: fm.read || "",
         featured: fm.featured === "true",
         draft: fm.draft === "true",
+        publish: fm.publish || "",          // scheduled go-live date; "" = publish immediately
         type: fm.type || "post",            // "case-study" for client write-ups; "post" otherwise
         path: `posts/${side}/${f}`,
       };
     })
-    .filter((p) => INCLUDE_DRAFTS || !p.draft)
+    // Drop drafts, and scheduled posts whose publish date hasn't arrived yet (DRAFTS=1 shows all).
+    .filter((p) => INCLUDE_DRAFTS || (!p.draft && (!p.publish || p.publish <= TODAY)))
     .sort((a, b) => (a.iso < b.iso ? 1 : -1));
 }
 
