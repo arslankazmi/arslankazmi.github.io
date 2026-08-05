@@ -5,7 +5,6 @@ tags: [learning, making, notebook]
 blurb: On the small, specific pleasure of practicing something until it suddenly clicks.
 read: 2 min
 featured: false
-draft: true
 publish: 2026-08-13
 ---
 

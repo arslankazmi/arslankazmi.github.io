@@ -5,7 +5,6 @@ tags: [note-taking, research, productivity, notebook]
 blurb: A note-taking method built for retrieval and comparison — structure each source into a small set of categories, and you can line up any field across everything you've read.
 read: 4 min
 featured: false
-draft: true
 publish: 2026-08-13
 ---
 

@@ -1,17 +1,18 @@
 name: Scheduled publishing
 
-# Flip any post whose front-matter `publish:` date has arrived (see
-# scripts/publish-scheduled.mjs) from draft to live, then deploy. Runs daily on
-# a cron and can be triggered manually. Posts publish on their date even without
-# a cartoon; a reminder issue is opened for each so art can be added later.
+# Scheduled publishing is build-time: a post with a `publish: YYYY-MM-DD` field
+# is held out of the build until that date, then appears once a build runs (see
+# scripts/build-index.mjs). So "publishing" is just a deploy on/after the date —
+# this workflow NEVER writes to the repo (no commits, no PRs), which keeps main's
+# branch protection intact. Each day it checks whether any post's date is today;
+# if so it opens a cartoon-reminder issue for each and dispatches deploy.yml.
 on:
   schedule:
     - cron: "0 14 * * *" # daily 14:00 UTC
   workflow_dispatch:
 
 permissions:
-  contents: write # push the auto-publish branch
-  pull-requests: write # open + merge the auto-publish PR
+  contents: read # read posts to find today's; deploy.yml does the build
   issues: write # open cartoon-reminder issues
   actions: write # dispatch deploy.yml
 
@@ -28,50 +29,28 @@ jobs:
         with:
           node-version: 20
 
-      - name: Flip due scheduled drafts
-        run: node scripts/publish-scheduled.mjs
+      - name: Find posts going live today
+        run: node scripts/published-today.mjs
 
-      - name: Count newly published
+      - name: Count
         id: result
         run: echo "count=$(jq 'length' published.json)" >> "$GITHUB_OUTPUT"
 
-      - name: Publish via PR, notify, deploy
+      - name: Notify + deploy
         if: steps.result.outputs.count != '0'
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
           set -euo pipefail
 
-          # `main` is protected — changes must go through a PR (0 approvals
-          # required). So push the flip to a temp branch and squash-merge a PR
-          # rather than pushing to main directly. Repo-local identity only
-          # (see CLAUDE.md — never the work email).
-          branch="auto-publish/$(date -u +%Y%m%d)-${GITHUB_RUN_ID}"
-          git config user.name "scheduled-publish[bot]"
-          git config user.email "akazmi.public@gmail.com"
-          git checkout -b "$branch"
-          git add posts/
-          git commit -m "chore: auto-publish scheduled post(s)"
-          git push -u origin "$branch"
-
-          gh pr create --base main --head "$branch" \
-            --title "chore: auto-publish scheduled post(s)" \
-            --body "Automated by \`schedule-publish.yml\` — flips posts whose \`publish:\` date has arrived. See the run for details."
-
-          # Mergeability can lag just after creation; retry a few times.
-          for i in 1 2 3 4 5; do
-            if gh pr merge "$branch" --squash --delete-branch; then break; fi
-            echo "merge not ready (attempt $i), retrying…"; sleep 5
-          done
-
-          # One cartoon-reminder issue per newly published post.
+          # One cartoon-reminder issue per post going live today.
           jq -c '.[]' published.json | while read -r post; do
             title=$(jq -r '.title' <<<"$post")
             path=$(jq -r '.path'  <<<"$post")
             slug=$(jq -r '.slug'  <<<"$post")
             side=$(jq -r '.side'  <<<"$post")
             body=$(printf '%s\n' \
-              "Auto-published on schedule without a cartoon yet." \
+              "Went live today on schedule without a cartoon yet." \
               "" \
               "Add at least one xkcd-style stick-figure cartoon per CLAUDE.md (§ Images & cartoons)." \
               "" \
@@ -81,7 +60,7 @@ jobs:
             gh issue create --title "🎨 Cartoon needed: $title" --body "$body"
           done
 
-          # A PR merged by GITHUB_TOKEN does NOT trigger deploy.yml's on:push,
-          # so dispatch it explicitly. It builds from main HEAD, which now
-          # includes the merged auto-publish commit.
+          # Rebuild + deploy so today's posts appear. build-index.mjs gates by
+          # date at build time, so this deploy reveals every post now due. Any
+          # deploy reveals all due posts, so a missed day self-heals next run.
           gh workflow run deploy.yml --ref main

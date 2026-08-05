@@ -5,7 +5,6 @@ tags: [ai, software-engineering, learning, opinion]
 blurb: A code monkey, a pair programmer, an instructor — three distinct ways I want AI in my development work, and when each one fits.
 read: 3 min
 featured: true
-draft: true
 publish: 2026-08-09
 ---
 
