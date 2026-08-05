@@ -29,16 +29,22 @@ A post can be set to publish itself on a date instead of being merged live by ha
 `publish: YYYY-MM-DD` line to its front-matter **alongside** `draft: true`. A daily cron
 (`.github/workflows/schedule-publish.yml`, 14:00 UTC; also `workflow_dispatch` for a manual/first
 run) invokes `scripts/publish-scheduled.mjs`, which — for every post whose `publish` date has arrived
-— removes the `draft: true` line, sets `date:` to the `publish` value (the post dates to its real
-go-live day), commits, opens a **cartoon-reminder issue** for each, and dispatches `deploy.yml`.
+— removes the `draft: true` line and sets `date:` to the `publish` value (the post dates to its real
+go-live day). The workflow then pushes that flip to a temp branch, **opens and squash-merges a PR**,
+opens a **cartoon-reminder issue** for each post, and dispatches `deploy.yml`.
 
 - **Opt-in only**: a post is eligible **only** if it has both `draft: true` and a valid `publish:`
   date. Drafts without `publish:` (e.g. ones still being written) are never touched.
 - `publish:` stays in the front-matter after flipping as an audit trail; the build ignores it.
 - Don't rely on `date:` or the filename to schedule — they carry stale placeholder dates. `publish:`
   is the only signal.
-- The GITHUB_TOKEN commit can't re-trigger `deploy.yml` (`on: push`), so the workflow dispatches the
-  deploy itself — don't "fix" that into a plain push.
+- `main` is protected (the `protect-main` ruleset: changes must go through a PR). The workflow
+  therefore publishes via a temp branch + auto-merged PR — **don't "simplify" it into a direct
+  `git push` to `main`; that push is rejected** (`GH013`).
+- A PR merged by GITHUB_TOKEN can't re-trigger `deploy.yml` (`on: push`), so the workflow dispatches
+  the deploy itself.
+- Repo setting required: Settings → Actions → General → Workflow permissions = **Read and write**
+  (already enabled). Publishing also needs the ruleset's 0-approval PR rule to stay at 0 approvals.
 
 ## Authoring a post
 

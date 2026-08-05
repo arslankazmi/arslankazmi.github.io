@@ -10,7 +10,8 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: write # commit the flipped drafts
+  contents: write # push the auto-publish branch
+  pull-requests: write # open + merge the auto-publish PR
   issues: write # open cartoon-reminder issues
   actions: write # dispatch deploy.yml
 
@@ -34,19 +35,34 @@ jobs:
         id: result
         run: echo "count=$(jq 'length' published.json)" >> "$GITHUB_OUTPUT"
 
-      - name: Commit, notify, deploy
+      - name: Publish via PR, notify, deploy
         if: steps.result.outputs.count != '0'
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
           set -euo pipefail
 
-          # Repo-local identity (see CLAUDE.md — never the work email).
+          # `main` is protected — changes must go through a PR (0 approvals
+          # required). So push the flip to a temp branch and squash-merge a PR
+          # rather than pushing to main directly. Repo-local identity only
+          # (see CLAUDE.md — never the work email).
+          branch="auto-publish/$(date -u +%Y%m%d)-${GITHUB_RUN_ID}"
           git config user.name "scheduled-publish[bot]"
           git config user.email "akazmi.public@gmail.com"
+          git checkout -b "$branch"
           git add posts/
           git commit -m "chore: auto-publish scheduled post(s)"
-          git push
+          git push -u origin "$branch"
+
+          gh pr create --base main --head "$branch" \
+            --title "chore: auto-publish scheduled post(s)" \
+            --body "Automated by \`schedule-publish.yml\` — flips posts whose \`publish:\` date has arrived. See the run for details."
+
+          # Mergeability can lag just after creation; retry a few times.
+          for i in 1 2 3 4 5; do
+            if gh pr merge "$branch" --squash --delete-branch; then break; fi
+            echo "merge not ready (attempt $i), retrying…"; sleep 5
+          done
 
           # One cartoon-reminder issue per newly published post.
           jq -c '.[]' published.json | while read -r post; do
@@ -65,7 +81,7 @@ jobs:
             gh issue create --title "🎨 Cartoon needed: $title" --body "$body"
           done
 
-          # A push made with GITHUB_TOKEN does NOT trigger deploy.yml's on:push,
+          # A PR merged by GITHUB_TOKEN does NOT trigger deploy.yml's on:push,
           # so dispatch it explicitly. It builds from main HEAD, which now
-          # includes the auto-publish commit above.
+          # includes the merged auto-publish commit.
           gh workflow run deploy.yml --ref main
