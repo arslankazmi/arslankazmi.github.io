@@ -43,6 +43,9 @@
     a.card:hover { transform: translateY(-5px) rotate(-0.4deg); box-shadow: var(--shadow-lg, 0 18px 44px rgba(0,0,0,0.16)); }
     .card .thumb { aspect-ratio: 16 / 11; background: #101218; overflow: hidden; display: block; }
     .card .thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    /* the TRITRIS block wordmark is a wide transparent PNG — show it whole, centred. */
+    .card .thumb.logo { display: grid; place-items: center; padding: 22px 26px; }
+    .card .thumb.logo img { width: 100%; height: auto; object-fit: contain; }
 
     /* textless "coming soon" placeholders */
     .soon { pointer-events: none; opacity: 0.85; }
@@ -60,7 +63,7 @@
     <main class="grid">
       <!-- Tritris — the first toy -->
       <a class="card" href="./tritris/index.html" aria-label="Tritris">
-        <span class="thumb"><img src="./assets/tritris.svg" alt="Tritris"></span>
+        <span class="thumb logo"><img src="./assets/tritris-logo.png" alt="Tritris"></span>
       </a>
 
       <!-- placeholders: the wall keeps growing -->
