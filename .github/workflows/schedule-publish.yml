@@ -43,12 +43,23 @@ jobs:
         run: |
           set -euo pipefail
 
+          # Existing cartoon-issue titles (any state) — so a repeat run on a
+          # post's publish day (e.g. a manual trigger + the cron, or a rare
+          # double-fire) doesn't file a duplicate. Match against all states so a
+          # post whose issue was already resolved/closed isn't re-created.
+          existing=$(gh issue list --state all --limit 300 --json title -q '.[].title')
+
           # One cartoon-reminder issue per post going live today.
           jq -c '.[]' published.json | while read -r post; do
             title=$(jq -r '.title' <<<"$post")
             path=$(jq -r '.path'  <<<"$post")
             slug=$(jq -r '.slug'  <<<"$post")
             side=$(jq -r '.side'  <<<"$post")
+            issue_title="🎨 Cartoon needed: $title"
+            if grep -Fxq "$issue_title" <<<"$existing"; then
+              echo "skip (issue already exists): $issue_title"
+              continue
+            fi
             body=$(printf '%s\n' \
               "Went live today on schedule without a cartoon yet." \
               "" \
@@ -57,7 +68,7 @@ jobs:
               "- Post: \`$path\`" \
               "- Live: \`/$side/p/$slug/\`" \
               "- Drop art under \`assets/img/$slug/\`, referenced with a root-absolute \`/assets/...\` path.")
-            gh issue create --title "🎨 Cartoon needed: $title" --body "$body"
+            gh issue create --title "$issue_title" --body "$body"
           done
 
           # Rebuild + deploy so today's posts appear. build-index.mjs gates by
