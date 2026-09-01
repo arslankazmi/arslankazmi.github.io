@@ -25,6 +25,15 @@ const esc = (s) =>
 
 export const postUrl = (side, slug) => `${SITE}/${side}/p/${slug}/`;
 
+/** Plain-text excerpt for a fallback description (strips tags, trims to a word boundary). */
+export function excerpt(text, n = 160) {
+  const t = String(text ?? "").replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim();
+  if (t.length <= n) return t;
+  const cut = t.slice(0, n);
+  const at = cut.lastIndexOf(" ");
+  return (at > 40 ? cut.slice(0, at) : cut).replace(/[\s,;:.]+$/, "") + "…";
+}
+
 // YYYY-MM-DD -> RFC-822 (noon UTC avoids any TZ date roll).
 const rfc822 = (iso) => new Date(`${iso}T12:00:00Z`).toUTCString();
 
