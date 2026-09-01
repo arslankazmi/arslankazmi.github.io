@@ -52,7 +52,8 @@ are `issues: write` + `actions: write`.
 ## Authoring a post
 
 - File: `posts/{dev,personal}/YYYY-MM-DD-slug.md`.
-- Frontmatter: `title, date, tags, blurb, read, featured` (+ `draft: true` to keep it out of the build).
+- Frontmatter: `title, date, tags, blurb, read, featured` (+ `draft: true` to keep it out of the build,
+  `publish: YYYY-MM-DD` to schedule it, `image: /path` to override the social card).
 - Footnotes (`[^x]`) render as **margin sidenotes** on wide screens (`shared/sidenotes.js`),
   degrading to bottom footnotes when narrow or JS-off.
 
@@ -106,6 +107,26 @@ hover-zoom for free.
 **Attribution:** the author's own cartoons/drawings need **no** credit line — they're original work.
 Any *sourced* image (public-domain vintage art, openly-licensed photos) must get a `<cite>` credit in
 the caption **and** a line in `ASSET_CREDITS.md` + the acknowledgements page (`acknowledgements/index.html`).
+
+**Social cards use the cartoon.** A post's `og:image` is picked by `scripts/seo.mjs ogImageFor()`:
+explicit `image:` front-matter → first file in `assets/img/<slug>/` (the cartoon) → the site logo
+(`assets/logo-ak.png`) as fallback. So dropping a cartoon under `assets/img/<slug>/` automatically makes
+it the shared-link card — no extra step.
+
+## Discovery — feeds, sitemap, social cards
+
+All generated at build (`scripts/seo.mjs`, wired in `build.mjs`), absolute-URL'd against
+`SITE = https://arslankazmi.github.io`:
+
+- **RSS 2.0 feeds per side** — `/dev/feed.xml` and `/personal/feed.xml`, built from the post index
+  (summary/blurb items, newest-first). Auto-discovery `<link rel="alternate">` is in every post head and
+  the landing pages. (Feeds are summary-only for now; upgrading to full `<content:encoded>` would need the
+  post markdown rendered with absolute asset URLs.)
+- **Open Graph + Twitter cards** — emitted for every post (`postPage()`) and the three landing pages
+  (static heads in `dev/`, `personal/`, root `index.html`). Card is `summary_large_image` when a real
+  post image exists, else `summary` (logo). Canonical `<link>` points at the static `/<side>/p/<slug>/`.
+- **`sitemap.xml` + `robots.txt`** — sitemap lists landing/section pages + every published post
+  (`<lastmod>` = post date); robots allows all and points at the sitemap.
 
 ## Editorial policy
 

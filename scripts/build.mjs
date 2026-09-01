@@ -21,6 +21,7 @@ import { marked } from "marked";
 import markedFootnote from "marked-footnote";
 import * as esbuild from "esbuild";
 import { buildIndex } from "./build-index.mjs";
+import { rssFeed, sitemapXml, robotsTxt, ogTags, ogImageFor, postUrl } from "./seo.mjs";
 import { buildAnnotations } from "./annotations.mjs";
 import { devBlocks } from "../dev/blocks.mjs";
 import { personalBlocks } from "../personal/blocks.mjs";
@@ -172,6 +173,14 @@ function postPage(side, post, bodyHtml) {
     `    @font-face { font-family: 'dropcap'; src: url('../../../assets/dropcaps/GoudyInitialen.ttf') format('truetype'); font-display: swap; }\n`
     + `    .post .prose .dropcap { font-family: 'dropcap', var(--font-accent), 'Fraunces', serif; font-size: 5.2em; line-height: 0.72; font-weight: 400; float: left; margin: 0.08em 0.08em -0.05em 0; color: var(--accent); }`;
   const meta = he([post.dateLong || post.date, (post.tags || []).join(", ")].filter(Boolean).join(" · "));
+  // Social cards + canonical + feed autodiscovery. og:image prefers the post's
+  // cartoon (assets/img/<slug>/) and falls back to the site logo.
+  const seoHead = ogTags({
+    title: post.title, description: post.blurb, url: postUrl(side, post.slug),
+    image: ogImageFor(REPO, post), type: "article",
+    publishedTime: `${post.iso}T12:00:00Z`, siteName: site,
+  });
+  const feedLink = `<link rel="alternate" type="application/rss+xml" title="${site} feed" href="/${side}/feed.xml"/>`;
   const enhCss = ENHANCEMENTS.filter(n => existsSync(join(REPO, "shared", `${n}.css`)))
     .map(n => `  <link rel="stylesheet" href="/shared/${n}.css"/>`).join("\n");
   const enhJs = ENHANCEMENTS.map(n => `  <script src="/shared/${n}.js" defer></script>`).join("\n");
@@ -182,6 +191,8 @@ function postPage(side, post, bodyHtml) {
   <title>${he(post.title)} · ${site}</title>
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   ${post.blurb ? `<meta name="description" content="${he(post.blurb)}"/>` : ""}
+  ${seoHead}
+  ${feedLink}
   <link rel="icon" type="image/svg+xml" href="../../../assets/favicon.svg"/>
   <link rel="stylesheet" href="${css}"/>
 ${enhCss}
@@ -290,6 +301,17 @@ async function main() {
     }
   }
   log(`per-post pages: ${postCount}`);
+
+  // 6b. discovery: per-side RSS feeds, sitemap, robots
+  writeFileSync(join(OUT, "dev", "feed.xml"), rssFeed("dev", index.dev, {
+    title: "arslan.dev", description: "Developer writing by Arslan Kazmi — AI, craft, tools, and ML.",
+  }));
+  writeFileSync(join(OUT, "personal", "feed.xml"), rssFeed("personal", index.personal, {
+    title: "arslan.land", description: "Essays and notebook by Arslan Kazmi.",
+  }));
+  writeFileSync(join(OUT, "sitemap.xml"), sitemapXml(index));
+  writeFileSync(join(OUT, "robots.txt"), robotsTxt());
+  log(`feeds + sitemap + robots`);
 
   // 7. build-time link/doc/image preview annotations (internal · wikipedia · arxiv · file · image · OG)
   await buildAnnotations({
