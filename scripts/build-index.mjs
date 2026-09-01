@@ -68,6 +68,7 @@ function collect(repo, side) {
         featured: fm.featured === "true",
         draft: fm.draft === "true",
         publish: fm.publish || "",          // scheduled go-live date; "" = publish immediately
+        image: fm.image || "",              // optional og:image override (else cartoon → logo fallback)
         type: fm.type || "post",            // "case-study" for client write-ups; "post" otherwise
         path: `posts/${side}/${f}`,
       };
