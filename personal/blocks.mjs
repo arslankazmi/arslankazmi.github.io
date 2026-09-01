@@ -32,7 +32,7 @@ export function personalBlocks({ route, entries = [], current, currentMd, rp = {
   const books = rp.books || [], games = rp.games || {}, now = games.now || {};
   const b = [
     { t: "h1", text: "arslan.land" },
-    { t: "p", text: "I make things on the internet and write about why. A small site for essays, notes, and the occasional weeknote." },
+    { t: "p", text: "Turning incoherent thoughts into slightly less incoherent words. A small site for essays, notes, and the occasional weeknote." },
   ];
   const writing = entries.filter(e => !isNotebook(e));
   if (writing.length) b.push({ t: "h2", text: "Writing" }, { t: "table", head: ["piece", "date", "tag"], rows: writing.map(e => [{ text: e.title, href: `#/p/${e.slug}` }, e.date, e.tag || ""]) });

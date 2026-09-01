@@ -5,8 +5,8 @@ function Hero({ onNavigate }) {
       <div>
         <h1>
           Hi, I'm <span className="accent" style={{fontFamily: "var(--font-accent)", fontStyle: "italic"}}>Arslan</span>.<br/>
-          I make things <span className="marker">on the internet</span><br/>
-          and write about why.
+          Turning incoherent thoughts into<br/>
+          <span className="marker">slightly less incoherent</span> words.
         </h1>
         <p>
           A small site for essays, notes, and the occasional weeknote.
