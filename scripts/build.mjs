@@ -21,7 +21,7 @@ import { marked } from "marked";
 import markedFootnote from "marked-footnote";
 import * as esbuild from "esbuild";
 import { buildIndex } from "./build-index.mjs";
-import { rssFeed, sitemapXml, robotsTxt, ogTags, ogImageFor, postUrl } from "./seo.mjs";
+import { rssFeed, sitemapXml, robotsTxt, ogTags, ogImageFor, postUrl, excerpt } from "./seo.mjs";
 import { buildAnnotations } from "./annotations.mjs";
 import { devBlocks } from "../dev/blocks.mjs";
 import { personalBlocks } from "../personal/blocks.mjs";
@@ -176,7 +176,7 @@ function postPage(side, post, bodyHtml) {
   // Social cards + canonical + feed autodiscovery. og:image prefers the post's
   // cartoon (assets/img/<slug>/) and falls back to the site logo.
   const seoHead = ogTags({
-    title: post.title, description: post.blurb, url: postUrl(side, post.slug),
+    title: `${post.title} · ${site}`, description: post.blurb, url: postUrl(side, post.slug),
     image: ogImageFor(REPO, post), type: "article",
     publishedTime: `${post.iso}T12:00:00Z`, siteName: site,
   });
@@ -296,7 +296,11 @@ async function main() {
       const raw = readFileSync(join(REPO, post.path), "utf8").replace(/^---[\s\S]*?\r?\n---\r?\n?\s*/, "");
       const dir = join(OUT, side, "p", post.slug);
       mkdirSync(dir, { recursive: true });
-      writeFileSync(join(dir, "index.html"), postPage(side, post, marked.parse(raw)));
+      const bodyHtml = marked.parse(raw);
+      // Ensure every post has a real description: fall back to a content excerpt
+      // (feeds + og:description read post.blurb, so this fills both).
+      if (!post.blurb) post.blurb = excerpt(bodyHtml, 160);
+      writeFileSync(join(dir, "index.html"), postPage(side, post, bodyHtml));
       postCount++;
     }
   }
