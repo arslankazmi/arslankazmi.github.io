@@ -12,6 +12,7 @@
     "serve": "python3 -m http.server --directory _public 8080"
   },
   "devDependencies": {
+    "@resvg/resvg-js": "^2.6.2",
     "esbuild": "^0.28.0",
     "marked": "^18.0.5"
   },

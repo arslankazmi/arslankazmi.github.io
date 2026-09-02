@@ -9,9 +9,6 @@
    feeds/cards resolve off-site (feed readers and social scrapers don't know the
    origin). Canonical/static post URL is /<side>/p/<slug>/.
    ============================================================ */
-import { existsSync, readdirSync } from "node:fs";
-import { join } from "node:path";
-
 export const SITE = "https://arslankazmi.github.io";
 
 // Escape for both XML text and double-quoted attributes.
@@ -41,21 +38,13 @@ const absolutize = (p) =>
   /^https?:\/\//i.test(p) ? p : `${SITE}${p.startsWith("/") ? "" : "/"}${p}`;
 
 /**
- * Absolute og:image for a post, plus whether it's a "large" (landscape-ish)
- * card image. Priority: explicit `image:` front-matter → a cartoon under
- * assets/img/<slug>/ (the cartoon-per-post convention) → the site logo. SVG is
- * skipped (poor social-scraper support). Returns { url, large } or null.
+ * Absolute og:image for a post. Every post gets a generated 1200×630 card
+ * (see scripts/og-card.mjs), so the default is that card's URL; an explicit
+ * `image:` front-matter value overrides it. Always "large" (1.91:1) →
+ * summary_large_image. Returns { url, large }.
  */
-export function ogImageFor(repo, post) {
-  if (post.image) return { url: absolutize(post.image), large: true };
-  const dir = join(repo, "assets", "img", post.slug);
-  if (existsSync(dir)) {
-    const img = readdirSync(dir).filter((f) => /\.(png|jpe?g|webp|gif)$/i.test(f)).sort()[0];
-    if (img) return { url: `${SITE}/assets/img/${post.slug}/${img}`, large: true };
-  }
-  if (existsSync(join(repo, "assets", "logo-ak.png")))
-    return { url: `${SITE}/assets/logo-ak.png`, large: false }; // logo → small square card
-  return null;
+export function ogImageFor(post, cardUrl) {
+  return { url: post.image ? absolutize(post.image) : cardUrl, large: true };
 }
 
 /** Open Graph + Twitter Card + canonical <link>, as head markup. */
