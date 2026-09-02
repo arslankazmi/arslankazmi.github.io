@@ -22,6 +22,7 @@ import markedFootnote from "marked-footnote";
 import * as esbuild from "esbuild";
 import { buildIndex } from "./build-index.mjs";
 import { rssFeed, sitemapXml, robotsTxt, ogTags, ogImageFor, postUrl, excerpt } from "./seo.mjs";
+import { renderCard } from "./og-card.mjs";
 import { buildAnnotations } from "./annotations.mjs";
 import { devBlocks } from "../dev/blocks.mjs";
 import { personalBlocks } from "../personal/blocks.mjs";
@@ -177,7 +178,7 @@ function postPage(side, post, bodyHtml) {
   // cartoon (assets/img/<slug>/) and falls back to the site logo.
   const seoHead = ogTags({
     title: `${post.title} · ${site}`, description: post.blurb, url: postUrl(side, post.slug),
-    image: ogImageFor(REPO, post), type: "article",
+    image: ogImageFor(post, `${postUrl(side, post.slug)}card.png`), type: "article",
     publishedTime: `${post.iso}T12:00:00Z`, siteName: site,
   });
   const feedLink = `<link rel="alternate" type="application/rss+xml" title="${site} feed" href="/${side}/feed.xml"/>`;
@@ -301,6 +302,10 @@ async function main() {
       // (feeds + og:description read post.blurb, so this fills both).
       if (!post.blurb) post.blurb = excerpt(bodyHtml, 160);
       writeFileSync(join(dir, "index.html"), postPage(side, post, bodyHtml));
+      // 1200×630 social card (og:image) with the title baked in.
+      writeFileSync(join(dir, "card.png"), renderCard({
+        title: post.title, site: side === "dev" ? "arslan.dev" : "arslan.land", side,
+      }));
       postCount++;
     }
   }
@@ -316,6 +321,11 @@ async function main() {
   writeFileSync(join(OUT, "sitemap.xml"), sitemapXml(index));
   writeFileSync(join(OUT, "robots.txt"), robotsTxt());
   log(`feeds + sitemap + robots`);
+
+  // 6c. landing-page social cards (referenced from the static heads)
+  writeFileSync(join(OUT, "dev", "card.png"), renderCard({ title: "programming, AI & craft, and dev writing", site: "arslan.dev", side: "dev" }));
+  writeFileSync(join(OUT, "personal", "card.png"), renderCard({ title: "essays, a notebook, and slow thinking", site: "arslan.land", side: "personal" }));
+  writeFileSync(join(OUT, "card.png"), renderCard({ title: "the workshop and the writing", site: "Arslan Kazmi", side: "dev" }));
 
   // 7. build-time link/doc/image preview annotations (internal · wikipedia · arxiv · file · image · OG)
   await buildAnnotations({

@@ -108,10 +108,12 @@ hover-zoom for free.
 Any *sourced* image (public-domain vintage art, openly-licensed photos) must get a `<cite>` credit in
 the caption **and** a line in `ASSET_CREDITS.md` + the acknowledgements page (`acknowledgements/index.html`).
 
-**Social cards use the cartoon.** A post's `og:image` is picked by `scripts/seo.mjs ogImageFor()`:
-explicit `image:` front-matter → first file in `assets/img/<slug>/` (the cartoon) → the site logo
-(`assets/logo-ak.png`) as fallback. So dropping a cartoon under `assets/img/<slug>/` automatically makes
-it the shared-link card — no extra step.
+**Social cards are generated (1200×630).** Every post's `og:image` is a card rendered at build by
+`scripts/og-card.mjs` (`@resvg/resvg-js`, a build-only WASM dep) to `/<side>/p/<slug>/card.png` — the
+post title on a side-branded background, DejaVu fonts (see the deploy workflow's font step). The three
+landing pages get their own cards (`/dev/card.png`, `/personal/card.png`, `/card.png`). An explicit
+`image:` front-matter value overrides the generated card. (The in-article cartoon is separate now;
+compositing it into the card is a future enhancement.)
 
 ## Discovery — feeds, sitemap, social cards
 
@@ -123,8 +125,8 @@ All generated at build (`scripts/seo.mjs`, wired in `build.mjs`), absolute-URL'd
   the landing pages. (Feeds are summary-only for now; upgrading to full `<content:encoded>` would need the
   post markdown rendered with absolute asset URLs.)
 - **Open Graph + Twitter cards** — emitted for every post (`postPage()`) and the three landing pages
-  (static heads in `dev/`, `personal/`, root `index.html`). Card is `summary_large_image` when a real
-  post image exists, else `summary` (logo). Canonical `<link>` points at the static `/<side>/p/<slug>/`.
+  (static heads in `dev/`, `personal/`, root `index.html`). Always `summary_large_image` (the generated
+  1200×630 card is a real landscape image). Canonical `<link>` points at the static `/<side>/p/<slug>/`.
 - **`sitemap.xml` + `robots.txt`** — sitemap lists landing/section pages + every published post
   (`<lastmod>` = post date); robots allows all and points at the sitemap.
 

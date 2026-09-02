@@ -26,6 +26,12 @@ jobs:
           node-version: 20
           cache: npm
       - run: npm ci
+      # DejaVu (Sans/Serif/Mono) is what the OG social cards render with
+      # (scripts/og-card.mjs). It's preinstalled on ubuntu-latest; ensure it so
+      # the card fonts stay deterministic. Non-fatal — falls back if unavailable.
+      - name: Ensure DejaVu fonts for social cards
+        run: sudo apt-get install -y fonts-dejavu-core || echo "using available system fonts"
+        continue-on-error: true
       - run: npm run build
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
