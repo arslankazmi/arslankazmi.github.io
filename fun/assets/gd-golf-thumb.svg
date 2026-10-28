@@ -1,0 +1,45 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 220" role="img" aria-label="Gradient Descent Golf">
+  <defs>
+    <clipPath id="c"><rect width="320" height="220"/></clipPath>
+  </defs>
+  <g clip-path="url(#c)">
+    <rect width="320" height="220" fill="#6e5136"/>
+    <!-- contour bands of a tilted ravine, high (brown/sand) to low (deep green) -->
+    <g transform="translate(205 120) rotate(-24)">
+      <ellipse rx="250" ry="150" fill="#b99363"/>
+      <ellipse rx="205" ry="118" fill="#d9cf8e"/>
+      <ellipse rx="165" ry="92" fill="#9cc265"/>
+      <ellipse rx="128" ry="68" fill="#5ea152"/>
+      <ellipse rx="92" ry="46" fill="#2b7840"/>
+      <ellipse rx="58" ry="27" fill="#1d6639"/>
+      <ellipse rx="28" ry="13" fill="#14502f"/>
+      <g fill="none" stroke="rgba(0,0,0,0.22)" stroke-width="1.4">
+        <ellipse rx="250" ry="150"/><ellipse rx="205" ry="118"/><ellipse rx="165" ry="92"/>
+        <ellipse rx="128" ry="68"/><ellipse rx="92" ry="46"/><ellipse rx="58" ry="27"/><ellipse rx="28" ry="13"/>
+      </g>
+    </g>
+    <!-- a decoy "sand trap" well -->
+    <g transform="translate(92 58)">
+      <circle r="24" fill="#5ea152" stroke="rgba(0,0,0,0.22)" stroke-width="1.4"/>
+      <circle r="12" fill="#2b7840" stroke="rgba(0,0,0,0.22)" stroke-width="1.4"/>
+    </g>
+    <!-- the descent: zig-zag across the ravine, settling into the cup -->
+    <polyline fill="none" stroke="rgba(255,255,255,0.9)" stroke-width="2.2" stroke-linejoin="round"
+      points="34,178 74,118 92,176 124,128 140,164 164,134 176,152 190,134 198,128 205,120"/>
+    <g fill="#fff">
+      <circle cx="74" cy="118" r="3"/><circle cx="92" cy="176" r="3"/><circle cx="124" cy="128" r="3"/>
+      <circle cx="140" cy="164" r="3"/><circle cx="164" cy="134" r="3"/><circle cx="176" cy="152" r="3"/>
+      <circle cx="190" cy="134" r="3"/><circle cx="198" cy="128" r="3"/>
+    </g>
+    <!-- tee -->
+    <rect x="22" y="188" width="8" height="4" fill="#fff" opacity="0.85"/>
+    <rect x="38" y="188" width="8" height="4" fill="#fff" opacity="0.85"/>
+    <circle cx="34" cy="178" r="6.5" fill="#fbfbf6" stroke="rgba(0,0,0,0.35)"/>
+    <!-- cup + flag -->
+    <circle cx="205" cy="120" r="9" fill="#0d1a12" stroke="rgba(255,255,255,0.6)" stroke-width="1.5"/>
+    <line x1="205" y1="120" x2="205" y2="72" stroke="#f4f1e8" stroke-width="2.6"/>
+    <path d="M205 72 L232 81 L205 90 Z" fill="#e8553f"/>
+    <!-- wordmark -->
+    <text x="300" y="204" text-anchor="end" font-family="Georgia, serif" font-weight="700" font-size="22" fill="#fbfbf6" opacity="0.95">∇ golf</text>
+  </g>
+</svg>
