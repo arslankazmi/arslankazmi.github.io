@@ -1,0 +1,236 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <title>Gradient Descent Golf · arslan.land</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="description" content="Gradient Descent Golf — you are the optimizer. Pick GD, Momentum or Adam and a learning rate, and roll the ball down a randomly generated loss landscape into the global minimum."/>
+  <link rel="icon" type="image/svg+xml" href="/assets/favicon.svg"/>
+  <!-- Personal (paper) theme: fonts + tokens for the page chrome. The course keeps its own palette. -->
+  <link rel="stylesheet" href="https://arslankazmi.github.io/ak-design/dist/personal.css"/>
+  <style>
+    :root { --pf: #101218; }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; }
+    body {
+      background: var(--bg, #edece4);
+      color: var(--fg1, #1a1a1a);
+      font-family: var(--font-body, system-ui, sans-serif);
+      min-height: 100vh;
+      -webkit-tap-highlight-color: transparent;
+      touch-action: manipulation;
+    }
+    .wrap { max-width: 1040px; margin: 0 auto; padding: 16px 16px 40px; }
+
+    .topbar { display: flex; align-items: center; gap: 12px; margin-bottom: 14px; flex-wrap: wrap; }
+    .brand { display: flex; align-items: baseline; gap: 12px; margin-right: auto; flex-wrap: wrap; }
+    .brand h1 { font-family: var(--font-display, Georgia, serif); font-size: clamp(24px, 4.4vw, 36px); margin: 0; letter-spacing: -0.02em; }
+    .brand h1 .g { color: var(--seagreen-500, #3fae7a); }
+    .brand .tag { font-family: var(--font-mono, monospace); font-size: 12px; color: var(--fg2, #666); }
+    .iconbtn, .textbtn {
+      font-family: var(--font-mono, monospace); font-size: 13px;
+      border: 1px solid var(--border-strong, #cfc9bb); background: var(--bg-elevated, #fff);
+      color: var(--fg1, #1a1a1a); border-radius: 10px; padding: 8px 12px; cursor: pointer;
+      transition: transform var(--dur-fast, 120ms), background var(--dur-fast, 120ms);
+    }
+    .iconbtn:hover, .textbtn:hover { transform: translateY(-1px); background: var(--accent-soft, #e8f3f2); }
+    a.textbtn { text-decoration: none; }
+
+    .stage { display: flex; gap: 20px; align-items: flex-start; flex-wrap: wrap; justify-content: center; }
+    .boardbox {
+      position: relative; background: var(--pf); border-radius: 16px; padding: 10px;
+      box-shadow: var(--shadow-lg, 0 12px 40px rgba(0,0,0,0.18)); border: 1px solid rgba(0,0,0,0.15);
+      flex: 1 1 460px; max-width: 660px;
+    }
+    canvas#course { display: block; width: 100%; height: auto; aspect-ratio: 1; border-radius: 8px; cursor: crosshair; }
+
+    .hud { flex: 1 1 280px; max-width: 340px; display: flex; flex-direction: column; gap: 12px; }
+    .card {
+      background: var(--bg-elevated, #fff); border: 1px solid var(--border, #e2ddd0);
+      border-radius: 14px; padding: 12px 14px; box-shadow: var(--shadow-sm, 0 2px 8px rgba(0,0,0,0.06));
+    }
+    .stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px 10px; }
+    .stat .k, .lab { font-family: var(--font-mono, monospace); font-size: 10.5px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--fg3, #999); }
+    .stat .v { font-family: var(--font-display, Georgia, serif); font-size: 24px; font-weight: 700; line-height: 1.1; }
+    .stat .v.small { font-size: 16px; font-family: var(--font-mono, monospace); font-weight: 500; }
+    .under { color: var(--seagreen-500, #3fae7a); } .over { color: var(--coral-500, #d0604a); }
+
+    .opts { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; margin: 6px 0 12px; }
+    .opt {
+      font-family: var(--font-mono, monospace); font-size: 13px; padding: 9px 4px; border-radius: 10px; cursor: pointer;
+      border: 1px solid var(--border-strong, #cfc9bb); background: var(--bg, #edece4); color: var(--fg1, #1a1a1a);
+    }
+    .opt[aria-pressed="true"] { background: var(--accent, #178e8b); border-color: var(--accent, #178e8b); color: #fff; }
+    .opt kbd { all: unset; opacity: 0.6; font-size: 10px; margin-left: 4px; }
+    .lab .sym, .k .sym { text-transform: none; font-size: 13px; }
+    .slider { margin: 4px 0 10px; }
+    .slider .row { display: flex; justify-content: space-between; align-items: baseline; }
+    .slider output { font-family: var(--font-mono, monospace); font-size: 14px; font-weight: 600; }
+    .slider input { width: 100%; accent-color: var(--accent, #178e8b); margin: 6px 0 0; }
+    .slider.off { opacity: 0.4; }
+    button#shoot {
+      width: 100%; font-family: var(--font-mono, monospace); font-size: 15px; font-weight: 600; border: 0; cursor: pointer;
+      background: var(--seagreen-500, #3fae7a); color: #fff; border-radius: 12px; padding: 12px; margin-top: 2px;
+      box-shadow: 0 3px 0 rgba(0,0,0,0.18); transition: transform var(--dur-fast, 120ms);
+    }
+    button#shoot:active { transform: translateY(2px); box-shadow: 0 1px 0 rgba(0,0,0,0.18); }
+    button#shoot:disabled { opacity: 0.5; cursor: default; }
+
+    .caddie h3 { font-family: var(--font-display, Georgia, serif); font-size: 17px; margin: 2px 0 4px; }
+    .caddie p { margin: 0; font-size: 14px; line-height: 1.5; color: var(--fg2, #555); }
+    .seedrow { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; font-family: var(--font-mono, monospace); font-size: 12px; color: var(--fg2, #666); }
+    .seedrow b { color: var(--fg1, #1a1a1a); }
+    .seedrow .textbtn { padding: 5px 9px; font-size: 12px; }
+    .legend { font-family: var(--font-mono, monospace); font-size: 11px; line-height: 1.7; color: var(--fg2, #666); }
+    .legend b { color: var(--fg1, #1a1a1a); font-weight: 600; }
+
+    /* overlays */
+    .overlay {
+      position: absolute; inset: 10px; border-radius: 8px; z-index: 5;
+      display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center;
+      background: rgba(10, 12, 18, 0.88); color: #e1e4eb; padding: 24px; gap: 12px; backdrop-filter: blur(3px);
+      overflow-y: auto;
+    }
+    .overlay.hidden { display: none; }
+    .overlay h2 { font-family: var(--font-display, Georgia, serif); margin: 0; font-size: clamp(28px, 6vw, 44px); color: #fff; }
+    .overlay h2 .g { color: #7fd6a4; }
+    .overlay p { margin: 0; font-size: 14px; color: #c3c9d4; max-width: 40ch; line-height: 1.6; }
+    .overlay p.mono { font-family: var(--font-mono, monospace); font-size: 12.5px; color: #9aa3b2; }
+    .overlay .big { font-family: var(--font-mono, monospace); font-size: 15px; color: #8ee6c9; }
+    .overlay .keys { display: grid; grid-template-columns: auto 1fr; gap: 4px 14px; font-family: var(--font-mono, monospace); font-size: 12px; color: #cdd2dd; text-align: left; }
+    .overlay .keys b { color: #fff; }
+    .overlay .primary {
+      font-family: var(--font-mono, monospace); font-size: 14px; border: 0; cursor: pointer;
+      background: #3fae7a; color: #fff; border-radius: 10px; padding: 10px 20px; margin-top: 4px;
+    }
+    .overlay .secondary {
+      font-family: var(--font-mono, monospace); font-size: 13px; cursor: pointer; background: transparent;
+      color: #cdd2dd; border: 1px solid #4a5160; border-radius: 10px; padding: 8px 16px;
+    }
+    .overlay .lesson { background: rgba(255,255,255,0.06); border-radius: 10px; padding: 10px 14px; max-width: 44ch; text-align: left; }
+    .overlay .lesson b { color: #fff; display: block; margin-bottom: 2px; }
+    table.scorecard { border-collapse: collapse; font-family: var(--font-mono, monospace); font-size: 12.5px; color: #dfe3ea; }
+    table.scorecard th, table.scorecard td { padding: 4px 7px; border-bottom: 1px solid #2c3240; text-align: center; }
+    table.scorecard th { color: #8f98a8; font-weight: 500; }
+    table.scorecard td.u { color: #7fd6a4; } table.scorecard td.o { color: #f0937e; }
+
+    footer.foot { margin-top: 30px; text-align: center; font-family: var(--font-mono, monospace); font-size: 12px; color: var(--fg2, #666); line-height: 1.7; }
+    footer.foot a { color: var(--accent, #178e8b); }
+
+    @media (max-width: 760px) {
+      .hud { max-width: 660px; flex-basis: 100%; }
+      .legend { display: none; }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="topbar">
+      <div class="brand">
+        <h1>Gradient Descent <span class="g">Golf</span></h1>
+        <span class="tag">you are the optimizer</span>
+      </div>
+      <button id="muteBtn" class="iconbtn" title="Mute (M)" aria-pressed="false">🔊</button>
+      <a class="textbtn" href="../index.html">← Fun</a>
+    </div>
+
+    <div class="stage">
+      <div class="boardbox">
+        <canvas id="course" width="720" height="720" aria-label="Loss landscape course map"></canvas>
+
+        <div id="titleOverlay" class="overlay">
+          <h2>Gradient Descent <span class="g">Golf</span></h2>
+          <p>Each hole is a loss landscape. The flag marks the <b>global minimum</b>. You don't aim: you pick an
+            optimizer and a learning rate, and the ball follows the gradient for 50 steps.</p>
+          <div class="keys">
+            <b>Space</b><span>descend (take a stroke)</span>
+            <b>1 · 2 · 3</b><span>GD · Momentum · Adam</span>
+            <b>← →</b><span>learning rate η</span>
+            <b>↑ ↓</b><span>momentum β</span>
+            <b>R · N · M</b><span>restart hole · new course · mute</span>
+          </div>
+          <p class="mono">Leave the map = diverged (+1 penalty). Too fast over the cup = lip-out. 9 random holes per course.</p>
+          <button id="startBtn" class="primary">Tee off</button>
+        </div>
+
+        <div id="holeOverlay" class="overlay hidden">
+          <h2 id="holeTitle">Par</h2>
+          <div class="big" id="holeSub">3 strokes · par 3</div>
+          <div class="lesson"><b id="lessonHead"></b><span id="lessonBody"></span></div>
+          <button id="nextBtn" class="primary">Next hole (Enter)</button>
+        </div>
+
+        <div id="endOverlay" class="overlay hidden">
+          <h2>Course complete</h2>
+          <div class="big" id="endSub"></div>
+          <table class="scorecard" id="scorecard"></table>
+          <p class="mono" id="bestLine"></p>
+          <div style="display:flex; gap:10px; flex-wrap:wrap; justify-content:center">
+            <button id="newBtn" class="primary">New course (N)</button>
+            <button id="replayBtn" class="secondary">Replay this course</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="hud">
+        <div class="card stats">
+          <div class="stat"><div class="k">Hole</div><div class="v" id="hole">1/9</div></div>
+          <div class="stat"><div class="k">Par</div><div class="v" id="par">3</div></div>
+          <div class="stat"><div class="k">Strokes</div><div class="v" id="strokes">0</div></div>
+          <div class="stat"><div class="k">Course</div><div class="v" id="total">E</div></div>
+          <div class="stat"><div class="k">Loss</div><div class="v small" id="lossV">—</div></div>
+          <div class="stat"><div class="k"><span class="sym">|∇L|</span></div><div class="v small" id="gradV">—</div></div>
+        </div>
+
+        <div class="card">
+          <div class="lab">Optimizer</div>
+          <div class="opts" role="group" aria-label="Optimizer">
+            <button class="opt" data-opt="gd" aria-pressed="true">GD<kbd>1</kbd></button>
+            <button class="opt" data-opt="momentum" aria-pressed="false">Momentum<kbd>2</kbd></button>
+            <button class="opt" data-opt="adam" aria-pressed="false">Adam<kbd>3</kbd></button>
+          </div>
+          <div class="slider">
+            <div class="row"><label class="lab" for="lr">Learning rate <span class="sym">η</span></label><output id="lrOut">0.01</output></div>
+            <input type="range" id="lr" min="0" max="300" step="1" value="100"/>
+          </div>
+          <div class="slider" id="betaWrap">
+            <div class="row"><label class="lab" for="beta">Momentum <span class="sym">β</span></label><output id="betaOut">0.90</output></div>
+            <input type="range" id="beta" min="0" max="99" step="1" value="90"/>
+          </div>
+          <button id="shoot">Descend ⛳ (Space)</button>
+        </div>
+
+        <div class="card caddie" aria-live="polite">
+          <div class="lab">Caddie</div>
+          <h3 id="caddieHead">Read the green.</h3>
+          <p id="caddieBody">Tight contour lines are steep: keep η small or you'll overshoot. Wide gaps are flat: you'll need a bigger η or some momentum.</p>
+        </div>
+
+        <div class="card">
+          <div class="seedrow">
+            <span>course <b id="seed">——</b></span>
+            <span id="wind"></span>
+            <span style="margin-left:auto"></span>
+            <button id="copyBtn" class="textbtn" title="Copy a link to this course">copy link</button>
+            <button id="restartBtn" class="textbtn" title="Restart hole (R)">↺ hole</button>
+            <button id="newCourseBtn" class="textbtn" title="New course (N)">new</button>
+          </div>
+        </div>
+        <div class="card legend">
+          <b>⛳</b> flag = global minimum &nbsp; <b>▭</b> tee<br>
+          <b>yellow arrow</b> = −∇L, where plain GD goes next<br>
+          <b>wind</b> = minibatch noise added to every gradient
+        </div>
+      </div>
+    </div>
+
+    <footer class="foot">
+      Every course is generated from its seed: share the link to play the same 9 holes.
+      Part of <a href="../index.html">Fun</a> · <a href="https://github.com/arslankazmi/arslankazmi.github.io/tree/main/fun/gd-golf">source</a>.
+    </footer>
+  </div>
+
+  <script src="engine.js"></script>
+  <script src="main.js"></script>
+</body>
+</html>
