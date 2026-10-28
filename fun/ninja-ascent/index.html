@@ -1,0 +1,191 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <title>Ninja Ascent · arslan.land</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"/>
+  <meta name="description" content="Ninja Ascent — an endless climb between two skyscrapers. Wall-jump across the gap, slash what can be cut, dodge what can't, and grab the gold."/>
+  <link rel="icon" type="image/svg+xml" href="/assets/favicon.svg"/>
+  <!-- Personal (paper) theme: fonts + tokens for the page chrome. The playfield keeps its own night palette. -->
+  <link rel="stylesheet" href="https://arslankazmi.github.io/ak-design/dist/personal.css"/>
+  <style>
+    * { box-sizing: border-box; }
+    html, body { margin: 0; }
+    body {
+      background: var(--bg, #edece4);
+      color: var(--fg1, #1a1a1a);
+      font-family: var(--font-body, system-ui, sans-serif);
+      min-height: 100vh;
+      -webkit-tap-highlight-color: transparent;
+      touch-action: manipulation;
+      user-select: none; -webkit-user-select: none;
+    }
+    .wrap { max-width: 900px; margin: 0 auto; padding: 16px 16px 40px; }
+
+    .topbar { display: flex; align-items: center; gap: 12px; margin-bottom: 14px; flex-wrap: wrap; }
+    .brand { display: flex; align-items: baseline; gap: 12px; margin-right: auto; flex-wrap: wrap; }
+    .brand h1 { font-family: var(--font-display, Georgia, serif); font-size: clamp(24px, 4.4vw, 36px); margin: 0; letter-spacing: -0.02em; }
+    .brand h1 .r { color: #c8372d; }
+    .brand .tag { font-family: var(--font-mono, monospace); font-size: 12px; color: var(--fg2, #666); }
+    .iconbtn, .textbtn {
+      font-family: var(--font-mono, monospace); font-size: 13px;
+      border: 1px solid var(--border-strong, #cfc9bb); background: var(--bg-elevated, #fff);
+      color: var(--fg1, #1a1a1a); border-radius: 10px; padding: 8px 12px; cursor: pointer;
+      transition: transform var(--dur-fast, 120ms), background var(--dur-fast, 120ms);
+    }
+    .iconbtn:hover, .textbtn:hover { transform: translateY(-1px); background: var(--accent-soft, #e8f3f2); }
+    a.textbtn { text-decoration: none; }
+
+    .stage { display: flex; gap: 20px; align-items: flex-start; justify-content: center; flex-wrap: wrap; }
+    .col { display: flex; flex-direction: column; align-items: center; gap: 14px; }
+    .boardbox {
+      position: relative; background: #0b1022; border-radius: 16px; padding: 8px;
+      box-shadow: var(--shadow-lg, 0 12px 40px rgba(0,0,0,0.18)); border: 1px solid rgba(0,0,0,0.15);
+    }
+    canvas#play {
+      display: block; border-radius: 10px;
+      height: min(76vh, 720px); width: auto; aspect-ratio: 9 / 16; max-width: calc(100vw - 48px);
+    }
+
+    /* overlays */
+    .overlay {
+      position: absolute; inset: 8px; border-radius: 10px; z-index: 5;
+      display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center;
+      background: rgba(8, 10, 22, 0.86); color: #e1e4eb; padding: 22px; gap: 12px; backdrop-filter: blur(3px);
+      overflow-y: auto;
+    }
+    .overlay.hidden { display: none; }
+    .overlay h2 { font-family: var(--font-display, Georgia, serif); margin: 0; font-size: clamp(30px, 7vw, 46px); color: #fff; line-height: 1; }
+    .overlay h2 .r { color: #ff6b5e; }
+    .overlay p { margin: 0; font-size: 14px; color: #c3c9d4; max-width: 30ch; line-height: 1.55; }
+    .overlay .keys { display: grid; grid-template-columns: auto 1fr; gap: 4px 14px; font-family: var(--font-mono, monospace); font-size: 12px; color: #cdd2dd; text-align: left; }
+    .overlay .keys b { color: #fff; }
+    .overlay .primary {
+      font-family: var(--font-mono, monospace); font-size: 14px; border: 0; cursor: pointer;
+      background: #c8372d; color: #fff; border-radius: 10px; padding: 10px 22px; margin-top: 4px;
+    }
+    .legend3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; width: 100%; max-width: 300px; }
+    .legend3 div { background: rgba(255,255,255,0.05); border-radius: 10px; padding: 8px 4px 6px; }
+    .legend3 canvas { display: block; margin: 0 auto 4px; width: 84px; height: 44px; }
+    .legend3 b { display: block; font-size: 12px; color: #fff; }
+    .legend3 span { font-family: var(--font-mono, monospace); font-size: 10.5px; color: #9aa3b2; }
+    .stats { display: grid; grid-template-columns: repeat(2, auto); gap: 2px 18px; font-family: var(--font-mono, monospace); font-size: 13px; color: #cdd2dd; }
+    .stats b { color: #fff; text-align: right; }
+    .best { font-family: var(--font-mono, monospace); font-size: 12.5px; color: #ffd166; }
+
+    /* on-screen buttons */
+    .pads { display: flex; gap: 14px; width: 100%; max-width: 420px; }
+    .pad {
+      flex: 1; height: 64px; border-radius: 16px; cursor: pointer; touch-action: none;
+      font-family: var(--font-mono, monospace); font-size: 15px; font-weight: 600; letter-spacing: 0.06em;
+      border: 1px solid var(--border-strong, #cfc9bb); background: var(--bg-elevated, #fff); color: var(--fg1, #1a1a1a);
+      box-shadow: 0 3px 0 rgba(0,0,0,0.12); transition: transform 80ms, background 80ms;
+    }
+    .pad small { display: block; font-size: 10.5px; font-weight: 400; opacity: 0.6; letter-spacing: 0; }
+    .pad.down { transform: translateY(2px); box-shadow: 0 1px 0 rgba(0,0,0,0.12); }
+    .pad.jump.down { background: #e8f3f2; }
+    .pad.slash { border-color: #c8372d; color: #c8372d; }
+    .pad.slash.down { background: #fbe9e7; }
+
+    .side { width: 250px; display: flex; flex-direction: column; gap: 12px; }
+    .card {
+      background: var(--bg-elevated, #fff); border: 1px solid var(--border, #e2ddd0);
+      border-radius: 14px; padding: 12px 14px; box-shadow: var(--shadow-sm, 0 2px 8px rgba(0,0,0,0.06));
+      font-size: 13.5px; line-height: 1.55; color: var(--fg2, #555);
+    }
+    .card .lab { font-family: var(--font-mono, monospace); font-size: 10.5px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--fg3, #999); margin-bottom: 4px; }
+    .card b { color: var(--fg1, #1a1a1a); }
+    .card .keys { font-family: var(--font-mono, monospace); font-size: 12px; line-height: 1.8; }
+
+    footer.foot { margin-top: 26px; text-align: center; font-family: var(--font-mono, monospace); font-size: 12px; color: var(--fg2, #666); }
+    footer.foot a { color: var(--accent, #178e8b); }
+
+    @media (max-width: 720px) { .side { display: none; } }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="topbar">
+      <div class="brand">
+        <h1>Ninja <span class="r">Ascent</span></h1>
+        <span class="tag">up is the only way out</span>
+      </div>
+      <button id="muteBtn" class="iconbtn" title="Mute (M)" aria-pressed="false">🔊</button>
+      <a class="textbtn" href="../index.html">← Fun</a>
+    </div>
+
+    <div class="stage">
+      <div class="col">
+        <div class="boardbox">
+          <canvas id="play" width="360" height="640" aria-label="Ninja Ascent playfield"></canvas>
+
+          <div id="titleOverlay" class="overlay">
+            <h2>Ninja <span class="r">Ascent</span></h2>
+            <p>Run up the gap between two towers. Jump to switch walls. The sword only cuts what's meant to be cut.</p>
+            <div class="legend3">
+              <div><canvas data-legend="collect" width="168" height="88"></canvas><b>Grab</b><span>coins · onigiri</span></div>
+              <div><canvas data-legend="avoid" width="168" height="88"></canvas><b>Dodge</b><span>can't be cut</span></div>
+              <div><canvas data-legend="cut" width="168" height="88"></canvas><b>Slash</b><span>hurts if uncut</span></div>
+            </div>
+            <div class="keys">
+              <b>Space · ↑ · W</b><span>jump to the other wall</span>
+              <b>J · K · X</b><span>slash</span>
+              <b>P · M</b><span>pause · mute</span>
+            </div>
+            <button id="startBtn" class="primary">Climb (Space)</button>
+          </div>
+
+          <div id="pauseOverlay" class="overlay hidden">
+            <h2>Paused</h2>
+            <p>Press P or tap to keep climbing.</p>
+          </div>
+
+          <div id="overOverlay" class="overlay hidden">
+            <h2>Fell <span class="r">short</span></h2>
+            <div class="stats">
+              <span>height</span><b id="oMeters">0 m</b>
+              <span>coins</span><b id="oCoins">0</b>
+              <span>cuts</span><b id="oCuts">0</b>
+              <span>score</span><b id="oScore">0</b>
+            </div>
+            <div class="best" id="oBest"></div>
+            <button id="againBtn" class="primary">Climb again (Space)</button>
+          </div>
+        </div>
+
+        <div class="pads">
+          <button class="pad jump" id="jumpPad" aria-label="Jump">JUMP<small>space</small></button>
+          <button class="pad slash" id="slashPad" aria-label="Slash">SLASH<small>J</small></button>
+        </div>
+      </div>
+
+      <div class="side">
+        <div class="card">
+          <div class="lab">How to climb</div>
+          You run up <b>one wall at a time</b>. <b>Jump</b> to wall-jump across the gap. In the air you're safe from
+          things on the walls, but not from what's falling.
+        </div>
+        <div class="card">
+          <div class="lab">The sword</div>
+          <b>Slash</b> cuts planks, lanterns, crates and melons. It does nothing to spikes, AC units, pots or
+          blocks: those you dodge.
+        </div>
+        <div class="card keys">
+          <b>Space ↑ W</b> jump<br>
+          <b>J K X</b> slash<br>
+          <b>P</b> pause &nbsp; <b>M</b> mute
+        </div>
+        <div class="card"><div class="lab">Best</div><b id="sideBest">—</b></div>
+      </div>
+    </div>
+
+    <footer class="foot">
+      Everything is drawn and synthesized in code. Part of <a href="../index.html">Fun</a> ·
+      <a href="https://github.com/arslankazmi/arslankazmi.github.io/tree/main/fun/ninja-ascent">source</a>.
+    </footer>
+  </div>
+
+  <script src="engine.js"></script>
+  <script src="main.js"></script>
+</body>
+</html>
