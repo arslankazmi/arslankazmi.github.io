@@ -64,15 +64,15 @@ const wallX = (type, side) => (side === "L" ? E.WALL_L + E.TYPES[type].w / 2 : E
 {
   const g = quiet();
   place(g, "spikes", "L", NINJA_Y - 40);
-  place(g, "ac", "L", NINJA_Y - 70);   // right behind: i-frames should cover it
+  place(g, "pipe", "L", NINJA_Y - 70);   // right behind: i-frames should cover it
   run(g, 0.5);
   ok(g.hearts === 2, `one hit costs one heart, i-frames block the second (hearts ${g.hearts})`);
   const h = quiet();
-  place(h, "lantern", "L", NINJA_Y - 40);
+  place(h, "sign", "L", NINJA_Y - 40);
   run(h, 0.3);
   ok(h.hearts === 2, "an uncut cuttable hurts");
   const k = quiet();
-  for (let i = 0; i < 3; i++) place(k, "block", "L", NINJA_Y - 40 - i * 400, "air");
+  for (let i = 0; i < 3; i++) place(k, "metal", "L", NINJA_Y - 40 - i * 400, "air");
   run(k, 6);
   ok(k.over && k.hearts === 0 && k.events.some((e) => e.type === "over"), "three hits end the run");
   const before = k.dist;
@@ -92,10 +92,10 @@ const wallX = (type, side) => (side === "L" ? E.WALL_L + E.TYPES[type].w / 2 : E
   run(g, 0.4);
   ok(g.coins === 2, "coins on your wall are collected");
   g.hearts = 2;
-  place(g, "onigiri", "L", NINJA_Y - 30, "air");
+  place(g, "heart", "L", NINJA_Y - 30, "air");
   run(g, 0.3);
-  ok(g.hearts === 3, "onigiri restores a heart");
-  place(g, "onigiri", "L", NINJA_Y - 30, "air");
+  ok(g.hearts === 3, "a heart pickup restores a heart");
+  place(g, "heart", "L", NINJA_Y - 30, "air");
   run(g, 0.3);
   ok(g.hearts === 3, "hearts cap at 3");
   ok(g.score === g.meters + 10 * g.coins, "score = metres + 10·coins + 25·cuts");

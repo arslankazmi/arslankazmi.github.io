@@ -24,17 +24,18 @@
   const DT = 1 / 120;
   const PX_PER_M = 10;
 
+  // Hitbox sizes match the sprites (Kenney Pixel Platformer tiles drawn at 2×).
   const TYPES = {
-    coin:    { kind: "collect", w: 16, h: 16 },
-    onigiri: { kind: "collect", w: 22, h: 20 },
-    spikes:  { kind: "avoid", w: 22, h: 30 },
-    ac:      { kind: "avoid", w: 30, h: 26 },
-    pot:     { kind: "avoid", w: 20, h: 22 },
-    block:   { kind: "avoid", w: 24, h: 20 },
-    plank:   { kind: "cut", w: 46, h: 12 },
-    lantern: { kind: "cut", w: 20, h: 28 },
-    crate:   { kind: "cut", w: 26, h: 26 },
-    melon:   { kind: "cut", w: 24, h: 22 },
+    coin:   { kind: "collect", w: 18, h: 18 },
+    heart:  { kind: "collect", w: 22, h: 20 },
+    spikes: { kind: "avoid", w: 18, h: 34 },
+    pipe:   { kind: "avoid", w: 34, h: 24 },
+    brick:  { kind: "avoid", w: 32, h: 32 },
+    metal:  { kind: "avoid", w: 32, h: 32 },
+    plank:  { kind: "cut", w: 36, h: 18 },
+    sign:   { kind: "cut", w: 30, h: 34 },
+    crate:  { kind: "cut", w: 32, h: 32 },
+    box:    { kind: "cut", w: 32, h: 32 },
   };
 
   function mulberry32(a) {
@@ -158,7 +159,7 @@
         if (!o.alive || !overlap(box, rectOf(o))) continue;
         if (o.kind === "collect") {
           o.alive = false;
-          if (o.type === "onigiri") {
+          if (o.type === "heart") {
             this.hearts = Math.min(MAX_HEARTS, this.hearts + 1);
             this.events.push({ type: "heal", x: o.x, y: o.y });
           } else {
@@ -203,8 +204,8 @@
         return { type, lane: "air", side: where, x, y: SPAWN_Y, vy: 110 + 110 * r() };
       };
       switch (name) {
-        case "wallHazard": return [wall(this.pick(["spikes", "ac"]), s)];
-        case "wallCut": return [wall(this.pick(["plank", "lantern"]), s)];
+        case "wallHazard": return [wall(this.pick(["spikes", "pipe"]), s)];
+        case "wallCut": return [wall(this.pick(["plank", "sign"]), s)];
         case "coinsWall": {
           const k = 3 + Math.floor(r() * 3);
           return Array.from({ length: k }, (_, i) => ({ type: "coin", lane: s, side: s, x: ninjaX(s), y: SPAWN_Y - i * 30, vy: 0 }));
@@ -218,10 +219,10 @@
             return { type: "coin", lane: "air", side: "C", x, y: SPAWN_Y - travel * p - HOP * Math.sin(Math.PI * p), vy: 0 };
           });
         }
-        case "dropHazard": return [drop(this.pick(["pot", "block"]))];
-        case "dropCut": return [drop(this.pick(["crate", "melon"]))];
-        case "combo": return [wall(this.pick(["spikes", "ac"]), s), wall(this.pick(["plank", "lantern"]), other(s))];
-        case "onigiri": return [{ type: "onigiri", lane: "air", side: "C", x: W / 2, y: SPAWN_Y, vy: 60 }];
+        case "dropHazard": return [drop(this.pick(["brick", "metal"]))];
+        case "dropCut": return [drop(this.pick(["crate", "box"]))];
+        case "combo": return [wall(this.pick(["spikes", "pipe"]), s), wall(this.pick(["plank", "sign"]), other(s))];
+        case "heart": return [{ type: "heart", lane: "air", side: "C", x: W / 2, y: SPAWN_Y, vy: 60 }];
       }
       return [];
     }
@@ -236,7 +237,7 @@
         ["dropHazard", this.dist > 1500 ? 0.3 + 1.7 * d : 0],
         ["dropCut", 0.6 + d],
         ["combo", d > 0.35 ? 2 * d : 0],
-        ["onigiri", this.hearts < MAX_HEARTS ? 0.18 : 0],
+        ["heart", this.hearts < MAX_HEARTS ? 0.18 : 0],
       ];
     }
     choose() {

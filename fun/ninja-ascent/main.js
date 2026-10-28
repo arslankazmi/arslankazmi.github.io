@@ -163,83 +163,47 @@
     ctx.fillRect(fx, 0, 3, H);
   }
 
-  // --- the ninja ------------------------------------------------------------------------------
-  /**
-   * Upright pose centred on the body: facing +x (the gap), the wall at x ≈ −11.
-   * Running = feet alternately planted on the wall while climbing; tuck = mid-jump.
-   */
-  function ninjaPose(run, tuck, slashing) {
-    const s = Math.sin(run), c = Math.cos(run);
-    ctx.lineCap = "round"; ctx.lineJoin = "round";
-    // headband tails stream down behind a climber
-    const wave = Math.sin(clock * 18) * 2;
-    ctx.strokeStyle = "#e0392d"; ctx.lineWidth = 2.6;
-    ctx.beginPath();
-    ctx.moveTo(-4, -15); ctx.quadraticCurveTo(-10 + wave, -6, -8 - wave, 6);
-    ctx.moveTo(-4, -14); ctx.quadraticCurveTo(-5 - wave, -4, -2 + wave, 4);
-    ctx.stroke();
+  // --- sprites ------------------------------------------------------------------------------
+  // Ninja: "Ninja [Animated]" by Morgan McGuire & DezrasDragons (CC0), 32×32 cells, by column.
+  // Objects: Kenney "Pixel Platformer" tiles (CC0), 18×18, packed into one strip.
+  const img = (src) => { const i = new Image(); i.src = src; return i; };
+  const NINJA = img("assets/ninja-morgan3d.png");
+  const TILES = img("assets/kenney-objects.png");
+  const ready = (i) => i.complete && i.naturalWidth > 0;
+  const TILE = { coin: 0, coinEdge: 1, heart: 2, heartEmpty: 3, spikes: 4, pipe: 5, brick: 6, metal: 7, plank: 8, sign: 9, crate: 10, box: 11 };
+  const SWORD_ROW = 4;                          // the sheet's sword third starts at row 4
+  const COL = { jump: 2, attack: 3, climb: 6 };
+  const FRAMES = { jump: 3, attack: 4, climb: 4 };
+
+  /** Draw ninja cell (col, row) at 2×, top-left (x, y), optionally mirrored. */
+  function ninjaCell(col, row, x, y, flip) {
+    if (!ready(NINJA)) return;
     ctx.save();
-    ctx.shadowColor = "rgba(150,180,255,0.95)"; ctx.shadowBlur = 5;   // rim light against the night
-    // sword across the back, hilt over the shoulder
-    if (!slashing) {
-      ctx.strokeStyle = "#6b7190"; ctx.lineWidth = 2;
-      ctx.beginPath(); ctx.moveTo(-7, 7); ctx.lineTo(-2, -14); ctx.stroke();
-      ctx.strokeStyle = "#c39a4f"; ctx.lineWidth = 3;
-      ctx.beginPath(); ctx.moveTo(-2, -14); ctx.lineTo(-1, -19); ctx.stroke();
-    }
-    ctx.strokeStyle = "#0b0b10"; ctx.fillStyle = "#0b0b10";
-    // legs: hip (−1, 4)
-    ctx.lineWidth = 4.4;
-    if (tuck) {
-      ctx.beginPath(); ctx.moveTo(-1, 4); ctx.lineTo(6, 7); ctx.lineTo(2, 12); ctx.stroke();
-      ctx.beginPath(); ctx.moveTo(-1, 4); ctx.lineTo(4, 2); ctx.lineTo(0, 9); ctx.stroke();
-    } else {
-      for (const k of [1, -1]) {
-        const fy = 8 + 8 * s * k, planted = s * k > 0;
-        const fx = planted ? -11 : -6;
-        ctx.beginPath(); ctx.moveTo(-1, 4); ctx.lineTo(3, 6 + 5 * s * k); ctx.lineTo(fx, fy); ctx.stroke();
-      }
-    }
-    // torso
-    ctx.lineWidth = 8.5;
-    ctx.beginPath(); ctx.moveTo(-1, 4); ctx.lineTo(1, -8); ctx.stroke();
-    // arms: shoulder (1, −6)
-    ctx.lineWidth = 3.4;
-    if (slashing) {
-      ctx.beginPath(); ctx.moveTo(1, -6); ctx.lineTo(8, -12); ctx.stroke();
-      ctx.restore();
-      ctx.strokeStyle = "#eef3ff"; ctx.lineWidth = 2.4;
-      ctx.beginPath(); ctx.moveTo(8, -12); ctx.lineTo(26, -30); ctx.stroke();
-      ctx.save();
-    } else if (tuck) {
-      ctx.beginPath(); ctx.moveTo(1, -6); ctx.lineTo(7, -2); ctx.lineTo(4, 3); ctx.stroke();
-    } else {
-      ctx.beginPath(); ctx.moveTo(1, -6); ctx.lineTo(6, -2 + 5 * c); ctx.stroke();
-      ctx.beginPath(); ctx.moveTo(1, -6); ctx.lineTo(-4, -2 - 5 * c); ctx.stroke();
-    }
-    // head, band, eye slit toward the gap
-    ctx.fillStyle = "#0b0b10";
-    ctx.beginPath(); ctx.arc(2, -14, 6.4, 0, 7); ctx.fill();
+    if (flip) { ctx.translate(x + 64, y); ctx.scale(-1, 1); } else ctx.translate(x, y);
+    ctx.drawImage(NINJA, col * 32, (SWORD_ROW + row) * 32, 32, 32, 0, 0, 64, 64);
     ctx.restore();
-    ctx.fillStyle = "#e0392d"; ctx.fillRect(-4.5, -17, 13, 3);
-    ctx.fillStyle = "#f4e7d6"; ctx.fillRect(3.5, -14, 5, 1.7);
   }
 
   function drawNinja(g) {
     const n = g.ninja;
     if (g.inv > 0 && Math.floor(clock / 0.08) % 2 === 0 && mode === "play") ctx.globalAlpha = 0.35;
-    const slashing = g.slashT > 0, run = clock * g.speed * 0.045;
     ctx.save();
-    ctx.translate(n.x, n.y);
-    ctx.scale(1.15, 1.15);
+    ctx.imageSmoothingEnabled = false;
+    ctx.shadowColor = "rgba(150,180,255,0.8)"; ctx.shadowBlur = 6;   // rim light against the night
     if (n.jumping) {
-      const p = Math.min(1, n.jt / E.JUMP_T), dir = n.from === "L" ? 1 : -1;
-      ctx.scale(dir, 1);
-      ctx.rotate(p * Math.PI * 2);
-      ninjaPose(0, true, slashing);
+      const p = Math.min(1, n.jt / E.JUMP_T);
+      const f = Math.min(FRAMES.jump - 1, Math.floor(p * FRAMES.jump));
+      ninjaCell(COL.jump, f, n.x - 32, n.y - 36, n.from === "R");   // faces the way it's flying
+    } else if (g.slashT > 0) {
+      const f = Math.min(FRAMES.attack - 1, Math.floor((1 - g.slashT / E.SLASH_T) * FRAMES.attack));
+      // standing attack frames face right; body edge (cell x≈8) against the wall
+      if (n.side === "L") ninjaCell(COL.attack, f, WALL_L - 16, NINJA_Y - 34, false);
+      else ninjaCell(COL.attack, f, WALL_R - 48, NINJA_Y - 34, true);
     } else {
-      if (n.side === "R") ctx.scale(-1, 1);
-      ninjaPose(run, false, slashing);
+      // climb frames cling to a wall on the right of the cell (x≈26); mirror for the left wall
+      const f = Math.floor(clock * (6 + g.speed / 45)) % FRAMES.climb;
+      if (n.side === "R") ninjaCell(COL.climb, f, WALL_R - 52, NINJA_Y - 30, false);
+      else ninjaCell(COL.climb, f, WALL_L - 12, NINJA_Y - 30, true);
     }
     ctx.restore();
     ctx.globalAlpha = 1;
@@ -267,107 +231,42 @@
   }
 
   // --- objects ----------------------------------------------------------------------------------
+  /** Draw a tile at 2×, centred on the current origin. */
+  function tile(name, { rot = 0, flip = false, dx = 0, dy = 0 } = {}) {
+    if (!ready(TILES)) return;
+    ctx.save();
+    ctx.imageSmoothingEnabled = false;
+    ctx.translate(dx, dy);
+    if (rot) ctx.rotate(rot);
+    if (flip) ctx.scale(-1, 1);
+    ctx.drawImage(TILES, TILE[name] * 18, 0, 18, 18, -18, -18, 36, 36);
+    ctx.restore();
+  }
   const dashCut = (w, h) => {
     ctx.save();
     ctx.setLineDash([3, 3]);
-    ctx.strokeStyle = "rgba(255,255,255,0.7)"; ctx.lineWidth = 1.2;
+    ctx.strokeStyle = "rgba(255,255,255,0.75)"; ctx.lineWidth = 1.2;
     ctx.beginPath(); ctx.moveTo(-w / 2 - 2, h / 2 + 2); ctx.lineTo(w / 2 + 2, -h / 2 - 2); ctx.stroke();
     ctx.restore();
   };
-  const warn = (path) => {
-    ctx.save();
-    ctx.shadowColor = "rgba(255,60,50,0.9)";
-    ctx.shadowBlur = 8 + 4 * Math.sin(clock * 8);
-    ctx.strokeStyle = "rgba(255,90,80,0.95)"; ctx.lineWidth = 1.6;
-    path(); ctx.stroke();
-    ctx.restore();
-  };
-  function rr(x, y, w, h, r) { ctx.beginPath(); ctx.roundRect ? ctx.roundRect(x, y, w, h, r) : ctx.rect(x, y, w, h); }
+  /** Glow: gold for collectables, pulsing red for avoidables. */
+  function glow(kind) {
+    if (kind === "collect") { ctx.shadowColor = "rgba(255,200,60,0.85)"; ctx.shadowBlur = 10; }
+    else if (kind === "avoid") { ctx.shadowColor = "rgba(255,60,50,0.95)"; ctx.shadowBlur = 8 + 4 * Math.sin(clock * 8); }
+  }
 
   const DRAW = {
-    coin(o) {
-      const sq = Math.abs(Math.cos(clock * 3 + o.phase));
-      ctx.save();
-      ctx.shadowColor = "rgba(255,200,60,0.8)"; ctx.shadowBlur = 10;
-      ctx.fillStyle = "#f5c242";
-      ctx.beginPath(); ctx.ellipse(0, 0, 8 * (0.35 + 0.65 * sq), 8, 0, 0, 7); ctx.fill();
-      ctx.restore();
-      ctx.strokeStyle = "#b9861d"; ctx.lineWidth = 1.4;
-      ctx.beginPath(); ctx.ellipse(0, 0, 5 * (0.35 + 0.65 * sq), 5, 0, 0, 7); ctx.stroke();
-    },
-    onigiri() {
-      ctx.save();
-      ctx.shadowColor = "rgba(255,230,140,0.9)"; ctx.shadowBlur = 12;
-      ctx.fillStyle = "#fbfaf4";
-      ctx.beginPath(); ctx.moveTo(0, -11); ctx.quadraticCurveTo(13, 8, 9, 10); ctx.lineTo(-9, 10); ctx.quadraticCurveTo(-13, 8, 0, -11); ctx.fill();
-      ctx.restore();
-      ctx.fillStyle = "#1d3b2a"; ctx.fillRect(-5, 2, 10, 8);
-    },
-    spikes(o, dir) {
-      ctx.fillStyle = "#6b7184"; ctx.fillRect(-11 * dir, -15, 5 * dir, 30);
-      const path = () => {
-        ctx.beginPath();
-        for (let i = 0; i < 3; i++) {
-          const y = -15 + i * 10;
-          ctx.moveTo(-6 * dir, y); ctx.lineTo(11 * dir, y + 5); ctx.lineTo(-6 * dir, y + 10);
-        }
-      };
-      ctx.fillStyle = "#c3c9d6"; path(); ctx.fill();
-      warn(path);
-    },
-    ac(o, dir) {
-      ctx.fillStyle = "#8d93a3"; rr(-15, -13, 30, 26, 3); ctx.fill();
-      ctx.fillStyle = "#4b5061";
-      ctx.beginPath(); ctx.arc(2 * dir, 0, 8.5, 0, 7); ctx.fill();
-      ctx.strokeStyle = "#9aa0b0"; ctx.lineWidth = 1.2;
-      const a = clock * 20;
-      for (let i = 0; i < 3; i++) { ctx.beginPath(); ctx.moveTo(2 * dir, 0); ctx.lineTo(2 * dir + Math.cos(a + i * 2.1) * 7, Math.sin(a + i * 2.1) * 7); ctx.stroke(); }
-      warn(() => rr(-15, -13, 30, 26, 3));
-    },
-    pot() {
-      ctx.fillStyle = "#3f8f4e";
-      ctx.beginPath(); ctx.ellipse(-4, -10, 5, 7, -0.5, 0, 7); ctx.ellipse(4, -11, 5, 7, 0.5, 0, 7); ctx.fill();
-      const path = () => { ctx.beginPath(); ctx.moveTo(-10, -4); ctx.lineTo(10, -4); ctx.lineTo(7, 11); ctx.lineTo(-7, 11); ctx.closePath(); };
-      ctx.fillStyle = "#c0643a"; path(); ctx.fill();
-      ctx.fillStyle = "#a24f2b"; ctx.fillRect(-10, -4, 20, 4);
-      warn(path);
-    },
-    block() {
-      ctx.fillStyle = "#8a8f99"; rr(-12, -10, 24, 20, 2); ctx.fill();
-      ctx.fillStyle = "#5e636d"; ctx.fillRect(-8, -5, 6, 10); ctx.fillRect(2, -5, 6, 10);
-      warn(() => rr(-12, -10, 24, 20, 2));
-    },
-    plank(o, dir) {
-      ctx.fillStyle = "#a8743f"; ctx.fillRect(-23, -6, 46, 12);
-      ctx.strokeStyle = "#7c5229"; ctx.lineWidth = 1;
-      ctx.beginPath(); ctx.moveTo(-20, -2); ctx.lineTo(18, -2); ctx.moveTo(-16, 2.5); ctx.lineTo(20, 2.5); ctx.stroke();
-      ctx.fillStyle = "#565b66"; ctx.fillRect(-23 * dir - (dir > 0 ? 0 : 3), -7, 3, 14);
-      dashCut(46, 12);
-    },
-    lantern() {
-      ctx.strokeStyle = "#2c2c33"; ctx.lineWidth = 1.2;
-      ctx.beginPath(); ctx.moveTo(0, -20); ctx.lineTo(0, -13); ctx.stroke();
-      ctx.save(); ctx.shadowColor = "rgba(255,90,60,0.7)"; ctx.shadowBlur = 10;
-      ctx.fillStyle = "#d8402f"; ctx.beginPath(); ctx.ellipse(0, 1, 10, 13, 0, 0, 7); ctx.fill();
-      ctx.restore();
-      ctx.strokeStyle = "rgba(255,200,150,0.6)"; ctx.lineWidth = 1;
-      for (const y of [-7, 1, 9]) { ctx.beginPath(); ctx.ellipse(0, y, 9.5, 2, 0, 0, Math.PI); ctx.stroke(); }
-      ctx.fillStyle = "#2c2c33"; ctx.fillRect(-5, -14, 10, 3); ctx.fillRect(-5, 13, 10, 3);
-      dashCut(20, 28);
-    },
-    crate() {
-      ctx.fillStyle = "#b4834a"; ctx.fillRect(-13, -13, 26, 26);
-      ctx.strokeStyle = "#7c5229"; ctx.lineWidth = 2.2;
-      ctx.strokeRect(-12, -12, 24, 24);
-      ctx.beginPath(); ctx.moveTo(-12, -12); ctx.lineTo(12, 12); ctx.stroke();
-      dashCut(26, 26);
-    },
-    melon() {
-      ctx.fillStyle = "#2f7d3c"; ctx.beginPath(); ctx.ellipse(0, 0, 12, 11, 0, 0, 7); ctx.fill();
-      ctx.strokeStyle = "#174d22"; ctx.lineWidth = 2;
-      for (const k of [-6, 0, 6]) { ctx.beginPath(); ctx.ellipse(k, 0, 2.5, 10.5, 0, 0, 7); ctx.stroke(); }
-      dashCut(24, 22);
-    },
+    coin(o) { tile(Math.floor(clock * 7 + o.phase * 3) % 2 ? "coinEdge" : "coin"); },
+    heart() { tile("heart"); },
+    // spikes are floor spikes: turn them so the base sits on the wall and the points face the gap
+    spikes(o, dir) { tile("spikes", { rot: dir * Math.PI / 2, dx: 9 * dir }); },
+    pipe(o, dir) { tile("pipe", { flip: dir < 0 }); },
+    brick() { tile("brick"); },
+    metal() { tile("metal"); },
+    plank() { tile("plank", { dy: 8 }); dashCut(36, 18); },
+    sign(o, dir) { tile("sign", { rot: dir * Math.PI / 2 }); dashCut(30, 34); },
+    crate() { tile("crate"); dashCut(32, 32); },
+    box() { tile("box"); dashCut(32, 32); },
   };
   function drawObject(o) {
     ctx.save();
@@ -375,15 +274,14 @@
     const spin = o.lane === "air" && o.kind !== "collect" ? Math.sin(clock * 3 + o.phase) * 0.25 : 0;
     ctx.translate(o.x, o.y + bob);
     if (spin) ctx.rotate(spin);
+    glow(o.kind);
     DRAW[o.type](o, o.side === "R" ? -1 : 1);
     ctx.restore();
   }
 
   // --- particles ---------------------------------------------------------------------------------
-  const PALETTE = {
-    plank: ["#a8743f", "#7c5229", "#d9a46a"], crate: ["#b4834a", "#7c5229", "#e0b47a"],
-    lantern: ["#d8402f", "#ffb38a", "#2c2c33"], melon: ["#e2434b", "#2f7d3c", "#ffd3d6"],
-  };
+  const WOOD = ["#c8834a", "#8a5530", "#e8b07a"];
+  const PALETTE = { plank: WOOD, sign: WOOD, crate: WOOD, box: WOOD };
   function burst(x, y, colors, n, speed = 160, life = 0.6) {
     for (let i = 0; i < n; i++) {
       const a = Math.random() * Math.PI * 2, v = speed * (0.3 + Math.random());
@@ -405,18 +303,13 @@
 
   // --- HUD -------------------------------------------------------------------------------------------
   function heart(x, y, full) {
-    ctx.fillStyle = full ? "#ff5a4f" : "rgba(255,255,255,0.18)";
-    ctx.beginPath();
-    ctx.moveTo(x, y + 5);
-    ctx.bezierCurveTo(x - 9, y - 2, x - 5, y - 9, x, y - 4);
-    ctx.bezierCurveTo(x + 5, y - 9, x + 9, y - 2, x, y + 5);
-    ctx.fill();
+    ctx.save(); ctx.translate(x, y); ctx.scale(0.6, 0.6); tile(full ? "heart" : "heartEmpty"); ctx.restore();
   }
   function drawHud(g) {
     const grd = ctx.createLinearGradient(0, 0, 0, 70);
     grd.addColorStop(0, "rgba(5,7,16,0.75)"); grd.addColorStop(1, "rgba(5,7,16,0)");
     ctx.fillStyle = grd; ctx.fillRect(0, 0, W, 70);
-    for (let i = 0; i < E.MAX_HEARTS; i++) heart(18 + i * 20, 24, i < g.hearts);
+    for (let i = 0; i < E.MAX_HEARTS; i++) heart(20 + i * 22, 24, i < g.hearts);
     ctx.textAlign = "center"; ctx.fillStyle = "#fff";
     ctx.font = "700 26px ui-sans-serif, system-ui, sans-serif";
     ctx.fillText(`${g.meters} m`, W / 2, 32);
@@ -425,7 +318,7 @@
     ctx.textAlign = "right"; ctx.fillStyle = "#f5c242";
     ctx.font = "700 15px ui-monospace, monospace";
     ctx.fillText(`${g.coins}`, W - 14, 29);
-    ctx.beginPath(); ctx.arc(W - 14 - ctx.measureText(`${g.coins}`).width - 10, 24, 6, 0, 7); ctx.fill();
+    ctx.save(); ctx.translate(W - 14 - ctx.measureText(`${g.coins}`).width - 12, 24); ctx.scale(0.55, 0.55); tile("coin"); ctx.restore();
     ctx.textAlign = "left";
   }
 
@@ -541,20 +434,23 @@
   function syncMute() { muteBtn.textContent = muted ? "🔇" : "🔊"; muteBtn.setAttribute("aria-pressed", String(muted)); }
   muteBtn.addEventListener("click", () => { muted = !muted; store.set("ninja-mute", muted ? "1" : "0"); syncMute(); });
 
-  // --- legend thumbnails on the title card (drawn with the same art) --------------------------------------------
-  for (const cv of document.querySelectorAll("canvas[data-legend]")) {
-    const lc = cv.getContext("2d"), kind = cv.dataset.legend;
-    const sets = { collect: [["coin", 26], ["onigiri", 58]], avoid: [["spikes", 22], ["pot", 60]], cut: [["lantern", 26], ["melon", 60]] };
-    lc.scale(2, 2);
-    for (const [type, x] of sets[kind]) {
-      lc.save(); lc.translate(x, 22);
-      // borrow the main renderer's drawing code by pointing it at this context
-      const o = { type, side: "L", phase: 0, kind: E.TYPES[type].kind };
-      drawWith(lc, () => DRAW[type](o, 1));
-      lc.restore();
+  // --- legend thumbnails on the title card (drawn with the same sprites) ------------------------------------------
+  function drawLegends() {
+    for (const cv of document.querySelectorAll("canvas[data-legend]")) {
+      const lc = cv.getContext("2d"), kind = cv.dataset.legend;
+      const sets = { collect: [["coin", 24], ["heart", 60]], avoid: [["spikes", 22], ["metal", 60]], cut: [["crate", 24], ["sign", 62]] };
+      lc.setTransform(2, 0, 0, 2, 0, 0);
+      lc.clearRect(0, 0, 84, 44);
+      for (const [type, x] of sets[kind]) {
+        lc.save(); lc.translate(x, 22); lc.scale(0.85, 0.85);
+        const o = { type, side: "L", phase: 0, kind: E.TYPES[type].kind };
+        drawWith(lc, () => { glow(o.kind); DRAW[type](o, 1); });
+        lc.restore();
+      }
     }
   }
   function drawWith(c, fn) { ctx = c; try { fn(); } finally { ctx = mainCtx; } }
+  if (ready(TILES)) drawLegends(); else TILES.addEventListener("load", drawLegends);
 
   syncMute();
   syncBest();

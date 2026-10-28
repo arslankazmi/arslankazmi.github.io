@@ -18,7 +18,7 @@ falling objects plus wall objects, the three object types and a slash that only 
 **Everything below is the builder's call** unless noted.
 
 Lives at `/fun/ninja-ascent/`, a sibling of Tritris and Gradient Descent Golf. Same shape: plain
-HTML5 canvas + WebAudio, no framework, no build step, no external assets.
+HTML5 canvas + WebAudio, no framework, no build step. Sprites are CC0 (see §6).
 
 ```
 fun/ninja-ascent/
@@ -55,9 +55,9 @@ fun/ninja-ascent/
 
 | | on a wall (scrolls with the building) | falling (faster than the scroll) |
 |---|---|---|
-| collectable | coin trails | coin arcs across the gap; rare **onigiri** = +1 heart (max 3) |
-| avoidable | spikes, AC units | flower pots, cinder blocks |
-| cuttable | wooden planks, paper lanterns | crates, watermelons |
+| collectable | coin trails | coin arcs across the gap; rare **heart** = +1 heart (max 3) |
+| avoidable | spikes, pipes | bricks, metal blocks |
+| cuttable | wooden planks, signs | crates, boxes |
 
 Falling objects drop either hugging a building face (a threat to a ninja running there) or down
 the middle (a threat to a ninja mid-jump).
@@ -67,7 +67,7 @@ the middle (a threat to a ninja mid-jump).
 The spawner emits a **row** every `0.95 s → 0.55 s` (shrinking with difficulty `d = min(1,
 distance / 12000)`). Each row is one weighted **pattern**: wall hazard, wall cuttable, wall coins,
 coin arc, falling hazard, falling cuttable, a hazard-plus-cuttable combo (only once `d > 0.35`), or
-a rare onigiri when hurt. Hazards get more common and falling ones only appear once the run is
+a rare heart when hurt. Hazards get more common and falling ones only appear once the run is
 under way.
 
 Fairness is enforced on **arrival times**, meaning when each avoidable will reach the ninja's line:
@@ -89,8 +89,14 @@ score is stored in `localStorage` (try/catch, optional).
 
 * Night sky with a moon and a parallax skyline (scrolls at 0.2×). Building faces have a window grid
   with deterministic lit windows, edge highlights and rooftop-free endless height.
-* Ninja: a black silhouette with a red headband whose tails stream behind, legs cycling against the
-  wall, a sword on the back, a tuck-and-spin mid-jump, and an arc trail on a slash.
+* **Sprites (CC0).** Ninja: *Ninja [Animated]* by morgan3d & DezrasDragons, 32×32 pixel art drawn at 2×
+  with nearest-neighbour scaling. The climb column is the wall-run (mirrored for the left wall), the jump
+  column plays across a leap, and the attack column plays during a slash. Objects: Kenney's *Pixel
+  Platformer* tiles, also at 2× (spikes and signs rotated to stick out from the wall). The pack is
+  chunky pixel art, so everything wooden reads as cuttable and everything stone/metal as avoidable. A
+  red pulse marks avoidables, gold glow marks collectables and a dashed line marks cuttables. Credits
+  live in `ASSET_CREDITS.md` and on the acknowledgements page.
+* Buildings, sky, moon and the slash arc stay drawn in code (neither pack has a night city).
 * Particles for cuts (wood chips / melon splash), coin sparkles and hits. A short screen shake on a
   hit.
 * Synthesized WebAudio: jump whoosh, slash swish, cut thunk, coin ding, hit thud, game-over sting.
@@ -104,12 +110,11 @@ score is stored in `localStorage` (try/catch, optional).
 * jump crosses in 0.30 s; no jump mid-air;
 * the slash cuts cuttables in range, but not avoidables, collectables or anything out of range;
 * hits cost one heart, i-frames block a double hit, and zero hearts ends the run;
-* coins and onigiri apply; speed ramps monotonically and respects the cap;
+* coins and heart pickups apply; speed ramps monotonically and respects the cap;
 * **fairness:** over long simulated runs, avoidable arrivals never break the §4 rules;
 * **playability:** a simple look-ahead bot (jump away from incoming hazards, slash incoming
   cuttables) survives well past the early game on most seeds.
 
 ## 8. Out of scope (for now)
 
-Power-ups beyond onigiri, characters/skins, online leaderboard, sprite art (the art is drawn in code
-and can be swapped for openly licensed sprites later).
+Power-ups beyond hearts, characters/skins, online leaderboard, sprite art for the buildings and sky.
