@@ -60,6 +60,7 @@
       font-family: var(--font-mono, monospace); font-size: 13px; padding: 9px 4px; border-radius: 10px; cursor: pointer;
       border: 1px solid var(--border-strong, #cfc9bb); background: var(--bg, #edece4); color: var(--fg1, #1a1a1a);
     }
+    .opt:disabled { opacity: 0.4; cursor: not-allowed; }
     .opt[aria-pressed="true"] { background: var(--accent, #178e8b); border-color: var(--accent, #178e8b); color: #fff; }
     .opt kbd { all: unset; opacity: 0.6; font-size: 10px; margin-left: 4px; }
     .lab .sym, .k .sym { text-transform: none; font-size: 13px; }
@@ -149,6 +150,7 @@
             <b>↑ ↓</b><span>momentum β</span>
             <b>R · N · M</b><span>restart hole · new course · mute</span>
           </div>
+          <p class="mono">Holes 1–3: GD only · Momentum unlocks on hole 4 · Adam on hole 7.</p>
           <p class="mono">Leave the map = diverged (+1 penalty). Too fast over the cup = lip-out. 9 random holes per course.</p>
           <button id="startBtn" class="primary">Tee off</button>
         </div>

@@ -273,7 +273,13 @@
   function caddie(head, body) { $("caddieHead").textContent = head; $("caddieBody").textContent = body; }
 
   function syncControls() {
-    for (const b of document.querySelectorAll(".opt")) b.setAttribute("aria-pressed", String(b.dataset.opt === cfg.opt));
+    const allowed = course ? course.hole.allowed : E.OPTIMIZERS;
+    for (const b of document.querySelectorAll(".opt")) {
+      const locked = !allowed.includes(b.dataset.opt);
+      b.setAttribute("aria-pressed", String(b.dataset.opt === cfg.opt));
+      b.disabled = locked;
+      b.title = locked ? `Unlocks on hole ${b.dataset.opt === "momentum" ? 4 : 7}` : "";
+    }
     const lr = cfg.lr[cfg.opt];
     $("lr").value = String(Math.round(((Math.log10(lr) + 3) / 3) * 300));
     $("lrOut").textContent = lr < 0.01 ? lr.toFixed(4) : lr < 0.1 ? lr.toFixed(3) : lr.toFixed(2);
@@ -287,18 +293,27 @@
     cfg.lr[cfg.opt] = 10 ** (-3 + (3 * Math.max(0, Math.min(300, v))) / 300);
     syncControls();
   }
-  function setOpt(opt) { cfg.opt = opt; syncControls(); }
+  function setOpt(opt) { if (course.hole.allowed.includes(opt)) { cfg.opt = opt; syncControls(); } }
 
   // --- flow ------------------------------------------------------------------------------
+  const UNLOCKS = {
+    0: ["Hole 1 · plain GD only.", "Momentum unlocks on hole 4 and Adam on hole 7. Plain GD first: find the learning rate that's big enough to arrive and small enough not to diverge."],
+    3: ["New club: Momentum (2).", "A heavy ball: velocity carries over between steps, so it builds speed down long valleys and rolls over small dips. β sets how much it remembers."],
+    6: ["New club: Adam (3).", "Adam rescales each step by the recent size of the gradient, so its step is about η whether the slope is steep or flat. It's the forgiving one, and that's why it's everyone's default."],
+  };
   function loadHole() {
     anim = null;
     mapCanvas = renderMap(course.hole);
     const h = course.hole;
+    if (!h.allowed.includes(cfg.opt)) cfg.opt = "gd";
+    syncControls();
     const notes = [];
     if (h.kappa > 5) notes.push("a long, narrow ravine");
     if (h.wells.length > 2) notes.push(`${h.wells.length - 1} sand traps`);
     if (h.wind) notes.push("gusty wind");
-    caddie(`Hole ${course.holeIdx + 1} · par ${h.par}`,
+    const unlock = UNLOCKS[course.holeIdx];
+    if (unlock) caddie(unlock[0], unlock[1]);
+    else caddie(`Hole ${course.holeIdx + 1} · par ${h.par}`,
       notes.length ? `Watch out for ${notes.join(", ")}. Hover the map to read the loss anywhere.`
         : "A gentle one. Read the contours, set η, and descend.");
     updateHud();

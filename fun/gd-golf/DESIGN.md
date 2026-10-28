@@ -58,7 +58,8 @@ Difficulty ramps with hole index `t = i/8`:
    sideways jitter) with probability `t`, otherwise anywhere — so hazards get in the way as the
    course goes on instead of sitting harmlessly in a corner.
 3. **It is solvable in one shot.** The engine plays the first stroke itself over a hyperparameter
-   grid (GD × 14 learning rates, Momentum × 14 × 4 β values, Adam × 14) — with the *exact* wind the
+   grid (GD × 14 learning rates, Momentum × 14 × 4 β values, Adam × 14 — only the optimizers
+   unlocked on that hole) — with the *exact* wind the
    player will get on stroke 1 — and at least one configuration must sink it.
 
 After 40 rejected candidates the generator relaxes (fewer decoys, lower κ), so it always
@@ -66,13 +67,21 @@ terminates.
 
 **Par is data-driven**: the fraction `f` of the grid that holes it in one shot.
 `f ≥ 30% → par 2`, `f ≥ 10% → par 3`, else `par 4`. Measured over 80 courses, `f` falls from
-~27% on hole 1 to ~15% on hole 9, and par shifts from mostly 3 to a 3/4 mix.
+~27% on hole 1 to ~15% on hole 9, and par shifts from mostly 3 to a 3/4 mix. With optimizer
+unlocks (§3) `f` sits at ~14–18% throughout: harder terrain is offset by a stronger toolset.
 
 ## 3. A shot
 
 The ball starts each stroke at rest wherever the last one ended. The player sets:
 
-* **Optimizer** — `GD`, `Momentum`, `Adam`.
+* **Optimizer** — `GD`, `Momentum`, `Adam`, **unlocked as the course goes on**: holes 1–3 GD only,
+  4–6 add Momentum, 7–9 add Adam. Each hole's solvability check and par use only its unlocked
+  optimizers. Why: measured over 720 holes, Adam sinks a hole in one shot at ~32% of learning rates
+  vs ~20% for Momentum and ~10% for GD. Its step is ≈η regardless of slope, so it's the forgiving
+  one. With everything available from hole 1, "always pick Adam" would be the whole strategy; with
+  unlocks each method gets its own stretch and Adam arrives as the payoff. (A stricter lip-out
+  rule for Adam was tried first and barely moved that number: within one 50-step stroke Adam's
+  second-moment memory makes its steps shrink near the cup too.)
 * **Learning rate η** — log slider, `1e-3 … 1`. Each optimizer remembers its own η.
 * **Momentum β** — `0 … 0.99` (Momentum only; Adam uses fixed β₁=0.9, β₂=0.999).
 

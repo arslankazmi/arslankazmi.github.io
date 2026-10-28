@@ -260,6 +260,12 @@
     ...LRS.map((lr) => ({ opt: "adam", lr, beta: 0 })),
   ];
 
+  /**
+   * Optimizers unlock as the course goes on: GD alone for holes 1–3, then
+   * Momentum, then Adam for 7–9 — each method gets its own stretch of holes.
+   */
+  function allowedFor(index) { return index < 3 ? ["gd"] : index < 6 ? ["gd", "momentum"] : OPTIMIZERS.slice(); }
+
   function parFor(frac) { return frac >= 0.3 ? 2 : frac >= 0.1 ? 3 : 4; }
 
   /** Hole `index` (0-based) of course `courseSeed` (int). Deterministic. */
@@ -272,6 +278,7 @@
       const t = attempt >= 200 ? 0 : t0 * 0.5 ** Math.floor(attempt / 40);
       const h = candidate(rand, t, seed);
       h.index = index;
+      h.allowed = allowedFor(index);
       h.wind = index < 3 || t === 0 ? 0 : 0.6 * t * (0.6 + 0.4 * rand());
       h.minima = findMinima(h);
       const best = h.minima[0];
@@ -281,12 +288,13 @@
       h.cupLoss = best.loss;
       const tee = h.tee;
       if (Math.hypot(tee[0] - best.x, tee[1] - best.y) < 0.95) continue;
+      const grid = GRID.filter((c) => h.allowed.includes(c.opt));
       let solved = 0, solution = null;
-      for (const cfg of GRID) {
+      for (const cfg of grid) {
         if (simulate(h, tee, cfg, 1).outcome === "holed") { solved++; solution = solution || cfg; }
       }
       if (!solved) continue;
-      h.solveFrac = solved / GRID.length;
+      h.solveFrac = solved / grid.length;
       h.solution = solution;
       h.par = parFor(h.solveFrac);
       h.attempts = attempt + 1;
@@ -326,6 +334,7 @@
     shoot(cfg) {
       if (this.done) return null;
       const h = this.hole;
+      if (!h.allowed.includes(cfg.opt)) return null;   // still locked
       const from = this.ball.slice();
       const res = simulate(h, from, cfg, this.strokes + 1);
       const kind = classify(h, res, cfg);
@@ -366,6 +375,6 @@
   globalThis.GolfEngine = {
     HOLES, STEPS, CUP_R, LIP, MAX_STROKES, LR_MIN, LR_MAX, LRS, BETAS, GRID, OPTIMIZERS, OPT_NAMES, LESSONS,
     mulberry32, hash, seedToInt, randomSeed, lossGrad, loss, findMinima, simulate, classify,
-    generateHole, parFor, Course, scoreName,
+    generateHole, parFor, allowedFor, Course, scoreName,
   };
 })();

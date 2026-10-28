@@ -101,9 +101,10 @@ const SEEDS = Number(process.env.SEEDS || 60);
       const solves = simulate(h, h.tee, h.solution, 1).outcome === "holed";
       const parOk = h.par === 2 || h.par === 3 || h.par === 4;
       const calm = i >= 3 || h.wind === 0;
-      if (!(lowest && far && inside && solves && parOk && calm)) {
+      const unlocked = JSON.stringify(h.allowed) === JSON.stringify(E.allowedFor(i)) && h.allowed.includes(h.solution.opt);
+      if (!(lowest && far && inside && solves && parOk && calm && unlocked)) {
         bad++;
-        if (bad <= 5) fails.push(`seed ${s} hole ${i + 1}: lowest=${lowest} far=${far} inside=${inside} solves=${solves} par=${h.par} calm=${calm}`);
+        if (bad <= 5) fails.push(`seed ${s} hole ${i + 1}: lowest=${lowest} far=${far} inside=${inside} solves=${solves} par=${h.par} calm=${calm} unlocked=${unlocked}`);
       }
     }
   }
@@ -134,6 +135,16 @@ const SEEDS = Number(process.env.SEEDS || 60);
   }
   while (!d.done) d.shoot({ opt: "gd", lr: 0.001, beta: 0 });
   ok(d.strokes === MAX_STROKES && d.pickedUp, "picked up at the stroke cap");
+}
+
+// --- optimizer unlocks ------------------------------------------------------------------------------
+{
+  ok(JSON.stringify(E.allowedFor(0)) === '["gd"]' && JSON.stringify(E.allowedFor(2)) === '["gd"]', "holes 1–3: GD only");
+  ok(JSON.stringify(E.allowedFor(3)) === '["gd","momentum"]' && JSON.stringify(E.allowedFor(5)) === '["gd","momentum"]', "holes 4–6: + Momentum");
+  ok(E.allowedFor(6).length === 3 && E.allowedFor(8).includes("adam"), "holes 7–9: + Adam");
+  const c = new Course("locks1");
+  ok(c.shoot({ opt: "adam", lr: 0.03, beta: 0 }) === null && c.strokes === 0, "a locked optimizer can't be used (no stroke taken)");
+  ok(c.shoot({ opt: "gd", lr: 0.01, beta: 0 }) !== null && c.strokes >= 1, "an unlocked optimizer can");
 }
 
 ok(E.scoreName(1, 3) === "Hole in one!" && E.scoreName(2, 3) === "Birdie" && E.scoreName(5, 3) === "Double bogey", "score names");
