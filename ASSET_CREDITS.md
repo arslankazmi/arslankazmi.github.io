@@ -31,5 +31,8 @@
   0146, 0086, 0026, 0047) from [*Pixel Platformer* 1.2](https://kenney.nl/assets/pixel-platformer) by
   [Kenney](https://kenney.nl), **CC0**, packed into one strip. Downloaded from the
   [OpenGameArt mirror](https://opengameart.org/content/pixel-platformer-0).
+- **`fun/snowglobe/`**: 3D via [three.js](https://threejs.org/) `0.160.0` (**MIT**, mrdoob and contributors),
+  loaded from jsDelivr, not vendored. No other borrowed assets: geometry, textures and sounds are generated in code.
+  `fun/assets/snowglobe-thumb.jpg` is a screenshot of the game.
 - **`assets/logo-ak*.png`, `favicon.svg`, `stamp.svg`, `heart-pin.svg`, `monogram.svg`,
   `asterism.svg`** — Arslan Kazmi design-system brand marks.
