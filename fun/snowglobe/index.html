@@ -1,0 +1,179 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <title>Snow Globe · arslan.land</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="description" content="Snow Globe — a tiny town inside a snow globe grows from huts to skyscrapers, then a blizzard brings a new civilisation somewhere else in the world. Spin it, shake it, speed up time."/>
+  <link rel="icon" type="image/svg+xml" href="/assets/favicon.svg"/>
+  <!-- Personal (paper) theme for the page chrome. -->
+  <link rel="stylesheet" href="https://arslankazmi.github.io/ak-design/dist/personal.css"/>
+  <script type="importmap">
+    { "imports": {
+        "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+        "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+    } }
+  </script>
+  <style>
+    * { box-sizing: border-box; }
+    html, body { margin: 0; }
+    body {
+      background: var(--bg, #edece4);
+      color: var(--fg1, #1a1a1a);
+      font-family: var(--font-body, system-ui, sans-serif);
+      min-height: 100vh;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .wrap { max-width: 1040px; margin: 0 auto; padding: 16px 16px 40px; }
+
+    .topbar { display: flex; align-items: center; gap: 12px; margin-bottom: 14px; flex-wrap: wrap; }
+    .brand { display: flex; align-items: baseline; gap: 12px; margin-right: auto; flex-wrap: wrap; }
+    .brand h1 { font-family: var(--font-display, Georgia, serif); font-size: clamp(24px, 4.4vw, 36px); margin: 0; letter-spacing: -0.02em; }
+    .brand h1 .r { color: #3f7fa0; }
+    .brand .tag { font-family: var(--font-mono, monospace); font-size: 12px; color: var(--fg2, #666); }
+    .iconbtn, .textbtn {
+      font-family: var(--font-mono, monospace); font-size: 13px;
+      border: 1px solid var(--border-strong, #cfc9bb); background: var(--bg-elevated, #fff);
+      color: var(--fg1, #1a1a1a); border-radius: 10px; padding: 8px 12px; cursor: pointer;
+      transition: transform var(--dur-fast, 120ms), background var(--dur-fast, 120ms);
+    }
+    .iconbtn:hover, .textbtn:hover { transform: translateY(-1px); background: var(--accent-soft, #e8f3f2); }
+    a.textbtn { text-decoration: none; }
+
+    .stage { display: flex; gap: 20px; align-items: flex-start; justify-content: center; flex-wrap: wrap; }
+    .col { display: flex; flex-direction: column; align-items: center; gap: 12px; min-width: 0; }
+    .boardbox {
+      position: relative; border-radius: 18px; overflow: hidden;
+      width: min(72vh, 680px, calc(100vw - 32px)); aspect-ratio: 1 / 1.06;
+      background: radial-gradient(ellipse at 50% 38%, #f8f1df 0%, #ecdfc1 55%, #d9c49b 100%);
+      box-shadow: var(--shadow-lg, 0 12px 40px rgba(0,0,0,0.18)); border: 1px solid rgba(90,60,20,0.25);
+    }
+    /* a sepia vignette and a little paper grain over the scene */
+    .boardbox::after {
+      content: ""; position: absolute; inset: 0; pointer-events: none; border-radius: inherit;
+      background:
+        radial-gradient(ellipse at 50% 45%, rgba(0,0,0,0) 55%, rgba(80,50,15,0.28) 100%),
+        url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.35  0 0 0 0 0.25  0 0 0 0 0.1  0 0 0 0.10 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+      mix-blend-mode: multiply;
+    }
+    canvas#globe { display: block; width: 100%; height: 100%; touch-action: none; cursor: grab; }
+    canvas#globe:active { cursor: grabbing; }
+
+    .bubble {
+      position: absolute; z-index: 3; transform: translate(-50%, calc(-100% - 10px)) scale(0.9); opacity: 0;
+      pointer-events: none; transition: opacity 160ms, transform 160ms;
+      background: #fffaf0; color: #3e2a0e; border: 2px solid #3b2618; border-radius: 14px;
+      padding: 6px 11px; font-family: var(--font-display, Georgia, serif); font-size: 14px; white-space: nowrap;
+      box-shadow: 0 3px 0 rgba(59,38,24,0.25);
+    }
+    .bubble::after {
+      content: ""; position: absolute; left: 50%; bottom: -9px; width: 12px; height: 12px; background: #fffaf0;
+      border-right: 2px solid #3b2618; border-bottom: 2px solid #3b2618; transform: translateX(-50%) rotate(45deg);
+    }
+    .bubble.show { opacity: 1; transform: translate(-50%, calc(-100% - 10px)) scale(1); }
+
+    .controls { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; }
+    .controls button {
+      font-family: var(--font-mono, monospace); font-size: 13px; min-width: 44px; height: 40px; padding: 0 12px;
+      border: 1px solid var(--border-strong, #cfc9bb); background: var(--bg-elevated, #fff); color: var(--fg1, #1a1a1a);
+      border-radius: 10px; cursor: pointer; box-shadow: 0 2px 0 rgba(0,0,0,0.1);
+    }
+    .controls button.on { background: #3b2618; color: #f8f1df; border-color: #3b2618; }
+    .controls .group { display: flex; gap: 4px; }
+    .controls .shake { border-color: #3f7fa0; color: #3f7fa0; }
+
+    .side { width: 260px; display: flex; flex-direction: column; gap: 12px; }
+    .card {
+      background: var(--bg-elevated, #fff); border: 1px solid var(--border, #e2ddd0);
+      border-radius: 14px; padding: 12px 14px; box-shadow: var(--shadow-sm, 0 2px 8px rgba(0,0,0,0.06));
+      font-size: 13.5px; line-height: 1.55; color: var(--fg2, #555);
+    }
+    .card .lab { font-family: var(--font-mono, monospace); font-size: 10.5px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--fg3, #999); margin-bottom: 4px; }
+    .card b { color: var(--fg1, #1a1a1a); }
+    .card .keys { font-family: var(--font-mono, monospace); font-size: 12px; line-height: 1.8; }
+    .now h3 { font-family: var(--font-display, Georgia, serif); font-size: 21px; margin: 0; color: var(--fg1, #1a1a1a); line-height: 1.15; }
+    .now .era { font-family: var(--font-display, Georgia, serif); font-style: italic; font-size: 15px; color: var(--fg1, #1a1a1a); }
+    .now .meta { font-family: var(--font-mono, monospace); font-size: 12px; margin-top: 6px; }
+    .dots { display: flex; gap: 5px; margin-top: 10px; }
+    .dots span { flex: 1; height: 6px; border-radius: 3px; background: var(--bg-sunken, #e6e0d2); }
+    .dots span.done { background: #c9a25a; }
+    .dots span.now { background: #3f7fa0; }
+    .bar { height: 3px; border-radius: 2px; background: var(--bg-sunken, #e6e0d2); margin-top: 6px; overflow: hidden; }
+    .bar i { display: block; height: 100%; width: 0; background: #3f7fa0; transition: width 0.5s linear; }
+    .seed { font-family: var(--font-mono, monospace); font-size: 11px; color: var(--fg3, #999); }
+
+    footer.foot { margin-top: 26px; text-align: center; font-family: var(--font-mono, monospace); font-size: 12px; color: var(--fg2, #666); }
+    footer.foot a { color: var(--accent, #178e8b); }
+
+    @media (max-width: 760px) {
+      .side { width: 100%; max-width: 680px; }
+      .side .howto, .side .keyscard { display: none; }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="topbar">
+      <div class="brand">
+        <h1>Snow <span class="r">Globe</span></h1>
+        <span class="tag">all of history, on your desk</span>
+      </div>
+      <button id="muteBtn" class="iconbtn" title="Sound (M)" aria-pressed="false">🔇</button>
+      <a class="textbtn" href="../index.html">← Fun</a>
+    </div>
+
+    <div class="stage">
+      <div class="col">
+        <div class="boardbox">
+          <canvas id="globe" aria-label="A snow globe with a tiny town inside. Drag to spin it."></canvas>
+          <div id="bubble" class="bubble" role="status" aria-live="polite"></div>
+        </div>
+        <div class="controls">
+          <div class="group">
+            <button id="pauseBtn" title="Pause (Space)">❚❚</button>
+            <button data-speed="1" title="Normal speed (1)">1×</button>
+            <button data-speed="4" title="Faster (2)">4×</button>
+            <button data-speed="16" title="Much faster (3)">16×</button>
+          </div>
+          <button id="nextBtn" title="Skip to the next age (N)">next age ⏭</button>
+          <button id="shakeBtn" class="shake" title="Shake the globe (S)">shake ❄</button>
+        </div>
+      </div>
+
+      <div class="side">
+        <div class="card now">
+          <div class="lab">Inside the glass</div>
+          <h3 id="hudPlace">—</h3>
+          <div class="era"><span id="hudAge">—</span> · <span id="hudYear"></span></div>
+          <div class="meta"><span id="hudSeason"></span> · <span id="hudWeather"></span></div>
+          <div class="meta" id="hudCount"></div>
+          <div class="dots" id="ageDots"></div>
+          <div class="bar"><i id="ageFill"></i></div>
+        </div>
+        <div class="card howto">
+          <div class="lab">What you're looking at</div>
+          A tiny town grows from a few huts to a city, one age at a time. When it reaches today, a
+          <b>blizzard</b> fills the glass, and a new people start over somewhere else in the world.
+          <b>Tap</b> a building or a person to say hello.
+        </div>
+        <div class="card keyscard keys">
+          <b>drag</b> spin · <b>flick</b> shake<br>
+          <b>scroll</b> / <b>pinch</b> zoom<br>
+          <b>Space</b> pause · <b>1 2 3</b> speed<br>
+          <b>N</b> next age · <b>S</b> shake · <b>M</b> sound
+        </div>
+        <div class="seed"><a id="seedLink" href="#">seed</a> · link to this globe</div>
+      </div>
+    </div>
+
+    <footer class="foot">
+      3D by <a href="https://threejs.org/">three.js</a> (MIT). Everything else is drawn in code and the sounds are synthesized.
+      Part of <a href="../index.html">Fun</a> · <a href="../../acknowledgements/index.html">credits</a> ·
+      <a href="https://github.com/arslankazmi/arslankazmi.github.io/tree/main/fun/snowglobe">source</a>.
+    </footer>
+  </div>
+
+  <script src="sim.js"></script>
+  <script type="module" src="main.js"></script>
+</body>
+</html>
