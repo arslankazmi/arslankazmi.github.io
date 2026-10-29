@@ -491,6 +491,131 @@ export function landmark(b, region) {
       k.spinner(bl, [0, y0 + 3.01, 0.17], 2.4);
       break;
     }
+    case "greatbath": {
+      const brick = "#b8714a";
+      k.add(box(W, 0.28, D, 0, y0 - 0.06, 0), brick);
+      const pw = W * 0.5, pd = D * 0.42;
+      k.add(box(pw, 0.05, pd, 0, y0 + 0.14, 0), "#5f9fb0", false);
+      for (const [x, z, w, d] of [[0, -pd / 2 - 0.05, pw + 0.2, 0.1], [0, pd / 2 + 0.05, pw + 0.2, 0.1], [-pw / 2 - 0.05, 0, 0.1, pd], [pw / 2 + 0.05, 0, 0.1, pd]]) k.add(box(w, 0.08, d, x, y0 + 0.22, z), shade(brick, 0.08), false);
+      for (let i = 0; i < 3; i++) k.add(box(0.3, 0.06, 0.08, 0, y0 + 0.16 + i * 0.03, pd / 2 - 0.06 - i * 0.08), shade(brick, 0.12), false);
+      for (const s of [-1, 1]) for (let i = 0; i < 3; i++) k.add(box(0.36, 0.3, 0.32, s * W * 0.38, y0 + 0.22, -D * 0.3 + i * D * 0.3), shade(brick, -0.06));
+      break;
+    }
+    case "granary": {
+      const brick = "#a9643f";
+      k.add(box(W, 0.3, D, 0, y0 - 0.06, 0), brick);
+      for (let r = 0; r < 2; r++) for (let i = 0; i < 4; i++) {
+        const x = -W * 0.36 + (i * W * 0.72) / 3, z = (r - 0.5) * D * 0.5;
+        k.add(box(W * 0.17, 0.3, D * 0.36, x, y0 + 0.24, z), shade(brick, 0.06));
+        k.add(box(W * 0.2, 0.05, D * 0.4, x, y0 + 0.54, z), "#8a5a38");
+      }
+      k.add(box(0.3, 0.06, 0.4, 0, y0 + 0.24, D / 2 + 0.1), shade(brick, 0.12), false);
+      break;
+    }
+    case "stupa": {
+      const c = "#efe6d2";
+      k.add(box(W, 0.18, D, 0, y0 - 0.04, 0), "#c9b48a");
+      k.add(cyl(S * 0.36, S * 0.38, 0.22, 20, 0, y0 + 0.14, 0), c);
+      k.add(dome(S * 0.33, 0, y0 + 0.36, 0), c);
+      k.add(box(0.2, 0.12, 0.2, 0, y0 + 0.36 + S * 0.32, 0), "#c9b48a");
+      k.add(cyl(0.015, 0.015, 0.4, 5, 0, y0 + 0.48 + S * 0.32, 0), WOOD, false);
+      for (let i = 0; i < 3; i++) k.add(cyl(0.12 - i * 0.03, 0.12 - i * 0.03, 0.025, 10, 0, y0 + 0.56 + S * 0.32 + i * 0.1, 0), GOLD, false);
+      for (let i = 0; i < 16; i++) { const a = (i / 16) * Math.PI * 2; k.add(box(0.04, 0.16, 0.04, Math.cos(a) * S * 0.46, y0 + 0.14, Math.sin(a) * S * 0.46), "#c9b48a", false); }
+      break;
+    }
+    case "shikhara": {
+      const c = "#d9a066";
+      k.add(box(W, 0.14, D, 0, y0 - 0.04, 0), "#c9a878");
+      k.add(box(W * 0.55, 0.5, W * 0.55, 0, y0 + 0.1, -D * 0.14), c);
+      let y = y0 + 0.6;
+      for (let i = 0; i < 6; i++) { const r = W * 0.34 * (1 - (i / 6) ** 1.6 * 0.75); k.add(cyl(r * 0.94, r, 0.22, 8, 0, y, -D * 0.14), shade(c, i % 2 ? 0.05 : -0.04)); y += 0.22; }
+      k.add(cyl(0.16, 0.16, 0.06, 12, 0, y, -D * 0.14), shade(c, 0.1));
+      k.add(cone(0.05, 0.16, 8, 0, y + 0.06, -D * 0.14), GOLD, false);
+      k.add(box(W * 0.45, 0.36, D * 0.32, 0, y0 + 0.1, D * 0.24), c);
+      k.add(pyr(W * 0.52, 0.32, D * 0.38, 0, y0 + 0.46, D * 0.24), shade(c, -0.08));
+      k.add(box(0.03, 0.4, 0.03, W * 0.2, y0 + 0.78, D * 0.3), "#555", false);
+      k.add(box(0.2, 0.12, 0.01, W * 0.2 + 0.1, y0 + 1.06, D * 0.3), "#e8742a", false);
+      break;
+    }
+    case "tomb": {
+      const brick = "#b8714a", blue = "#3f78b0";
+      k.add(new THREE.CylinderGeometry(S * 0.44, S * 0.48, 0.75, 8).rotateY(Math.PI / 8).translate(0, y0 + 0.375, 0), brick);
+      k.add(new THREE.CylinderGeometry(S * 0.445, S * 0.445, 0.08, 8).rotateY(Math.PI / 8).translate(0, y0 + 0.62, 0), blue, false);
+      k.add(new THREE.CylinderGeometry(S * 0.32, S * 0.34, 0.4, 8).rotateY(Math.PI / 8).translate(0, y0 + 0.95, 0), brick);
+      k.add(new THREE.CylinderGeometry(S * 0.325, S * 0.325, 0.06, 8).rotateY(Math.PI / 8).translate(0, y0 + 1.06, 0), blue, false);
+      k.add(dome(S * 0.3, 0, y0 + 1.15, 0), "#f2ede2");
+      k.add(cone(0.04, 0.18, 6, 0, y0 + 1.15 + S * 0.3, 0), GOLD, false);
+      for (let i = 0; i < 8; i++) { const a = (i / 8) * Math.PI * 2 + Math.PI / 8; k.add(cyl(0.05, 0.06, 0.9, 6, Math.cos(a) * S * 0.47, y0, Math.sin(a) * S * 0.47), shade(brick, -0.08)); k.add(dome(0.06, Math.cos(a) * S * 0.47, y0 + 0.9, Math.sin(a) * S * 0.47), "#f2ede2", false); }
+      k.add(box(0.2, 0.32, 0.03, 0, y0, S * 0.45), DOOR, false);
+      break;
+    }
+    case "mosque": {
+      const red = "#c46a4a", white = "#f4efe6";
+      k.add(box(W, 0.16, D, 0, y0 - 0.04, 0), shade(red, -0.05));
+      k.add(box(W * 0.78, 0.6, D * 0.4, 0, y0 + 0.12, -D * 0.2), red);
+      k.add(box(W * 0.79, 0.05, D * 0.41, 0, y0 + 0.62, -D * 0.2), white, false);
+      for (const [x, r] of [[-W * 0.24, 0.24], [0, 0.32], [W * 0.24, 0.24]]) {
+        k.add(cyl(r * 0.9, r * 0.9, 0.12, 14, x, y0 + 0.72, -D * 0.2), white);
+        k.add(ball(r, x, y0 + 0.84 + r * 0.25, -D * 0.2, 1, 1.25, 1), white);
+        k.add(cone(0.03, 0.18, 6, x, y0 + 0.84 + r * 1.4, -D * 0.2), GOLD, false);
+      }
+      k.add(box(W * 0.24, 0.72, 0.1, 0, y0 + 0.12, -D * 0.0 + 0.02), red);
+      k.add(box(W * 0.12, 0.45, 0.02, 0, y0 + 0.12, 0.08), shade(red, -0.35), false);
+      for (const [sx, sz] of [[-1, -1], [1, -1], [-1, 1], [1, 1]]) {
+        const x = sx * W * 0.46, z = sz * D * 0.44;
+        k.add(cyl(0.07, 0.09, 1.7, 8, x, y0, z), red);
+        for (const h of [0.6, 1.2]) k.add(cyl(0.11, 0.11, 0.04, 8, x, y0 + h, z), white, false);
+        k.add(cyl(0.1, 0.1, 0.12, 8, x, y0 + 1.7, z), white);
+        k.add(dome(0.1, x, y0 + 1.82, z), white);
+      }
+      break;
+    }
+    case "fort": {
+      const red = "#c46a4a", R = S * 0.42, h = 0.6;
+      for (const [sx, sz] of [[-1, -1], [1, -1], [1, 1], [-1, 1]]) {
+        k.add(cyl(0.26, 0.3, h + 0.15, 12, sx * R, y0, sz * R), red);
+        k.add(cyl(0.12, 0.12, 0.14, 8, sx * R, y0 + h + 0.15, sz * R), "#f2ede2");
+        k.add(dome(0.13, sx * R, y0 + h + 0.29, sz * R), "#f2ede2");
+      }
+      for (const [x, z, w, d] of [[0, -R, 2 * R, 0.18], [0, R, 2 * R, 0.18], [-R, 0, 0.18, 2 * R], [R, 0, 0.18, 2 * R]]) {
+        k.add(box(w, h, d, x, y0, z), red);
+        for (let i = -3; i <= 3; i++) k.add(box(w > d ? 0.1 : 0.2, 0.08, w > d ? 0.2 : 0.1, x + (w > d ? (i * w) / 7.5 : 0), y0 + h, z + (w > d ? 0 : (i * d) / 7.5)), shade(red, 0.1), false);
+      }
+      for (const s of [-1, 1]) { k.add(cyl(0.16, 0.18, h + 0.35, 10, s * 0.32, y0, R + 0.05), red); k.add(dome(0.14, s * 0.32, y0 + h + 0.35, R + 0.05), "#f2ede2"); }
+      k.add(box(0.3, 0.42, 0.04, 0, y0, R + 0.1), DOOR, false);
+      k.add(box(1.0, 0.5, 0.7, 0, y0, -0.15), "#f4efe6");
+      for (const x of [-0.3, 0, 0.3]) k.add(dome(0.14, x, y0 + 0.5, -0.15), "#f4efe6");
+      break;
+    }
+    case "mausoleum": {
+      const m = "#f4efe6";
+      k.add(box(W, 0.2, D, 0, y0 - 0.04, 0), "#ece4d6");
+      k.add(new THREE.CylinderGeometry(S * 0.3, S * 0.3, 0.75, 8).rotateY(Math.PI / 8).translate(0, y0 + 0.535, 0), m);
+      k.add(box(0.22, 0.42, 0.02, 0, y0 + 0.2, S * 0.29), "#c9bfae", false);
+      k.add(cyl(S * 0.2, S * 0.2, 0.16, 16, 0, y0 + 0.91, 0), m);
+      k.add(ball(S * 0.22, 0, y0 + 1.07 + S * 0.08, 0, 1, 1.2, 1), m);
+      k.add(cone(0.035, 0.24, 6, 0, y0 + 1.07 + S * 0.32, 0), GOLD, false);
+      for (const [sx, sz] of [[-1, -1], [1, -1], [-1, 1], [1, 1]]) {
+        k.add(cyl(0.06, 0.06, 0.12, 8, sx * S * 0.2, y0 + 0.91, sz * S * 0.2), m);
+        k.add(dome(0.07, sx * S * 0.2, y0 + 1.03, sz * S * 0.2), m);
+        const x = sx * W * 0.45, z = sz * D * 0.45;
+        k.add(cyl(0.05, 0.07, 1.35, 8, x, y0 + 0.16, z), m);
+        k.add(cyl(0.08, 0.08, 0.03, 8, x, y0 + 0.9, z), m, false);
+        k.add(dome(0.07, x, y0 + 1.51, z), m);
+      }
+      break;
+    }
+    case "minar": {
+      const c = "#e8e4dc";
+      k.add(new THREE.CylinderGeometry(S * 0.48, S * 0.5, 0.14, 10).translate(0, y0 + 0.03, 0), "#cfc6b4");
+      for (let i = 0; i < 4; i++) k.add(new THREE.ConeGeometry(0.2, 0.55, 4).rotateZ(0.35).translate(0.16, 0.3, 0).rotateY((i * Math.PI) / 2).translate(0, y0 + 0.1, 0), c);
+      k.add(cyl(0.09, 0.2, 2.6, 12, 0, y0 + 0.5, 0), c);
+      for (const h of [1.5, 2.4]) k.add(cyl(0.2, 0.15, 0.08, 12, 0, y0 + 0.5 + h, 0), shade(c, -0.08), false);
+      k.add(cyl(0.12, 0.1, 0.18, 12, 0, y0 + 3.1, 0), c);
+      k.add(dome(0.12, 0, y0 + 3.28, 0), c);
+      k.add(cone(0.02, 0.15, 6, 0, y0 + 3.4, 0), "#aaa", false);
+      break;
+    }
     default:
       k.add(box(W, 1, D, 0, y0, 0), STONE);
   }
@@ -513,6 +638,7 @@ export function treeKit(type) {
     T.colors = ["#7aa84f", "#6f9f4a", "#7d9a48", "#6f9f4a"];
   }
   if (type === "jungle") { parts.push(ball(0.34, 0, 0.62, 0, 1, 0.7, 1), ball(0.24, 0.2, 0.75, 0.1, 1, 0.7, 1)); T.colors = ["#4f8f4a", "#4a8a45", "#5a8a44", "#4a8a45"]; }
+  if (type === "banyan") { parts.push(ball(0.36, 0, 0.66, 0, 1.4, 0.6, 1.3), ball(0.24, 0.25, 0.78, 0.12, 1.2, 0.6, 1.1)); T.colors = ["#6f9f4a", "#5f8f44", "#6f8f40", "#5f8f44"]; }
   if (type === "cypress") { parts.push(ball(0.2, 0, 0.6, 0, 0.85, 2.4, 0.85)); T.colors = ["#4a7046", "#4a7046", "#4a6a44", "#4a6a44"]; }
   T.canopy = merge(parts.map(prep));
   T.canopyHull = hull(T.canopy);

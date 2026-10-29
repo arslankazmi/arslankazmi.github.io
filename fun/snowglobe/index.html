@@ -105,6 +105,15 @@
     footer.foot { margin-top: 26px; text-align: center; font-family: var(--font-mono, monospace); font-size: 12px; color: var(--fg2, #666); }
     footer.foot a { color: var(--accent, #178e8b); }
 
+    /* full screen (native, or a fixed overlay where the API is missing) */
+    .col.fs {
+      position: fixed; inset: 0; z-index: 50; justify-content: center; padding: 12px; gap: 10px;
+      background: var(--bg, #edece4);
+    }
+    .col.fs .boardbox {
+      width: min(calc(100vw - 24px), calc((100vh - 84px) / 1.06), calc((100dvh - 84px) / 1.06));
+    }
+
     @media (max-width: 760px) {
       .side { width: 100%; max-width: 680px; }
       .side .howto, .side .keyscard { display: none; }
@@ -137,6 +146,7 @@
           </div>
           <button id="nextBtn" title="Skip to the next age (N)">next age ⏭</button>
           <button id="shakeBtn" class="shake" title="Shake the globe (S)">shake ❄</button>
+          <button id="fsBtn" title="Full screen (F)">⛶</button>
         </div>
       </div>
 
@@ -144,6 +154,7 @@
         <div class="card now">
           <div class="lab">Inside the glass</div>
           <h3 id="hudPlace">—</h3>
+          <div class="meta" id="hudRegion"></div>
           <div class="era"><span id="hudAge">—</span> · <span id="hudYear"></span></div>
           <div class="meta"><span id="hudSeason"></span> · <span id="hudWeather"></span></div>
           <div class="meta" id="hudCount"></div>
@@ -160,7 +171,8 @@
           <b>drag</b> spin · <b>flick</b> shake<br>
           <b>scroll</b> / <b>pinch</b> zoom<br>
           <b>Space</b> pause · <b>1 2 3</b> speed<br>
-          <b>N</b> next age · <b>S</b> shake · <b>M</b> sound
+          <b>N</b> next age · <b>S</b> shake<br>
+          <b>F</b> full screen · <b>M</b> sound
         </div>
         <div class="seed"><a id="seedLink" href="#">seed</a> · link to this globe</div>
       </div>
