@@ -53,8 +53,11 @@ Lives at `/fun/snowglobe/`, a sibling of Tritris, GD Golf and Ninja Ascent.
   wobble in proportions). Roofs are oversized. Chimneys smoke.
 * **Townsfolk:** big round heads, small bodies, stick legs, a hat or hairdo per age/region. They walk
   between buildings on a bobbing gait, and in later ages small carts, then cars, run along the roads.
-* **The globe:** a glass sphere (a transmissive or fresnel rim-light shader with a soft specular
-  streak) on a carved wooden base with a small brass plaque. The plaque shows the current place and
+* **The globe** (revised at the author's request): real glass, a refractive `MeshPhysicalMaterial`
+  (transmission, IOR 1.46, clear coat) that reflects a small made-to-measure room (a tall window
+  up-left, a strip light right) through its own environment map. Only the glass sees that map, so
+  everything inside stays toon-shaded. A paper backdrop behind the scene gives the rim something
+  warm to refract. The glass sits on a carved wooden base with a small brass plaque. The plaque shows the current place and
   age, in a serif display font, for example "Nile Valley · Bronze Age". A soft sepia vignette and a
   faint paper-grain overlay frame the page.
 
@@ -63,8 +66,14 @@ Lives at `/fun/snowglobe/`, a sibling of Tritris, GD Golf and Ninja Ascent.
 * **Length:** about **5 minutes** per full arc at 1× speed, split evenly over the ages, with each
   transition taking a few seconds.
 * **Ages (7):** Stone → Bronze → Iron → Medieval → Renaissance → Industrial → Modern.
-* **Regions (at least 6 to start):** Nile Valley, Mesopotamia, East Asia (Japan/China flavour), Norse
-  fjord, Mesoamerica and the Mediterranean (Greek/Roman). Each region has a building kit per age, made
+* **Regions (9):** Nile Valley, Mesopotamia, East Asia (Japan/China flavour), Norse fjord,
+  Mesoamerica, the Mediterranean (Greek/Roman), and three South Asian regions added at the author's
+  request: **Indus Valley** (Mehrgarh → Mohenjo-daro → Taxila → Multan), **Punjab** (the Ravi plains →
+  Harappa → Sakala → Lahore) and the **Ganges Plain** (Pataliputra → Varanasi → Agra → Kolkata). These
+  three carry a real place name per age, shown on the plaque above the region. Their landmarks are the
+  Great Bath and granary, a stupa, a curvilinear-tower temple, a Multan-style tiled tomb, a
+  Mughal-style mosque, fort and marble mausoleum, the clock tower and railway station, and the Minar.
+  Their weather has a monsoon (summer rain and storms) and Punjab/Ganges winter fog; it never snows. Each region has a building kit per age, made
   from the same primitives with different proportions, roof shapes, colours and props. For example,
   the Nile goes from reed huts to mudbrick to a sandstone temple to an obelisk plaza, and later gets
   domed buildings and finally glass towers. East Asia goes from thatch to pagodas to castle walls and
@@ -119,6 +128,9 @@ Lives at `/fun/snowglobe/`, a sibling of Tritris, GD Golf and Ninja Ascent.
 * **Tap** a building or a person to show a small speech-bubble label (e.g. "Granary", "Blacksmith",
   "a farmer on her way home").
 * **Scroll / pinch** zooms the camera in and out within limits.
+* **Full screen** (`F` or the ⛶ button) uses the Fullscreen API on the globe and its controls, and
+  falls back to a fixed full-window overlay where the API is missing (iPhone Safari). `Esc` exits.
+* `#seed=N` reproduces a run; `#region=indus` (any region id) picks the first town's region.
 * **Mute** (`M`) toggles a soft ambient layer: wind, rain or crowd murmur, synthesised with WebAudio
   like the other games. It starts muted.
 
@@ -159,8 +171,6 @@ Visual quality is checked by eye in the browser at each age and region, includin
   or Norse Industrial/Modern age is an invented regional flavour, like a stone-and-jade factory
   district or turf-roofed apartment blocks). Recognisable, not accurate.
 * "Next age" during Modern triggers the blizzard reset.
-* The glass is a fresnel rim-light shader, not true transmission (cheaper and more reliable on
-  phones).
 * The plaque uses the paper theme's display serif.
 
 ## 11. Out of scope (for now)

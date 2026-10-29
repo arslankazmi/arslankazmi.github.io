@@ -23,7 +23,8 @@ const store = { get(k) { try { return localStorage.getItem(k); } catch { return 
 // --- seed + sim ---------------------------------------------------------------------
 const hashSeed = /seed=(\d+)/.exec(location.hash);
 const seed = hashSeed ? +hashSeed[1] : (Math.random() * 1e9) | 0;
-const sim = new S.Sim(seed);
+const startAt = /region=([a-z]+)/.exec(location.hash);
+const sim = new S.Sim(seed, { start: startAt ? startAt[1] : null });
 
 // --- renderer -------------------------------------------------------------------------
 const canvas = document.getElementById("globe");
@@ -32,6 +33,15 @@ renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
 renderer.shadowMap.enabled = true;
 renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 const scene = new THREE.Scene();
+// A paper backdrop (the same warm gradient as the page) so the glass has something to refract at its rim.
+scene.background = (() => {
+  const cv = document.createElement("canvas"); cv.width = 256; cv.height = 272;
+  const g = cv.getContext("2d"), gr = g.createRadialGradient(128, 100, 10, 128, 120, 200);
+  gr.addColorStop(0, "#f8f1df"); gr.addColorStop(0.55, "#ecdfc1"); gr.addColorStop(1, "#d9c49b");
+  g.fillStyle = gr; g.fillRect(0, 0, 256, 272);
+  const t = new THREE.CanvasTexture(cv); t.colorSpace = THREE.SRGBColorSpace;
+  return t;
+})();
 const camera = new THREE.PerspectiveCamera(30, 1, 0.5, 200);
 const LOOK = new THREE.Vector3(0, 4.2, 0);
 let camDist = 47, camDistTarget = 47;
@@ -137,28 +147,34 @@ const sunBall = new THREE.Mesh(new THREE.IcosahedronGeometry(0.55, 2), new THREE
 const moonBall = new THREE.Mesh(new THREE.IcosahedronGeometry(0.42, 2), new THREE.MeshBasicMaterial({ color: 0xf4ecd0 }));
 spin.add(sunBall, moonBall);
 
+// Real glass: refractive, clear-coated and reflecting a soft studio room. Only the glass sees the
+// environment map; the town inside keeps its flat toon look.
+const pmrem = new THREE.PMREMGenerator(renderer);
+// A made-to-measure "room": dim warm walls, a tall window up-left, a thin strip light right and a
+// soft glow overhead, so the reflections read as glass without covering the town.
+const envTex = (() => {
+  const room = new THREE.Scene();
+  room.add(new THREE.Mesh(new THREE.SphereGeometry(50, 32, 16), new THREE.ShaderMaterial({
+    side: THREE.BackSide,
+    vertexShader: "varying vec3 vP; void main(){ vP = position; gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }",
+    fragmentShader: "varying vec3 vP; void main(){ float y = normalize(vP).y; gl_FragColor = vec4(mix(vec3(0.18, 0.14, 0.1), vec3(0.42, 0.38, 0.33), smoothstep(-0.6, 0.8, y)), 1.0); }",
+  })));
+  const light = (w, h, x, y, z, k) => {
+    const m = new THREE.Mesh(new THREE.PlaneGeometry(w, h), new THREE.MeshBasicMaterial({ color: new THREE.Color(k, k, k * 0.96), side: THREE.DoubleSide }));
+    m.position.set(x, y, z); m.lookAt(0, 0, 0); room.add(m);
+  };
+  light(14, 22, -26, 16, 28, 6);      // window, up and to the left of the viewer
+  light(3, 26, 30, 6, 20, 3);         // thin strip on the right
+  light(30, 10, 0, 40, -6, 1.4);      // soft ceiling glow
+  const t = pmrem.fromScene(room, 0.02).texture;
+  return t;
+})();
 const glass = new THREE.Mesh(
-  new THREE.SphereGeometry(GLOBE_R, 72, 48),
-  new THREE.ShaderMaterial({
-    transparent: true, depthWrite: false,
-    uniforms: { uFrost: { value: 0 } },
-    vertexShader: "varying vec3 vN; varying vec3 vV; void main(){ vec4 mv = modelViewMatrix * vec4(position, 1.0); vN = normalize(normalMatrix * normal); vV = normalize(-mv.xyz); gl_Position = projectionMatrix * mv; }",
-    fragmentShader: `
-      uniform float uFrost; varying vec3 vN; varying vec3 vV;
-      void main(){
-        float ndv = max(dot(vN, vV), 0.0);
-        float f = pow(1.0 - ndv, 2.4);
-        vec3 L = normalize(vec3(-0.55, 0.65, 0.55));
-        float spec = pow(max(dot(vN, normalize(L + vV)), 0.0), 600.0) * 0.8 + pow(max(dot(vN, normalize(L + vV)), 0.0), 60.0) * 0.08;
-        float streak = smoothstep(0.86, 0.9, dot(vN, normalize(vec3(-0.6, 0.45, 0.65)))) * (1.0 - smoothstep(0.9, 0.95, dot(vN, normalize(vec3(-0.6, 0.45, 0.65))))) * 0.12;
-        float spec2 = pow(max(dot(vN, normalize(normalize(vec3(0.7, 0.1, 0.7)) + vV)), 0.0), 40.0) * 0.18;
-        vec3 col = mix(vec3(0.85, 0.93, 1.0), vec3(1.0), f);
-        float a = 0.03 + 0.45 * f + spec + streak + spec2 + uFrost * 0.25;
-        float rim = smoothstep(0.035, 0.0, ndv);
-        col = mix(col, vec3(0.23, 0.15, 0.09), rim);
-        a = max(a, rim * 0.9);
-        gl_FragColor = vec4(col, clamp(a, 0.0, 1.0));
-      }`,
+  new THREE.SphereGeometry(GLOBE_R, 96, 64),
+  new THREE.MeshPhysicalMaterial({
+    color: 0xffffff, metalness: 0, roughness: 0.02, transmission: 1, thickness: 0.4, ior: 1.46,
+    envMap: envTex, envMapIntensity: 1.0, clearcoat: 1, clearcoatRoughness: 0.03, specularIntensity: 1,
+    attenuationColor: new THREE.Color("#eef6ff"), attenuationDistance: 12, depthWrite: false,
   }),
 );
 glass.position.y = GLOBE_CY;
@@ -670,7 +686,7 @@ function updateWeather(dt) {
   const wo = bliz ? Math.sin(Math.PI * Math.min(1, sim.blizT / S.BLIZ_T)) : 0;
   whiteout.material.opacity = Math.min(0.97, wo * 1.25);
   whiteout.visible = whiteout.material.opacity > 0.01;
-  glass.material.uniforms.uFrost.value = Math.max(wo, sim.snowCover * 0.15);
+  glass.material.roughness = 0.02 + Math.max(wo * 0.35, sim.snowCover * 0.04);
 }
 
 // --- day and night ---------------------------------------------------------------------------------------------------------
@@ -862,11 +878,14 @@ function drawPlaque() {
   g.strokeStyle = "rgba(90,60,20,0.55)"; g.lineWidth = 3; roundRect(g, 20, 20, w - 40, h - 40, 14); g.stroke();
   for (const [x, y] of [[36, 36], [w - 36, 36], [36, h - 36], [w - 36, h - 36]]) { g.fillStyle = "#8a6424"; g.beginPath(); g.arc(x, y, 6, 0, 7); g.fill(); }
   const bliz = sim.state === "bliz" && !sim.rebuilt;
-  const title = bliz ? "· · ·" : sim.region.name.toUpperCase();
-  const sub = bliz ? "a new age is coming" : `${sim.ageInfo.name} · ${sim.ageInfo.year}`;
+  const place = sim.placeName, named = place !== sim.region.name;
+  const title = bliz ? "· · ·" : place.toUpperCase();
+  const sub = bliz ? "a new age is coming" : `${named ? sim.region.name + " · " : ""}${sim.ageInfo.name} · ${sim.ageInfo.year}`;
   g.textAlign = "center"; g.textBaseline = "middle";
   const text = (s, y, size, style = "") => {
     g.font = `${style} ${size}px ${displayFont}`;
+    const fit = g.measureText(s).width;
+    if (fit > w - 90) g.font = `${style} ${Math.floor((size * (w - 90)) / fit)}px ${displayFont}`;
     g.fillStyle = "rgba(255,240,200,0.55)"; g.fillText(s, w / 2, y + 2);
     g.fillStyle = "#3e2a0e"; g.fillText(s, w / 2, y);
   };
@@ -881,7 +900,8 @@ const WEATHER_NAMES = { clear: "clear skies", cloudy: "cloudy", rain: "rain", sn
 function hud(plaqueToo = false) {
   if (plaqueToo) drawPlaque();
   const bliz = sim.state === "bliz";
-  $("hudPlace").textContent = sim.region.name;
+  $("hudPlace").textContent = sim.placeName;
+  $("hudRegion").textContent = sim.placeName !== sim.region.name ? sim.region.name : "";
   $("hudAge").textContent = sim.ageInfo.name;
   $("hudYear").textContent = sim.ageInfo.year;
   $("hudSeason").textContent = bliz ? "winter" : sim.seasonName;
@@ -952,6 +972,30 @@ document.querySelectorAll("[data-speed]").forEach((b) => (b.onclick = () => setS
 $("nextBtn").onclick = nextAge;
 $("shakeBtn").onclick = shake;
 $("muteBtn").onclick = () => setMuted(!muted);
+
+// Full screen: the real Fullscreen API where there is one, else (iPhone Safari) a fixed overlay.
+const fsEl = document.querySelector(".col");
+const fsNow = () => document.fullscreenElement || document.webkitFullscreenElement;
+function syncFs() {
+  const on = !!fsNow() || fsEl.classList.contains("fake");
+  fsEl.classList.toggle("fs", on);
+  $("fsBtn").textContent = on ? "exit ⤡" : "⛶";
+  $("fsBtn").title = on ? "Exit full screen (F)" : "Full screen (F)";
+}
+function toggleFs() {
+  if (fsNow()) (document.exitFullscreen || document.webkitExitFullscreen).call(document);
+  else if (fsEl.classList.contains("fake")) fsEl.classList.remove("fake");
+  else {
+    const req = fsEl.requestFullscreen || fsEl.webkitRequestFullscreen;
+    const fake = () => fsEl.classList.add("fake");
+    if (!req) fake();
+    else { const p = req.call(fsEl); if (p && p.catch) p.catch(() => { fake(); syncFs(); }); }
+  }
+  syncFs();
+}
+document.addEventListener("fullscreenchange", syncFs);
+document.addEventListener("webkitfullscreenchange", syncFs);
+$("fsBtn").onclick = toggleFs;
 addEventListener("keydown", (e) => {
   if (e.metaKey || e.ctrlKey || e.altKey) return;
   const k = e.key.toLowerCase();
@@ -962,6 +1006,8 @@ addEventListener("keydown", (e) => {
   else if (k === "n") nextAge();
   else if (k === "s") shake();
   else if (k === "m") setMuted(!muted);
+  else if (k === "f") toggleFs();
+  else if (k === "escape" && fsEl.classList.contains("fake")) toggleFs();
 });
 
 // drag to spin, flick back and forth to shake, tap to ask, scroll/pinch to zoom

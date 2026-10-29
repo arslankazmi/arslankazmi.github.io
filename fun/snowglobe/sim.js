@@ -76,6 +76,15 @@
     stadium: { w: 3.2, d: 2.6, name: "the stadium" },
     turbine: { w: 0.8, d: 0.8, name: "the wind turbine" },
     neontower: { w: 1.6, d: 1.6, name: "the neon tower" },
+    greatbath: { w: 2.6, d: 2.0, name: "the Great Bath" },
+    granary: { w: 2.4, d: 1.6, name: "the great granary" },
+    stupa: { w: 1.8, d: 1.8, name: "the stupa" },
+    shikhara: { w: 1.6, d: 1.8, name: "the temple" },
+    tomb: { w: 1.8, d: 1.8, name: "the saint's tomb" },
+    mosque: { w: 3.0, d: 2.2, name: "the grand mosque" },
+    fort: { w: 3.0, d: 3.0, name: "the fort" },
+    mausoleum: { w: 2.6, d: 2.6, name: "the marble mausoleum" },
+    minar: { w: 1.6, d: 1.6, name: "the minar" },
   };
 
   // --- palettes ---------------------------------------------------------------
@@ -92,6 +101,10 @@
     modern: ["#cfd8dc", "#b9c9d3", "#e6e1d6", "#9fb7c4", "#d8c7a8"],
     stucco: ["#e9b872", "#d77a61", "#7fb2a8", "#f0d9a8", "#c98bb0"],
     glaze: ["#d9b47a", "#c8955f", "#4f7fae"],
+    baked: ["#b8714a", "#a9643f", "#c27c55"],
+    redstone: ["#c46a4a", "#b85c40", "#d07b58"],
+    haveli: ["#e8d6b0", "#d9b98a", "#c46a4a", "#f0e2c4"],
+    pastel: ["#e9c48a", "#e39a7a", "#9cc4b8", "#f0dcb0", "#d9a0b8"],
   };
   const RC = {
     thatch: ["#c9a25a", "#b89048"],
@@ -104,6 +117,8 @@
     sand: ["#d8b87e"],
     white: ["#e9dfc9"],
     blue: ["#4f7fae", "#5b8fb8"],
+    tileblue: ["#3f78b0", "#2f6aa0"],
+    brickdark: ["#9a5a3a"],
   };
 
   // Generic look per age; each region overrides the parts that make it itself.
@@ -208,6 +223,55 @@
       ],
       lms: [["stones"], ["temple"], ["temple", "stadium"], ["castle"], ["cathedral", "windmill"], ["factory", "lighthouse"], ["skytower", "stadium"]],
     },
+    // South Asia: the plaque names a real place for each age.
+    {
+      id: "indus", name: "Indus Valley", terrain: "river", trees: "palm", monsoon: true,
+      places: ["Mehrgarh", "Mohenjo-daro", "Taxila", "Multan", "Multan", "Multan", "Multan"],
+      ground: { grass: "#b4b56c", sand: "#ddc28c", bed: "#857558" }, water: "#6e9a9a",
+      weather: { clear: 6, cloudy: 2, rain: 1.2, snow: 0, fog: 0.8, storm: 0.6, sandstorm: 1.2 },
+      ages: [
+        { roofs: ["flat", "cone"], walls: P.mud, roofCs: RC.mud },
+        { roofs: ["flat"], walls: P.baked, roofCs: RC.brickdark },
+        { roofs: ["flat", "flat", "dome"], walls: P.baked.concat(P.mud), roofCs: RC.sand },
+        { roofs: ["flat", "dome"], walls: P.baked, roofCs: RC.tileblue.concat(RC.white) },
+        { roofs: ["flat", "dome"], walls: P.haveli, roofCs: RC.white.concat(RC.tileblue) },
+        { roofs: ["flat", "flat", "gable"], walls: P.baked.concat(P.haveli), roofCs: RC.slate },
+        { walls: P.modern.concat(P.haveli) },
+      ],
+      lms: [["stones"], ["greatbath", "granary"], ["stupa"], ["tomb"], ["tomb", "fort"], ["clocktower", "station"], ["skytower"]],
+    },
+    {
+      id: "punjab", name: "Punjab", terrain: "jungle", trees: "banyan", monsoon: true, winterFog: true,
+      places: ["the Ravi plains", "Harappa", "Sakala", "Lahore", "Lahore", "Lahore", "Lahore"],
+      ground: { grass: "#a3ba68", sand: "#d9c48e", bed: "#7d7a5a" }, water: "#6a9aa6",
+      weather: { clear: 5, cloudy: 2.5, rain: 1.5, snow: 0, fog: 1.2, storm: 0.8, sandstorm: 0.4 },
+      ages: [
+        { roofs: ["cone", "flat"], walls: P.mud, roofCs: RC.thatch },
+        { roofs: ["flat"], walls: P.baked, roofCs: RC.brickdark },
+        { roofs: ["flat", "gable"], walls: P.baked.concat(P.mud), roofCs: RC.thatch },
+        { roofs: ["flat", "dome"], walls: P.baked.concat(P.haveli), roofCs: RC.white },
+        { roofs: ["flat", "dome", "flat"], walls: P.redstone.concat(P.haveli), roofCs: RC.white },
+        { roofs: ["flat", "gable"], walls: P.redstone.concat(P.brick), roofCs: RC.slate },
+        { walls: P.modern.concat(P.haveli) },
+      ],
+      lms: [["stones"], ["granary", "greatbath"], ["stupa"], ["mosque"], ["fort", "mosque"], ["station", "clocktower"], ["minar", "skytower"]],
+    },
+    {
+      id: "ganges", name: "Ganges Plain", terrain: "river", trees: "banyan", monsoon: true, winterFog: true,
+      places: ["the Ganges plain", "the Ganges plain", "Pataliputra", "Varanasi", "Agra", "Kolkata", "Kolkata"],
+      ground: { grass: "#98b862", sand: "#e0cc98", bed: "#7a7a5c" }, water: "#6f9fa8",
+      weather: { clear: 4, cloudy: 2.5, rain: 2, snow: 0, fog: 1, storm: 1, sandstorm: 0 },
+      ages: [
+        { roofs: ["cone", "tent"], walls: P.reed, roofCs: RC.thatch },
+        { roofs: ["cone", "flat"], walls: P.mud, roofCs: RC.thatch },
+        { roofs: ["flat", "gable"], walls: P.plaster, roofCs: RC.thatch },
+        { roofs: ["flat", "dome"], walls: P.pastel, roofCs: RC.white },
+        { roofs: ["flat", "dome"], walls: P.pastel.concat(P.haveli), roofCs: RC.white },
+        { roofs: ["flat", "gable"], walls: P.pastel.concat(P.brick), roofCs: RC.terra },
+        { walls: P.modern.concat(P.pastel) },
+      ],
+      lms: [["stones"], ["granary"], ["stupa", "shikhara"], ["shikhara"], ["mausoleum"], ["station", "factory"], ["skytower", "stadium"]],
+    },
   ];
 
   function styleFor(region, age) { return Object.assign({}, BASE[age], region.ages[age] || {}); }
@@ -309,6 +373,7 @@
       this.seed = seed >>> 0;
       this.rng = mulberry32(this.seed || 1);
       this.forceRegion = opts.region || null;
+      this.startRegion = opts.start || null;      // first town only
       this.t = 0;
       this.cycle = -1;
       this.history = [];
@@ -330,6 +395,8 @@
     get houses() { return this.buildings.filter((b) => b.kind === "house"); }
     get landmarks() { return this.buildings.filter((b) => b.kind === "landmark"); }
     get ageInfo() { return AGES[this.age]; }
+    /** A real place name for this age where the region has one, else the region's name. */
+    get placeName() { return (this.region.places && this.region.places[this.age]) || this.region.name; }
     get season() { return this.state === "bliz" ? 3 : Math.floor((this.ageT / AGE_T) * 4) % 4; }
     get seasonName() { return SEASONS[this.season]; }
     get dayPhase() { return (this.t / DAY_T + 0.3) % 1; }   // 0 = midnight, 0.5 = noon
@@ -377,7 +444,9 @@
       this.cycle++;
       const avoid = this.history.slice(-2);
       const pool = REGIONS.filter((r) => !avoid.includes(r.id));
-      this.region = this.forceRegion ? REGIONS.find((r) => r.id === this.forceRegion) : this.pick(pool);
+      const want = this.forceRegion || this.startRegion;
+      this.startRegion = null;
+      this.region = (want && REGIONS.find((r) => r.id === want)) || this.pick(pool);
       this.history.push(this.region.id);
       if (this.history.length > 24) this.history.shift();
       this.terrain = this.makeTerrain();
@@ -764,8 +833,9 @@
 
     // --- weather ------------------------------------------------------------------------------
     weatherWeights(season) {
-      const W = this.region.weather, M = SEASON_MOD[season];
-      return WEATHER.map((k) => (W[k] || 0) * (M[k] ?? 1) * (k === this.weather.kind ? 0.35 : 1));
+      const R = this.region, W = R.weather, M = SEASON_MOD[season];
+      const local = (k) => (R.monsoon && season === 1 ? { rain: 3, storm: 2.5, clear: 0.6 }[k] ?? 1 : 1) * (R.winterFog && season === 3 ? { fog: 3 }[k] ?? 1 : 1);
+      return WEATHER.map((k) => (W[k] || 0) * (M[k] ?? 1) * local(k) * (k === this.weather.kind ? 0.35 : 1));
     }
     pickWeather() {
       const ws = this.weatherWeights(this.season);

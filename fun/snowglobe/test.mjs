@@ -110,11 +110,37 @@ const snap = (s) => JSON.stringify({ r: s.region.id, b: s.buildings.map(({ id, x
     sand += ws[S.WEATHER.indexOf("sandstorm")] / tot;
   }
   ok(snow === 0, "it never snows on the Nile");
+  for (const id of ["indus", "punjab", "ganges"]) {
+    const r = new Sim(2, { region: id });
+    let sn = 0, rainSummer = 0, rainWinter = 0;
+    for (let season = 0; season < 4; season++) {
+      const ws = r.weatherWeights(season), tot = ws.reduce((a, b) => a + b, 0);
+      sn += ws[S.WEATHER.indexOf("snow")];
+      if (season === 1) rainSummer = ws[S.WEATHER.indexOf("rain")] / tot;
+      if (season === 3) rainWinter = ws[S.WEATHER.indexOf("rain")] / tot;
+    }
+    ok(sn === 0 && rainSummer > 2 * rainWinter, `${id}: no snow, and the monsoon makes summer the rainy season`);
+  }
   ok(sand > 0, "the Nile gets sandstorms");
   const n = new Sim(1, { region: "norse" });
   const kinds = new Set();
   for (let i = 0; i < steps(CYCLE); i++) { n.step(); kinds.add(n.weather.kind); }
   ok(kinds.has("snow") && !kinds.has("sandstorm"), `the fjord gets snow but no sandstorms (${[...kinds].join(", ")})`);
+}
+
+// --- South Asian regions name real places ---------------------------------------------------
+{
+  const s = new Sim(4, { region: "indus" });
+  const seen = [];
+  for (let k = 0; k < 6; k++) { seen.push(s.placeName); s.nextAge(); }
+  seen.push(s.placeName);
+  ok(seen[1] === "Mohenjo-daro" && seen[3] === "Multan", `the Indus Valley visits Mohenjo-daro and Multan (${seen.join(" → ")})`);
+  const p = new Sim(4, { region: "punjab" });
+  for (let k = 0; k < 4; k++) p.nextAge();
+  ok(p.placeName === "Lahore", "Punjab becomes Lahore");
+  const lms = new Set();
+  for (let i = 0; i < steps(CYCLE); i++) { p.step(); for (const e of p.drain()) if (e.e === "add" && e.b.kind === "landmark") lms.add(e.b.lm); }
+  ok(S.REGIONS.length === 9, "nine regions in rotation");
 }
 
 // --- skipping ahead --------------------------------------------------------------------------
