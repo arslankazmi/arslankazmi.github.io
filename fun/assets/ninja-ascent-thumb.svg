@@ -1,0 +1,69 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 220" role="img" aria-label="Ninja Ascent">
+  <defs>
+    <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#070a1a"/><stop offset="1" stop-color="#1d2346"/>
+    </linearGradient>
+    <radialGradient id="moon" cx="0.5" cy="0.5" r="0.5">
+      <stop offset="0" stop-color="#fff0d2" stop-opacity="0.45"/><stop offset="1" stop-color="#fff0d2" stop-opacity="0"/>
+    </radialGradient>
+    <clipPath id="c"><rect width="320" height="220"/></clipPath>
+  </defs>
+  <g clip-path="url(#c)">
+    <rect width="320" height="220" fill="url(#sky)"/>
+    <g fill="#fff" opacity="0.7">
+      <rect x="120" y="22" width="1.5" height="1.5"/><rect x="150" y="60" width="1.2" height="1.2"/><rect x="200" y="30" width="1.5" height="1.5"/>
+      <rect x="96" y="80" width="1.2" height="1.2"/><rect x="178" y="96" width="1.2" height="1.2"/><rect x="138" y="128" width="1.2" height="1.2"/>
+    </g>
+    <circle cx="208" cy="58" r="56" fill="url(#moon)"/>
+    <circle cx="208" cy="58" r="22" fill="#f6ecd2"/>
+    <!-- distant towers -->
+    <rect x="104" y="0" width="30" height="220" fill="#141a35"/>
+    <rect x="186" y="0" width="34" height="220" fill="#141a35"/>
+    <rect x="142" y="0" width="24" height="220" fill="#1b2142"/>
+    <g fill="#ffd68c" opacity="0.45">
+      <rect x="110" y="40" width="3" height="4"/><rect x="122" y="96" width="3" height="4"/><rect x="194" y="70" width="3" height="4"/>
+      <rect x="206" y="150" width="3" height="4"/><rect x="148" y="120" width="3" height="4"/><rect x="156" y="180" width="3" height="4"/>
+    </g>
+    <!-- near buildings -->
+    <rect x="0" y="0" width="74" height="220" fill="#1a1e30"/>
+    <rect x="246" y="0" width="74" height="220" fill="#1a1e30"/>
+    <rect x="71" y="0" width="3" height="220" fill="#4a5276"/>
+    <rect x="246" y="0" width="3" height="220" fill="#4a5276"/>
+    <g fill="#262b42">
+      <rect x="12" y="14" width="16" height="24"/><rect x="40" y="14" width="16" height="24"/>
+      <rect x="12" y="64" width="16" height="24"/><rect x="40" y="114" width="16" height="24"/>
+      <rect x="12" y="164" width="16" height="24"/><rect x="264" y="14" width="16" height="24"/>
+      <rect x="292" y="64" width="16" height="24"/><rect x="264" y="114" width="16" height="24"/>
+      <rect x="292" y="164" width="16" height="24"/><rect x="292" y="14" width="16" height="24"/>
+    </g>
+    <g fill="#f2c66d">
+      <rect x="40" y="64" width="16" height="24"/><rect x="12" y="114" width="16" height="24"/>
+      <rect x="40" y="164" width="16" height="24"/><rect x="264" y="64" width="16" height="24"/><rect x="292" y="114" width="16" height="24"/>
+    </g>
+    <!-- a falling crate (cuttable) and a pot (avoidable) -->
+    <g transform="translate(168 40) rotate(12)">
+      <rect x="-12" y="-12" width="24" height="24" fill="#b4834a"/>
+      <rect x="-11" y="-11" width="22" height="22" fill="none" stroke="#7c5229" stroke-width="2"/>
+      <line x1="-11" y1="-11" x2="11" y2="11" stroke="#7c5229" stroke-width="2"/>
+    </g>
+    <g transform="translate(232 30)">
+      <path d="M-9 -3 L9 -3 L6 10 L-6 10 Z" fill="#c0643a" stroke="#ff5a50" stroke-width="1.4"/>
+      <ellipse cx="-3" cy="-8" rx="4" ry="6" fill="#3f8f4e"/><ellipse cx="4" cy="-9" rx="4" ry="6" fill="#3f8f4e"/>
+    </g>
+    <!-- coins along the jump arc -->
+    <g fill="#f5c242"><circle cx="110" cy="132" r="5"/><circle cx="134" cy="114" r="5"/><circle cx="186" cy="114" r="5"/><circle cx="210" cy="132" r="5"/></g>
+    <!-- the slash arc and the ninja mid-leap -->
+    <path d="M 132 128 A 40 40 0 0 1 196 98" fill="none" stroke="#ebf2ff" stroke-width="4" stroke-linecap="round" opacity="0.85"/>
+    <g transform="translate(160 112) rotate(-28)" stroke="#0b0b10" stroke-linecap="round" stroke-linejoin="round" fill="none">
+      <path d="M2 -31 Q -10 -34 -22 -28 M2 -30 Q -9 -26 -20 -21" stroke="#d8342a" stroke-width="3"/>
+      <path d="M0 -12 L9 -6 L4 0 M0 -12 L7 -15 L2 -6" stroke-width="5"/>
+      <path d="M0 -12 L3 -25" stroke-width="9"/>
+      <path d="M3 -23 L12 -27" stroke-width="4"/>
+      <path d="M12 -27 L34 -38" stroke="#dfe6f2" stroke-width="2.6"/>
+      <circle cx="5" cy="-31" r="7" fill="#0b0b10" stroke="none"/>
+      <rect x="-2" y="-34" width="14" height="3.4" fill="#d8342a" stroke="none"/>
+      <rect x="7" y="-31" width="5" height="1.8" fill="#f4e7d6" stroke="none"/>
+    </g>
+    <text x="304" y="206" text-anchor="end" font-family="Georgia, serif" font-weight="700" font-size="20" fill="#fbfbf6">ascent</text>
+  </g>
+</svg>
