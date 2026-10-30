@@ -72,7 +72,7 @@ Lives at `/fun/snowglobe/`, a sibling of Tritris, GD Golf and Ninja Ascent.
   cable rises to just under the glass, a terraced arcology and a spinning ring habitat. Hover cars
   circle the town, an orbital station and satellites cross the sky, roads get glowing lanes and
   townsfolk wear bubble helmets.
-* **Regions (10), each a real place per age** (revised at the author's request so the buildings match
+* **Regions (12), each a real place per age** (revised at the author's request so the buildings match
   the place and period). The plaque shows the place, with the region under it. Every landmark is
   that place's own, named on tap:
 
@@ -81,9 +81,11 @@ Lives at `/fun/snowglobe/`, a sibling of Tritris, GD Golf and Ninja Ascent.
   | Nile Valley | Nabta Playa, Giza, Thebes, Cairo… | Nabta Playa stone circle, Great Pyramid, Karnak pylon and obelisk, al-Azhar, the Citadel, Cairo Tower |
   | Mesopotamia | Göbekli Tepe, Ur, Babylon, Baghdad… | T-pillar circle, Ziggurat of Ur, Ishtar Gate, spiral minaret, gold-domed shrine, Baghdad Tower |
   | Yellow River | Banpo, Erlitou, Luoyang, Lin'an, Beijing, Shanghai… | pottery kiln, palace hall, city gate, Six Harmonies Pagoda, Ming hall and Gate of Heavenly Peace, Custom House, Oriental Pearl Tower |
-  | Japan | Jōmon village, Sannai-Maruyama, Yoshinogari, Kyoto, Osaka, Tokyo… | stone circle, six-pillar watchtower, raised storehouse, five-storey pagoda and shrine, Osaka Castle, brick station, Tokyo Tower |
+  | Japan | Jōmon village, Sannai-Maruyama, Yoshinogari, Kyoto, Osaka, Tokyo… | stone circle, six-pillar watchtower, raised storehouse, five-storey pagoda and shrine, Osaka Castle, brick station, Tokyo Skytree, the Metropolitan Government twin towers, Tokyo Tower |
+  | Manhattan | Lenapehoking, New Amsterdam (c. 1650), New York… | Lenape longhouse and wigwams, Fort Amsterdam and the windmill, Statue of Liberty and Grand Central, Empire State and Chrysler buildings |
   | Norse Fjord | (the fjord), Bergen…, Andøya | dolmen, longhouses, stave church, Bergenhus and the cathedral, lighthouse and cannery, concert hall, Andøya launch pad |
-  | Mesoamerica | Valley of Mexico, La Venta, Chichén Itzá, Mexico City… | Olmec head and La Venta pyramid, El Castillo and the Great Ballcourt, Metropolitan Cathedral, Torre Latinoamericana, Estadio Azteca |
+  | Maya Lowlands | the Yucatán, El Mirador, Chichén Itzá, Mérida, Cancún… | La Danta, El Castillo, El Caracol and the Great Ballcourt, Mérida Cathedral, henequen mill, beach hotel |
+  | Valley of Mexico (Aztec) | lakeshore, Cuicuilco, Tula (c. 1150), Tenochtitlan (c. 1500), Mexico City… | Cuicuilco's round pyramid, the Atlantes of Tula, the Templo Mayor and tlachtli court, Metropolitan Cathedral, Torre Latinoamericana, Estadio Azteca |
   | Mediterranean | Ġgantija, Knossos, Athens, Venice, Florence, Naples, Barcelona | megalithic temple, palace of Knossos, temple of Athena and theatre, St Mark's (five domes) and campanile, the Duomo and Giotto's campanile, Sagrada Família, Camp Nou |
   | Indus Valley | Mehrgarh, Mohenjo-daro, Taxila, Multan… | Great Bath and granary, Dharmarajika stupa, Shah Rukn-e-Alam, Multan Fort, Ghanta Ghar, the cricket stadium |
   | Punjab | Ravi plains, Harappa, Sakala, Lahore… | Harappan granary, stupa, Lahore Fort and Badshahi Mosque, Lahore Junction, GC clock tower, Minar-e-Pakistan |
@@ -94,6 +96,14 @@ Lives at `/fun/snowglobe/`, a sibling of Tritris, GD Golf and Ninja Ascent.
   period too: no domes in pharaonic Egypt or Gandhara, flat roofs in Cairo and Kolkata, low-rise
   painted gables in Bergen, Chinese hip roofs versus Japanese thatch and machiya. The Space Age is
   shared future architecture.
+  A region may shift an age's date to when its place really flourished (`years`: New Amsterdam
+  c. 1650, Tula c. 1150, Tenochtitlan c. 1500). Tenochtitlan is an island city in a lake joined by
+  causeways (terrain `lake`), and keeps lots clear in its sacred precinct (`reserve`) so the Templo
+  Mayor and the others have room. The Maya lowlands have no rivers but cenotes (terrain `cenote`).
+  **Big-city centres** (`dense`: Tokyo, New York) build about a third more, mostly 6–14-floor
+  towers on smaller lots from the Industrial age on. Tokyo's are themed: curtain glass with
+  helipads and red aviation lights, Shinjuku-style stepped crowns, the Cocoon Tower and billboard
+  buildings. New York's are Art Deco setbacks, with brownstones carrying rooftop water tanks.
   Their weather has monsoons in South Asia, winter fog in Punjab and the Ganges plain, and no snow
   in the Nile, South Asia or Mesoamerica.
 * **Terrain** depends on the region and is generated from noise inside the globe's disc: a river
