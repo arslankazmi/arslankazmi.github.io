@@ -276,7 +276,7 @@ function buildFields() {
   }
   if (!soil.length) { fieldsMesh = null; return; }
   const k = new Kit();
-  for (const g of soil) k.add(g, sim.region.id === "eastasia" ? "#7a8f7a" : "#8a6a44", false);
+  for (const g of soil) k.add(g, sim.region.id === "china" || sim.region.id === "japan" ? "#7a8f7a" : "#8a6a44", false);
   fieldsMesh = new THREE.Group();
   const sm = new THREE.Mesh(merge(k.body), M.body);
   const cm = new THREE.Mesh(merge(crops.map((g) => { const n = g.toNonIndexed(); g.dispose(); n.deleteAttribute("uv"); return n; })), M.crop);

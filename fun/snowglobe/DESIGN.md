@@ -72,18 +72,30 @@ Lives at `/fun/snowglobe/`, a sibling of Tritris, GD Golf and Ninja Ascent.
   cable rises to just under the glass, a terraced arcology and a spinning ring habitat. Hover cars
   circle the town, an orbital station and satellites cross the sky, roads get glowing lanes and
   townsfolk wear bubble helmets.
-* **Regions (9):** Nile Valley, Mesopotamia, East Asia (Japan/China flavour), Norse fjord,
-  Mesoamerica, the Mediterranean (Greek/Roman), and three South Asian regions added at the author's
-  request: **Indus Valley** (Mehrgarh → Mohenjo-daro → Taxila → Multan), **Punjab** (the Ravi plains →
-  Harappa → Sakala → Lahore) and the **Ganges Plain** (Pataliputra → Varanasi → Agra → Kolkata). These
-  three carry a real place name per age, shown on the plaque above the region. Their landmarks are the
-  Great Bath and granary, a stupa, a curvilinear-tower temple, a Multan-style tiled tomb, a
-  Mughal-style mosque, fort and marble mausoleum, the clock tower and railway station, and the Minar.
-  Their weather has a monsoon (summer rain and storms) and Punjab/Ganges winter fog; it never snows. Each region has a building kit per age, made
-  from the same primitives with different proportions, roof shapes, colours and props. For example,
-  the Nile goes from reed huts to mudbrick to a sandstone temple to an obelisk plaza, and later gets
-  domed buildings and finally glass towers. East Asia goes from thatch to pagodas to castle walls and
-  finally neon signs.
+* **Regions (10), each a real place per age** (revised at the author's request so the buildings match
+  the place and period). The plaque shows the place, with the region under it. Every landmark is
+  that place's own, named on tap:
+
+  | Region | Places by age (Stone → Space) | Signature landmarks |
+  |---|---|---|
+  | Nile Valley | Nabta Playa, Giza, Thebes, Cairo… | Nabta Playa stone circle, Great Pyramid, Karnak pylon and obelisk, al-Azhar, the Citadel, Cairo Tower |
+  | Mesopotamia | Göbekli Tepe, Ur, Babylon, Baghdad… | T-pillar circle, Ziggurat of Ur, Ishtar Gate, spiral minaret, gold-domed shrine, Baghdad Tower |
+  | Yellow River | Banpo, Erlitou, Luoyang, Lin'an, Beijing, Shanghai… | pottery kiln, palace hall, city gate, Six Harmonies Pagoda, Ming hall and Gate of Heavenly Peace, Custom House, Oriental Pearl Tower |
+  | Japan | Jōmon village, Sannai-Maruyama, Yoshinogari, Kyoto, Osaka, Tokyo… | stone circle, six-pillar watchtower, raised storehouse, five-storey pagoda and shrine, Osaka Castle, brick station, Tokyo Tower |
+  | Norse Fjord | (the fjord), Bergen…, Andøya | dolmen, longhouses, stave church, Bergenhus and the cathedral, lighthouse and cannery, concert hall, Andøya launch pad |
+  | Mesoamerica | Valley of Mexico, La Venta, Chichén Itzá, Mexico City… | Olmec head and La Venta pyramid, El Castillo and the Great Ballcourt, Metropolitan Cathedral, Torre Latinoamericana, Estadio Azteca |
+  | Mediterranean | Ġgantija, Knossos, Athens, Venice, Florence, Naples, Barcelona | megalithic temple, palace of Knossos, temple of Athena and theatre, St Mark's (five domes) and campanile, the Duomo and Giotto's campanile, Sagrada Família, Camp Nou |
+  | Indus Valley | Mehrgarh, Mohenjo-daro, Taxila, Multan… | Great Bath and granary, Dharmarajika stupa, Shah Rukn-e-Alam, Multan Fort, Ghanta Ghar, the cricket stadium |
+  | Punjab | Ravi plains, Harappa, Sakala, Lahore… | Harappan granary, stupa, Lahore Fort and Badshahi Mosque, Lahore Junction, GC clock tower, Minar-e-Pakistan |
+  | Ganges Plain | Ganges plain, Pataliputra, Varanasi, Agra, Kolkata… | Ashoka pillar and stupa, Kashi Vishwanath, Agra Fort and the marble mausoleum, Howrah station, jute mill, Eden Gardens |
+
+  Ages with nothing monumental to show (the Stone and Bronze Age Ganges plain, Mehrgarh, early
+  Mesoamerica) build no landmark rather than borrow another culture's. House styles follow the
+  period too: no domes in pharaonic Egypt or Gandhara, flat roofs in Cairo and Kolkata, low-rise
+  painted gables in Bergen, Chinese hip roofs versus Japanese thatch and machiya. The Space Age is
+  shared future architecture.
+  Their weather has monsoons in South Asia, winter fog in Punjab and the Ganges plain, and no snow
+  in the Nile, South Asia or Mesoamerica.
 * **Terrain** depends on the region and is generated from noise inside the globe's disc: a river
   (Nile, Mesopotamia), a coastline (Norse, Mediterranean), terraced hills (East Asia) or jungle
   (Mesoamerica).
