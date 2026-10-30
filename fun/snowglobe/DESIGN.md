@@ -63,9 +63,15 @@ Lives at `/fun/snowglobe/`, a sibling of Tritris, GD Golf and Ninja Ascent.
 
 ## 3. The cycle
 
-* **Length:** about **5 minutes** per full arc at 1× speed, split evenly over the ages, with each
-  transition taking a few seconds.
-* **Ages (7):** Stone → Bronze → Iron → Medieval → Renaissance → Industrial → Modern.
+* **Length:** about **5½ minutes** per full arc at 1× speed (eight ages of 42 s plus the blizzard),
+  with each transition taking a few seconds.
+* **Ages (8):** Stone → Bronze → Iron → Medieval → Renaissance → Industrial → Modern → **Space Age
+  (c. 2200)**, added at the author's request. The Space Age builds pod homes, glass greenhouse domes,
+  sky-garden towers and glowing spires, with landmarks per region: a rocket launch pad (rockets
+  launch about three times an age and exit through the top of the glass), a space elevator whose
+  cable rises to just under the glass, a terraced arcology and a spinning ring habitat. Hover cars
+  circle the town, an orbital station and satellites cross the sky, roads get glowing lanes and
+  townsfolk wear bubble helmets.
 * **Regions (9):** Nile Valley, Mesopotamia, East Asia (Japan/China flavour), Norse fjord,
   Mesoamerica, the Mediterranean (Greek/Roman), and three South Asian regions added at the author's
   request: **Indus Valley** (Mehrgarh → Mohenjo-daro → Taxila → Multan), **Punjab** (the Ravi plains →
@@ -83,7 +89,7 @@ Lives at `/fun/snowglobe/`, a sibling of Tritris, GD Golf and Ninja Ascent.
   (Mesoamerica).
 * **Order:** the next region is picked at random but never repeats the last two, so it doesn't feel
   like the same thing back to back.
-* **Reset:** at the end of Modern, snow thickens into a whiteout for about 4 s. Behind it the town is
+* **Reset:** at the end of the Space Age, snow thickens into a whiteout for about 4 s. Behind it the town is
   rebuilt, then the snow settles and a new region begins at the Stone Age.
 
 ## 4. The town simulation (`sim.js`)
@@ -170,7 +176,7 @@ Visual quality is checked by eye in the browser at each age and region, includin
 * Every region gets all seven ages, even where history didn't follow that path (a Mesoamerican
   or Norse Industrial/Modern age is an invented regional flavour, like a stone-and-jade factory
   district or turf-roofed apartment blocks). Recognisable, not accurate.
-* "Next age" during Modern triggers the blizzard reset.
+* "Next age" during the Space Age triggers the blizzard reset.
 * The plaque uses the paper theme's display serif.
 
 ## 11. Out of scope (for now)
