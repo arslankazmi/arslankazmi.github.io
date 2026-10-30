@@ -385,6 +385,32 @@ export function landmark(b, region) {
       break;
     }
     case "cathedral": {
+      if (rid === "mediterranean" && b.age === 3) {
+        // St Mark's, Venice: a Greek-cross basilica with five domes
+        const c = "#e9dcc4", lead = "#8f9aa0";
+        k.add(box(W * 0.9, 0.85, D * 0.62, 0, y0, 0), c);
+        k.add(box(D * 0.62, 0.85, W * 0.5, 0, y0, 0), c);
+        for (let i = 0; i < 5; i++) k.add(box(0.26, 0.38, 0.03, -W * 0.36 + i * W * 0.18, y0, D * 0.31 + 0.01), i === 2 ? "#e0b24a" : "#6a4a3a", false);
+        for (const [x, z, r] of [[0, 0, 0.36], [-W * 0.3, 0, 0.26], [W * 0.3, 0, 0.26], [0, -D * 0.2, 0.26], [0, D * 0.2, 0.26]]) {
+          k.add(cyl(r * 0.85, r * 0.85, 0.18, 14, x, y0 + 0.85, z), c);
+          k.add(ball(r, x, y0 + 1.05, z, 1, 1.15, 1), lead);
+          k.add(cone(0.03, 0.18, 6, x, y0 + 1.05 + r * 1.1, z), GOLD, false);
+        }
+        break;
+      }
+      if (rid === "mediterranean" && b.age === 4) {
+        // the Duomo, Florence: striped marble nave and Brunelleschi's ribbed red dome
+        const c = "#f1ece0", green = "#6f8f7a";
+        k.add(box(W * 0.9, 0.9, D * 0.55, 0, y0, 0), c);
+        for (let i = 0; i < 6; i++) k.add(box(0.03, 0.9, D * 0.555, -W * 0.4 + i * W * 0.16, y0, 0), green, false);
+        gable(k, W * 0.9, D * 0.55, y0 + 0.9, D * 0.22, c, "#c0603f", true);
+        k.add(new THREE.CylinderGeometry(0.5, 0.52, 0.45, 8).rotateY(Math.PI / 8).translate(W * 0.18, y0 + 1.12, 0), c);
+        k.add(ball(0.5, W * 0.18, y0 + 1.34, 0, 1, 1.25, 1, 2).scale(1, 1, 1), "#c0603f");
+        for (let i = 0; i < 8; i++) k.add(new THREE.TorusGeometry(0.5, 0.018, 4, 16, Math.PI / 2).rotateZ(0).scale(1, 1.25, 1).rotateY((i * Math.PI) / 4).translate(W * 0.18, y0 + 1.34, 0), "#f1ece0", false);
+        k.add(cyl(0.08, 0.1, 0.24, 8, W * 0.18, y0 + 1.95, 0), c);
+        k.add(cone(0.05, 0.14, 8, W * 0.18, y0 + 2.19, 0), GOLD, false);
+        break;
+      }
       const domed = rid === "mediterranean" || rid === "mesoamerica";
       const wallC = rid === "mesoamerica" ? "#f0d9a8" : domed ? "#efe3c6" : "#c4bcac";
       k.add(box(W * 0.9, 0.9, D * 0.6, 0, y0, 0), wallC);
@@ -594,6 +620,225 @@ export function landmark(b, region) {
       k.spinner(ring, [0, y0 + 1.25, 0], 0.5);
       break;
     }
+    case "pylon": {
+      // Karnak: a pylon gateway, then a forest of papyrus columns
+      const c = "#e3c48e";
+      // two broad, sloping pylon towers either side of the gate
+      const bw = W * 0.4, r0 = (bw / 2) * Math.SQRT2;
+      for (const sx of [-1, 1]) {
+        k.add(new THREE.CylinderGeometry(r0 * 0.8, r0, 1.2, 4).rotateY(Math.PI / 4).scale(1, 1, 0.34 / bw).translate(sx * (bw / 2 + 0.1), y0 + 0.6, D * 0.36), c);
+        k.add(box(bw * 0.82, 0.06, 0.32, sx * (bw / 2 + 0.1), y0 + 1.2, D * 0.36), shade(c, 0.12), false);
+      }
+      k.add(box(0.26, 0.85, 0.24, 0, y0, D * 0.36), shade(c, -0.05));
+      k.add(box(0.2, 0.6, 0.02, 0, y0, D * 0.45), DOOR, false);
+      for (const sx of [-1, 1]) for (const o of [-0.15, 0.15]) k.add(cyl(0.015, 0.015, 1.6, 4, sx * (bw / 2 + 0.1) + o, y0, D * 0.36 + 0.2), WOOD, false);
+      for (let i = 0; i < 4; i++) for (let j = 0; j < 3; j++) {
+        const x = -W * 0.3 + (i * W * 0.6) / 3, z = -D * 0.32 + j * D * 0.2;
+        k.add(cyl(0.08, 0.09, 0.9, 8, x, y0, z), shade(c, 0.05));
+        k.add(cyl(0.13, 0.08, 0.12, 8, x, y0 + 0.9, z), "#d9b47a", false);
+      }
+      k.add(box(W * 0.72, 0.1, D * 0.5, 0, y0 + 1.02, -D * 0.12), shade(c, -0.08));
+      break;
+    }
+    case "tvtower": {
+      const c = "#d9b47a";
+      k.add(cyl(0.3, 0.38, 0.2, 10, 0, y0, 0), "#b8b0a0");
+      k.add(cyl(0.11, 0.16, 2.8, 10, 0, y0 + 0.2, 0), c);
+      for (let i = 0; i < 6; i++) k.add(new THREE.CylinderGeometry(0.012, 0.012, 1.2, 4).rotateZ(0.12).translate(0.15, 0, 0).rotateY((i * Math.PI) / 3).translate(0, y0 + 2.4, 0), shade(c, -0.15), false);
+      k.add(cyl(0.34, 0.2, 0.22, 14, 0, y0 + 2.95, 0), "#f2ede2");
+      k.window(cyl(0.345, 0.345, 0.07, 14, 0, y0 + 3.03, 0));
+      k.add(cyl(0.02, 0.03, 0.5, 6, 0, y0 + 3.17, 0), "#888", false);
+      break;
+    }
+    case "tpillars": {
+      const c = "#cdbf9f";
+      k.add(cyl(S * 0.5, S * 0.52, 0.18, 20, 0, y0 - 0.06, 0), "#a99a7c");
+      for (let i = 0; i < 9; i++) {
+        const a = (i / 9) * Math.PI * 2, r = S * 0.42, ry = -a + Math.PI / 2;
+        k.add(box(0.12, 0.5, 0.06, Math.cos(a) * r, y0, Math.sin(a) * r, ry), c);
+        k.add(box(0.24, 0.08, 0.08, Math.cos(a) * r, y0 + 0.5, Math.sin(a) * r, ry), c);
+      }
+      for (const sx of [-1, 1]) { k.add(box(0.14, 0.75, 0.08, sx * 0.18, y0, 0), c); k.add(box(0.3, 0.1, 0.1, sx * 0.18, y0 + 0.75, 0), c); }
+      break;
+    }
+    case "ishtargate": {
+      const blue = "#2f5f9a", gold = "#e0b24a";
+      k.add(box(W, 0.7, D * 0.5, 0, y0, 0), blue);
+      for (const sx of [-1, 1]) k.add(box(0.5, 1.15, D * 0.75, sx * 0.42, y0, 0), blue);
+      for (let i = -6; i <= 6; i++) if (Math.abs(i) > 2) k.add(box(0.1, 0.12, D * 0.5, (i * W) / 13.5, y0 + 0.7, 0), blue, false);
+      for (const sx of [-1, 1]) for (const o of [-0.17, 0, 0.17]) k.add(box(0.1, 0.14, D * 0.75, sx * 0.42 + o, y0 + 1.15, 0), blue, false);
+      k.add(box(0.3, 0.6, 0.03, 0, y0, D * 0.38), DOOR, false);
+      for (let i = 0; i < 6; i++) k.add(box(0.12, 0.07, 0.02, -W * 0.42 + (i % 3) * 0.16 + (i > 2 ? W * 0.62 : 0), y0 + 0.4, D * 0.26), gold, false);
+      for (const sx of [-1, 1]) k.add(box(0.14, 0.09, 0.02, sx * 0.42, y0 + 0.8, D * 0.38), gold, false);
+      break;
+    }
+    case "spiralminaret": {
+      const c = "#d4a76f";
+      k.add(box(W, 0.2, D, 0, y0 - 0.05, 0), "#c8955f");
+      let y = y0 + 0.15;
+      for (let i = 0; i < 7; i++) { const r = S * 0.4 * (1 - i * 0.11); k.add(cyl(r * 0.94, r, 0.28, 16, 0, y, 0), shade(c, i % 2 ? 0.04 : -0.04)); y += 0.28; }
+      for (let i = 0; i < 24; i++) { const a = i * 0.8, r = S * 0.4 * (1 - (i / 24) * 0.75) + 0.01; k.add(box(0.12, 0.04, 0.05, Math.cos(a) * r, y0 + 0.15 + i * 0.08, Math.sin(a) * r, -a), shade(c, -0.15), false); }
+      k.add(cyl(0.12, 0.12, 0.22, 8, 0, y, 0), c);
+      k.add(dome(0.12, 0, y + 0.22, 0), c);
+      break;
+    }
+    case "kiln": {
+      k.add(dome(0.42, 0, y0, 0), "#b9844f");
+      k.add(cyl(0.08, 0.1, 0.35, 8, 0.18, y0 + 0.28, 0), "#a9643f");
+      k.add(box(0.18, 0.16, 0.03, 0, y0, 0.41), "#3a2a1a", false);
+      k.glow(box(0.12, 0.08, 0.02, 0, y0 + 0.02, 0.43), "#ff8a3a");
+      for (let i = 0; i < 6; i++) { const a = (i / 6) * Math.PI * 1.2 + 2.2; k.add(cyl(0.05, 0.07, 0.12, 8, Math.cos(a) * 0.55, y0, Math.sin(a) * 0.55), ["#c8553f", "#d9a679", "#8a4a2a"][i % 3], false); }
+      k.smoke.push([0.18, y0 + 0.66, 0]);
+      break;
+    }
+    case "palacehall": {
+      const ming = b.age >= 4;
+      const plat = ming ? "#f1ece0" : "#c9a26a", wall = ming ? "#b8402f" : "#c9a26a", roof = ming ? "#e8b83a" : "#c9a25a";
+      k.add(box(W, 0.3, D, 0, y0 - 0.05, 0), plat);
+      if (ming) k.add(box(W * 1.04, 0.14, D * 1.04, 0, y0 - 0.06, 0), plat, false);
+      k.add(box(W * 0.78, 0.6, D * 0.6, 0, y0 + 0.25, 0), wall);
+      for (let i = 0; i < 8; i++) k.add(cyl(0.035, 0.035, 0.6, 6, -W * 0.39 + (i * W * 0.78) / 7, y0 + 0.25, D * 0.31), ming ? "#9a2f22" : WOOD, false);
+      k.add(pyr(W * 1.0, 0.25, D * 0.86, 0, y0 + 0.85, 0), roof);
+      k.add(box(W * 0.58, 0.18, D * 0.4, 0, y0 + 1.05, 0), wall);
+      k.add(pyr(W * 0.82, 0.32, D * 0.62, 0, y0 + 1.2, 0), roof);
+      k.add(box(0.3, 0.32, 0.18, 0, y0 + 0.25 - 0.3, D * 0.5 + 0.05), plat, false);
+      break;
+    }
+    case "citygate": {
+      const ming = b.age >= 4, wall = ming ? "#b8402f" : "#9a948a", roof = ming ? "#e8b83a" : "#4a4f5c";
+      k.add(box(W, 0.75, D * 0.8, 0, y0, 0), ming ? "#b8402f" : "#8f8a84");
+      for (let i = -5; i <= 5; i++) k.add(box(0.12, 0.1, D * 0.8, (i * W) / 11.5, y0 + 0.75, 0), ming ? "#b8402f" : "#8f8a84", false);
+      k.add(box(0.36, 0.45, 0.03, 0, y0, D * 0.41), "#3a2a1a", false);
+      k.add(box(W * 0.6, 0.38, D * 0.55, 0, y0 + 0.85, 0), wall);
+      for (let i = 0; i < 6; i++) k.add(cyl(0.03, 0.03, 0.38, 6, -W * 0.28 + (i * W * 0.56) / 5, y0 + 0.85, D * 0.29), "#9a2f22", false);
+      k.add(pyr(W * 0.8, 0.22, D * 0.85, 0, y0 + 1.23, 0), roof);
+      k.add(box(W * 0.42, 0.2, D * 0.38, 0, y0 + 1.4, 0), wall);
+      k.add(pyr(W * 0.62, 0.3, D * 0.62, 0, y0 + 1.6, 0), roof);
+      break;
+    }
+    case "pearltower": {
+      const pink = "#d9608a";
+      k.add(cyl(S * 0.45, S * 0.48, 0.12, 16, 0, y0, 0), "#9aa3ab");
+      for (let i = 0; i < 3; i++) { const a = (i * Math.PI * 2) / 3; k.add(new THREE.CylinderGeometry(0.06, 0.07, 1.4, 8).rotateZ(Math.cos(a) * 0.18).rotateX(-Math.sin(a) * 0.18).translate(Math.cos(a) * 0.32, y0 + 0.75, Math.sin(a) * 0.32), "#e6eef2"); }
+      k.add(ball(0.42, 0, y0 + 1.15, 0, 1, 1, 1, 2), pink);
+      k.add(cyl(0.08, 0.1, 1.5, 10, 0, y0 + 1.5, 0), "#e6eef2");
+      for (let i = 0; i < 3; i++) k.add(ball(0.09, 0, y0 + 1.8 + i * 0.32, 0, 1, 1, 1, 1), pink, false);
+      k.add(ball(0.24, 0, y0 + 3.0, 0, 1, 1, 1, 2), pink);
+      k.add(cyl(0.025, 0.04, 0.9, 6, 0, y0 + 3.2, 0), "#e6eef2");
+      k.glow(ball(0.05, 0, y0 + 4.12, 0, 1, 1, 1, 0), "#ff4a3a");
+      break;
+    }
+    case "sixpillar": {
+      for (const x of [-0.35, 0, 0.35]) for (const z of [-0.25, 0.25]) k.add(cyl(0.07, 0.08, 1.9, 8, x, y0, z), "#7a5234");
+      for (const h of [0.6, 1.2, 1.8]) {
+        k.add(box(0.95, 0.06, 0.66, 0, y0 + h, 0), "#9a6a43");
+        for (const z of [-0.25, 0.25]) k.add(box(0.95, 0.05, 0.05, 0, y0 + h + 0.12, z), "#8a5a38", false);
+      }
+      k.add(box(0.06, 0.6, 0.06, 0.45, y0, 0.35), "#8a5a38", false);
+      break;
+    }
+    case "raisedstore": {
+      for (const x of [-0.3, 0.3]) for (const z of [-0.22, 0.22]) k.add(cyl(0.035, 0.04, 0.55, 6, x, y0, z), "#7a5234");
+      for (const x of [-0.3, 0.3]) for (const z of [-0.22, 0.22]) k.add(cyl(0.08, 0.08, 0.025, 8, x, y0 + 0.45, z), "#5a3a24", false);
+      k.add(box(0.8, 0.06, 0.6, 0, y0 + 0.55, 0), "#8a5a38");
+      k.add(box(0.64, 0.32, 0.46, 0, y0 + 0.61, 0), "#9a6a43");
+      gable(k, 0.64, 0.46, y0 + 0.93, 0.36, "#9a6a43", "#c9a25a", true, 0.1);
+      k.add(new THREE.BoxGeometry(0.1, 0.62, 0.04).rotateX(-0.5).translate(0, y0 + 0.28, 0.42), "#8a5a38", false);
+      break;
+    }
+    case "tokyotower": {
+      const red = "#e0522f", white = "#f4efe6";
+      for (const [sx, sz] of [[-1, -1], [1, -1], [1, 1], [-1, 1]]) k.add(new THREE.BoxGeometry(0.1, 1.3, 0.1).rotateZ(sx * 0.32).rotateX(-sz * 0.32).translate(sx * 0.5, y0 + 0.6, sz * 0.5), red);
+      let y = y0 + 1.2;
+      const secs = [[0.5, 0.36, red], [0.36, 0.26, white], [0.26, 0.18, red], [0.18, 0.12, white], [0.12, 0.06, red]];
+      for (const [rb, rt, c] of secs) { k.add(new THREE.CylinderGeometry(rt, rb, 0.6, 4).rotateY(Math.PI / 4).translate(0, y + 0.3, 0), c); y += 0.6; if (y < y0 + 1.9) { k.add(box(0.85, 0.16, 0.85, 0, y - 0.1, 0), white); k.window(box(0.86, 0.06, 0.86, 0, y - 0.05, 0)); } }
+      k.add(box(0.36, 0.1, 0.36, 0, y0 + 2.6, 0), white);
+      k.add(cyl(0.02, 0.04, 0.8, 6, 0, y, 0), red, false);
+      k.glow(ball(0.04, 0, y + 0.82, 0, 1, 1, 1, 0), "#ff4a3a");
+      break;
+    }
+    case "opera": {
+      k.add(new THREE.BoxGeometry(W * 0.95, 0.08, D * 0.9).rotateX(0.18).translate(0, y0 + 0.2, 0), "#f4f6f8");
+      k.add(box(W * 0.45, 0.7, D * 0.4, -W * 0.12, y0, -D * 0.12), "#bfe0ea");
+      k.add(box(W * 0.3, 0.95, D * 0.3, W * 0.18, y0, -D * 0.18), "#e6eef2");
+      k.add(new THREE.BoxGeometry(W * 0.32, 0.06, 0.6).rotateX(-0.5).translate(W * 0.18, y0 + 0.75, D * 0.02), "#f4f6f8");
+      k.window(box(W * 0.45, 0.4, 0.02, -W * 0.12, y0 + 0.1, D * 0.08 + 0.01));
+      break;
+    }
+    case "olmechead": {
+      const c = "#6f7466";
+      k.add(box(0.8, 0.1, 0.8, 0, y0 - 0.04, 0), "#8a8a7a", false);
+      k.add(ball(0.42, 0, y0 + 0.48, 0, 1, 1.12, 0.92, 2), c);
+      k.add(ball(0.44, 0, y0 + 0.7, -0.02, 1.02, 0.55, 0.96, 1), shade(c, -0.15));
+      for (const sx of [-1, 1]) { k.add(box(0.12, 0.05, 0.03, sx * 0.14, y0 + 0.58, 0.38), "#3a3c34", false); k.add(ball(0.08, sx * 0.4, y0 + 0.48, 0, 0.6, 1.2, 1, 0), c, false); }
+      k.add(new THREE.ConeGeometry(0.08, 0.16, 4).rotateX(Math.PI / 2).translate(0, y0 + 0.46, 0.42), c, false);
+      k.add(box(0.26, 0.05, 0.04, 0, y0 + 0.3, 0.37), "#3a3c34", false);
+      break;
+    }
+    case "ballcourt": {
+      const c = "#d9cdb0";
+      k.add(box(W * 0.7, 0.04, D * 0.35, 0, y0 - 0.02, 0), "#b9a77f", false);
+      for (const sz of [-1, 1]) {
+        k.add(new THREE.BoxGeometry(W * 0.9, 0.5, 0.35).rotateX(sz * 0.35).translate(0, y0 + 0.22, sz * D * 0.34), c);
+        k.add(box(W * 0.9, 0.3, 0.3, 0, y0 + 0.22, sz * D * 0.47), shade(c, -0.05));
+        k.add(new THREE.TorusGeometry(0.1, 0.03, 6, 12).translate(0, y0 + 0.45, sz * D * 0.2), "#b8b0a0");
+      }
+      k.add(box(0.3, 0.3, 0.3, W * 0.48, y0, 0), c);
+      k.add(pyr(0.4, 0.2, 0.4, W * 0.48, y0 + 0.3, 0), "#c9a25a");
+      break;
+    }
+    case "minoanpalace": {
+      const c = "#efe3c6", red = "#b8402f";
+      k.add(box(W * 0.9, 0.45, D * 0.8, 0, y0, 0), c);
+      k.add(box(W * 0.5, 0.4, D * 0.5, -W * 0.15, y0 + 0.45, -D * 0.1), c);
+      k.add(box(W * 0.3, 0.1, D * 0.25, 0, y0 - 0.02, D * 0.05), "#d6c48e", false);
+      for (let i = 0; i < 5; i++) {
+        const x = -W * 0.36 + i * W * 0.18;
+        k.add(cyl(0.065, 0.045, 0.4, 8, x, y0 + 0.02, D * 0.42), red);
+        k.add(cyl(0.08, 0.08, 0.05, 8, x, y0 + 0.42, D * 0.42), "#2a2a2a", false);
+      }
+      k.add(box(W * 0.92, 0.06, D * 0.16, 0, y0 + 0.45, D * 0.42), c);
+      for (const x of [-0.18, 0.18]) for (const sx of [-0.06, 0.06]) k.add(cone(0.04, 0.16, 5, x + sx, y0 + 0.85, -D * 0.1), c, false);
+      k.add(box(0.5, 0.1, 0.02, W * 0.2, y0 + 0.2, D * 0.401), "#3f78b0", false);
+      break;
+    }
+    case "campanile": {
+      const florence = b.age >= 4;
+      const c = florence ? "#f1ece0" : "#b4553f";
+      k.add(box(0.62, 2.0, 0.62, 0, y0, 0), c);
+      if (florence) for (const h of [0.5, 1.0, 1.5]) k.add(box(0.63, 0.05, 0.63, 0, y0 + h, 0), "#6f8f7a", false);
+      k.add(box(0.66, 0.4, 0.66, 0, y0 + 2.0, 0), florence ? c : "#efe3c6");
+      for (const [x, z, ry] of [[0, 0.33, 0], [0, -0.33, 0], [0.33, 0, Math.PI / 2], [-0.33, 0, Math.PI / 2]]) k.add(box(0.3, 0.26, 0.02, x, y0 + 2.07, z, ry), "#3a2a1a", false);
+      if (florence) k.add(box(0.7, 0.06, 0.7, 0, y0 + 2.4, 0), c);
+      else { k.add(box(0.5, 0.2, 0.5, 0, y0 + 2.4, 0), c); k.add(pyr(0.52, 0.85, 0.52, 0, y0 + 2.6, 0), "#6fa58f"); k.add(ball(0.05, 0, y0 + 3.5, 0, 1, 1, 1, 0), GOLD, false); }
+      break;
+    }
+    case "sagrada": {
+      const c = "#d9c49b";
+      k.add(box(W * 0.8, 0.8, D * 0.6, 0, y0, 0), c);
+      gable(k, W * 0.8, D * 0.6, y0 + 0.8, D * 0.3, c, shade(c, -0.1), true);
+      const tips = ["#e0522f", "#e8b83a", "#3f78b0", "#7fb56a"];
+      for (let i = 0; i < 4; i++) for (const sz of [-1, 1]) {
+        const x = -W * 0.3 + i * W * 0.2, h = 1.8 + (i === 1 || i === 2 ? 0.5 : 0);
+        k.add(new THREE.CylinderGeometry(0.06, 0.14, h, 8).translate(x, y0 + h / 2, sz * D * 0.32), c);
+        for (let j = 1; j < 5; j++) k.add(cyl(0.12 - j * 0.015, 0.12 - j * 0.015, 0.02, 8, x, y0 + (h * j) / 5, sz * D * 0.32), shade(c, -0.15), false);
+        k.add(ball(0.06, x, y0 + h + 0.05, sz * D * 0.32, 1, 1.4, 1, 0), tips[i], false);
+      }
+      k.add(new THREE.CylinderGeometry(0.08, 0.22, 2.8, 8).translate(0, y0 + 1.4, 0), shade(c, 0.05));
+      k.add(ball(0.09, 0, y0 + 2.88, 0, 1, 1, 1, 1), "#f4efe6", false);
+      k.add(cyl(0.012, 0.012, 0.3, 4, 0, y0 + 2.95, 0), "#f4efe6", false);
+      break;
+    }
+    case "ashokapillar": {
+      k.add(cyl(S * 0.45, S * 0.48, 0.06, 16, 0, y0 - 0.02, 0), "#c9b48a", false);
+      for (let i = 0; i < 14; i++) { const a = (i / 14) * Math.PI * 2; k.add(box(0.04, 0.16, 0.04, Math.cos(a) * S * 0.42, y0, Math.sin(a) * S * 0.42), "#b9a77f", false); }
+      k.add(cyl(0.07, 0.09, 2.0, 12, 0, y0, 0), "#e6d6b0");
+      k.add(cyl(0.14, 0.09, 0.16, 12, 0, y0 + 2.0, 0), "#d9c49b");
+      k.add(cyl(0.14, 0.14, 0.08, 12, 0, y0 + 2.16, 0), "#cdb88f");
+      for (let i = 0; i < 4; i++) { const a = (i * Math.PI) / 2; k.add(ball(0.07, Math.cos(a) * 0.07, y0 + 2.32, Math.sin(a) * 0.07, 1, 1.2, 1, 0), "#d9c49b", false); }
+      k.add(new THREE.CylinderGeometry(0.015, 0.015, 0.12, 6).rotateX(Math.PI / 2).translate(0, y0 + 2.42, 0), "#3f78b0", false);
+      break;
+    }
     case "greatbath": {
       const brick = "#b8714a";
       k.add(box(W, 0.28, D, 0, y0 - 0.06, 0), brick);
@@ -641,12 +886,13 @@ export function landmark(b, region) {
       break;
     }
     case "tomb": {
-      const brick = "#b8714a", blue = "#3f78b0";
+      const shrine = rid === "mesopotamia";   // a gold-domed shrine with blue tilework
+      const brick = shrine ? "#4f7fae" : "#b8714a", blue = shrine ? "#e0b24a" : "#3f78b0";
       k.add(new THREE.CylinderGeometry(S * 0.44, S * 0.48, 0.75, 8).rotateY(Math.PI / 8).translate(0, y0 + 0.375, 0), brick);
       k.add(new THREE.CylinderGeometry(S * 0.445, S * 0.445, 0.08, 8).rotateY(Math.PI / 8).translate(0, y0 + 0.62, 0), blue, false);
       k.add(new THREE.CylinderGeometry(S * 0.32, S * 0.34, 0.4, 8).rotateY(Math.PI / 8).translate(0, y0 + 0.95, 0), brick);
       k.add(new THREE.CylinderGeometry(S * 0.325, S * 0.325, 0.06, 8).rotateY(Math.PI / 8).translate(0, y0 + 1.06, 0), blue, false);
-      k.add(dome(S * 0.3, 0, y0 + 1.15, 0), "#f2ede2");
+      k.add(dome(S * 0.3, 0, y0 + 1.15, 0), shrine ? GOLD : "#f2ede2");
       k.add(cone(0.04, 0.18, 6, 0, y0 + 1.15 + S * 0.3, 0), GOLD, false);
       for (let i = 0; i < 8; i++) { const a = (i / 8) * Math.PI * 2 + Math.PI / 8; k.add(cyl(0.05, 0.06, 0.9, 6, Math.cos(a) * S * 0.47, y0, Math.sin(a) * S * 0.47), shade(brick, -0.08)); k.add(dome(0.06, Math.cos(a) * S * 0.47, y0 + 0.9, Math.sin(a) * S * 0.47), "#f2ede2", false); }
       k.add(box(0.2, 0.32, 0.03, 0, y0, S * 0.45), DOOR, false);

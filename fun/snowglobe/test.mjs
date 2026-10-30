@@ -160,7 +160,46 @@ const snap = (s) => JSON.stringify({ r: s.region.id, b: s.buildings.map(({ id, x
   ok(p.placeName === "Lahore", "Punjab becomes Lahore");
   const lms = new Set();
   for (let i = 0; i < steps(CYCLE); i++) { p.step(); for (const e of p.drain()) if (e.e === "add" && e.b.kind === "landmark") lms.add(e.b.lm); }
-  ok(S.REGIONS.length === 9, "nine regions in rotation");
+  ok(S.REGIONS.length === 10, "ten regions in rotation");
+}
+
+// --- every place builds its own landmarks, under their real names --------------------------------
+{
+  const expect = {
+    nile: [[1, "the Great Pyramid of Giza"], [2, "the temple of Karnak"], [6, "the Cairo Tower"]],
+    mesopotamia: [[0, "the pillar circle of Göbekli Tepe"], [2, "the Ishtar Gate"]],
+    china: [[3, "the Six Harmonies Pagoda"], [6, "the Oriental Pearl Tower"]],
+    japan: [[1, "the great watchtower"], [4, "Osaka Castle"], [6, "Tokyo Tower"]],
+    norse: [[3, "the stave church"], [4, "Bergenhus fortress"]],
+    mesoamerica: [[2, "a colossal Olmec head"], [3, "El Castillo"], [6, "the Estadio Azteca"]],
+    mediterranean: [[1, "the palace of Knossos"], [3, "St Mark's Basilica"], [4, "the Duomo"], [6, "the Sagrada Família"]],
+    indus: [[1, "the Great Bath"], [3, "the tomb of Shah Rukn-e-Alam"], [5, "Ghanta Ghar"]],
+    punjab: [[4, "Lahore Fort"], [6, "Minar-e-Pakistan"]],
+    ganges: [[2, "the Ashoka pillar"], [4, "Agra Fort"]],
+  };
+  let wrongKind = 0, missing = [];
+  for (const [id, want] of Object.entries(expect)) {
+    const seen = new Set();
+    for (let seed = 1; seed <= 3; seed++) {
+      const s = new Sim(seed * 7, { region: id });
+      for (let age = 0; age < AGES.length; age++) {
+        for (const e of s.drain()) if (e.e === "add" && e.b.kind === "landmark") {
+          seen.add(`${e.b.age}:${e.b.label}`);
+          if (!s.region.lms[e.b.age].includes(e.b.lm)) wrongKind++;
+        }
+        for (let i = 0; i < steps(AGE_T * 0.95); i++) s.step();
+        for (const e of s.drain()) if (e.e === "add" && e.b.kind === "landmark") {
+          seen.add(`${e.b.age}:${e.b.label}`);
+          if (!s.region.lms[e.b.age].includes(e.b.lm)) wrongKind++;
+        }
+        s.nextAge();
+      }
+    }
+    for (const [age, name] of want) if (!seen.has(`${age}:${name}`)) missing.push(`${id} ${age} ${name}`);
+  }
+  ok(wrongKind === 0, `landmarks only come from their own place and age (${wrongKind} strays)`);
+  ok(missing.length === 0, `each place builds its signature landmarks${missing.length ? " — missing: " + missing.join("; ") : ""}`);
+  ok(S.REGIONS.every((r) => r.places && r.places.length === AGES.length && r.lms.length === AGES.length), "every region has a place and landmark list for every age");
 }
 
 // --- skipping ahead --------------------------------------------------------------------------
