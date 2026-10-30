@@ -986,7 +986,7 @@ function drawPlaque() {
   const bliz = sim.state === "bliz" && !sim.rebuilt;
   const place = sim.placeName, named = place !== sim.region.name;
   const title = bliz ? "· · ·" : place.toUpperCase();
-  const sub = bliz ? "a new age is coming" : `${named ? sim.region.name + " · " : ""}${sim.ageInfo.name} · ${sim.ageInfo.year}`;
+  const sub = bliz ? "a new age is coming" : `${named ? sim.region.name + " · " : ""}${sim.ageInfo.name} · ${sim.yearLabel}`;
   g.textAlign = "center"; g.textBaseline = "middle";
   const text = (s, y, size, style = "") => {
     g.font = `${style} ${size}px ${displayFont}`;
@@ -1009,7 +1009,7 @@ function hud(plaqueToo = false) {
   $("hudPlace").textContent = sim.placeName;
   $("hudRegion").textContent = sim.placeName !== sim.region.name ? sim.region.name : "";
   $("hudAge").textContent = sim.ageInfo.name;
-  $("hudYear").textContent = sim.ageInfo.year;
+  $("hudYear").textContent = sim.yearLabel;
   $("hudSeason").textContent = bliz ? "winter" : sim.seasonName;
   $("hudWeather").textContent = bliz ? "blizzard" : WEATHER_NAMES[sim.weather.kind];
   $("hudCount").textContent = `${sim.buildings.length} buildings · ${people.list.length} people`;

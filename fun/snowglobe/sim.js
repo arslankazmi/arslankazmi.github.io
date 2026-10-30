@@ -91,12 +91,23 @@
     raisedstore: { w: 1.2, d: 1.0, name: "the storehouse" },
     tokyotower: { w: 1.8, d: 1.8, name: "the tower" },
     opera: { w: 2.6, d: 1.8, name: "the concert hall" },
-    olmechead: { w: 1.1, d: 1.1, name: "a colossal head" },
     ballcourt: { w: 2.6, d: 1.4, name: "the ballcourt" },
     minoanpalace: { w: 2.8, d: 2.4, name: "the palace" },
     campanile: { w: 0.9, d: 0.9, name: "the bell tower" },
     sagrada: { w: 2.6, d: 1.6, name: "the basilica" },
     ashokapillar: { w: 1.0, d: 1.0, name: "the pillar" },
+    skytree: { w: 1.6, d: 1.6, name: "the broadcast tower" },
+    tmg: { w: 2.2, d: 1.6, name: "the twin towers" },
+    mayatemple: { w: 2.4, d: 2.4, name: "the temple pyramid" },
+    observatory: { w: 1.8, d: 1.8, name: "the observatory" },
+    roundpyramid: { w: 2.6, d: 2.6, name: "the round pyramid" },
+    atlantes: { w: 2.0, d: 2.0, name: "the warrior columns" },
+    templomayor: { w: 2.4, d: 2.4, name: "the great temple" },
+    barklonghouse: { w: 2.4, d: 1.0, name: "the longhouse" },
+    starfort: { w: 2.6, d: 2.6, name: "the fort" },
+    liberty: { w: 1.4, d: 1.4, name: "the statue" },
+    empirestate: { w: 1.6, d: 1.6, name: "the skyscraper" },
+    chrysler: { w: 1.4, d: 1.4, name: "the skyscraper" },
     rocket: { w: 2.0, d: 2.0, name: "the launch pad" },
     elevator: { w: 1.6, d: 1.6, name: "the space elevator" },
     arcology: { w: 2.8, d: 2.8, name: "the arcology" },
@@ -128,6 +139,11 @@
     future: ["#f4f6f8", "#e6eef2", "#d9e8ec", "#f2ece2", "#cfe3e6"],
     ochre: ["#c9a26a", "#b98f5a", "#d4b07a"],
     greybrick: ["#8f8a84", "#a09a92", "#7e7a75"],
+    glassy: ["#9fc3d8", "#b9d0dc", "#cfd8dc", "#8fb0c4", "#d9dde0"],
+    bark: ["#8a7a5a", "#7d6c4e", "#968563"],
+    dutch: ["#b4553f", "#a24a38", "#c0674a", "#8a4a38"],
+    brown: ["#7a4f3a", "#8a5a42", "#6e4632", "#b4553f"],
+    deco: ["#d9cfb8", "#cfc4aa", "#b8a88a", "#a24a38", "#9fb7c4"],
     glaze: ["#d9b47a", "#c8955f", "#4f7fae"],
     baked: ["#b8714a", "#a9643f", "#c27c55"],
     redstone: ["#c46a4a", "#b85c40", "#d07b58"],
@@ -216,7 +232,7 @@
       names: { kiln: "the pottery kiln", "palacehall@1": "the palace hall", "palacehall@4": "the Hall of Supreme Harmony", "citygate@2": "the city gate", "citygate@4": "the Gate of Heavenly Peace", pagoda: "the Six Harmonies Pagoda", clocktower: "the Custom House", station: "Shanghai station", pearltower: "the Oriental Pearl Tower" },
     },
     {
-      id: "japan", name: "Japan", terrain: "hills", trees: "blossom",
+      id: "japan", name: "Japan", terrain: "hills", trees: "blossom", dense: true,
       places: ["a Jōmon village", "Sannai-Maruyama", "Yoshinogari", "Kyoto", "Osaka", "Tokyo", "Tokyo", "Tokyo"],
       ground: { grass: "#9fbf72", sand: "#d9c793", bed: "#7a7f63" }, water: "#6aa3b5",
       weather: { clear: 5, cloudy: 3, rain: 3, snow: 1.5, fog: 2, storm: 0.6, sandstorm: 0 },
@@ -227,10 +243,10 @@
         { roofs: ["hip", "gable"], walls: P.wood.concat(P.plaster), roofCs: RC.tile },
         { roofs: ["hip", "gable"], walls: P.white.concat(P.wood), roofCs: RC.tile },
         { roofs: ["gable", "hip"], walls: P.brick.concat(P.wood), roofCs: RC.tile },
-        { roofs: ["tower", "tower", "neon", "flat"], walls: P.modern },
+        { roofs: ["jtower", "jtower", "jtower", "neon"], walls: P.glassy, floors: [6, 12], size: [0.8, 1.05] },
       ],
-      lms: [["stones"], ["sixpillar"], ["raisedstore", "sixpillar"], ["pagoda", "shrine"], ["tenshu"], ["station", "clocktower"], ["tokyotower", "neontower"], ["elevator", "ringhab"]],
-      names: { stones: "the stone circle", sixpillar: "the great watchtower", raisedstore: "the raised storehouse", pagoda: "the five-storey pagoda", shrine: "the shrine", tenshu: "Osaka Castle", station: "the brick station", clocktower: "the clock tower", tokyotower: "Tokyo Tower" },
+      lms: [["stones"], ["sixpillar"], ["raisedstore", "sixpillar"], ["pagoda", "shrine"], ["tenshu"], ["station", "clocktower"], ["skytree", "tmg", "tokyotower"], ["elevator", "ringhab"]],
+      names: { stones: "the stone circle", sixpillar: "the great watchtower", raisedstore: "the raised storehouse", pagoda: "the five-storey pagoda", shrine: "the shrine", tenshu: "Osaka Castle", station: "the brick station", clocktower: "the clock tower", tokyotower: "Tokyo Tower", skytree: "Tokyo Skytree", tmg: "the Metropolitan Government Building" },
     },
     {
       id: "norse", name: "Norse Fjord", terrain: "coast", trees: "pine",
@@ -250,21 +266,58 @@
       names: { stones: "the dolmen", longhall: "the longhouse", stave: "the stave church", cathedral: "Bergen Cathedral", castle: "Bergenhus fortress", factory: "the fish cannery", opera: "the concert hall", rocket: "the Andøya launch pad" },
     },
     {
-      id: "mesoamerica", name: "Mesoamerica", terrain: "jungle", trees: "jungle",
-      places: ["the Valley of Mexico", "the Valley of Mexico", "La Venta", "Chichén Itzá", "Mexico City", "Mexico City", "Mexico City", "Mexico City"],
-      ground: { grass: "#88b062", sand: "#d6c48e", bed: "#6f7457" }, water: "#5fa5a0",
-      weather: { clear: 4, cloudy: 2.5, rain: 3.5, snow: 0, fog: 2, storm: 1.5, sandstorm: 0 },
+      id: "maya", name: "Maya Lowlands", terrain: "cenote", trees: "jungle",
+      places: ["the Yucatán", "the Yucatán", "El Mirador", "Chichén Itzá", "Mérida", "Mérida", "Cancún", "Cancún"],
+      ground: { grass: "#86ad5e", sand: "#e2d4a8", bed: "#5f8a80" }, water: "#4fb0a8",
+      weather: { clear: 4, cloudy: 2.5, rain: 3.5, snow: 0, fog: 1.5, storm: 1.8, sandstorm: 0 },
       ages: [
         { roofs: ["cone"], walls: P.reed, roofCs: RC.thatch },
         { roofs: ["cone", "gable"], walls: P.reed.concat(P.plaster), roofCs: RC.thatch },
-        { roofs: ["gable", "cone"], walls: P.plaster, roofCs: RC.thatch },
-        { roofs: ["gable", "flat"], walls: P.plaster.concat(P.stone), roofCs: RC.thatch },
+        { roofs: ["gable"], walls: P.plaster, roofCs: RC.thatch },
+        { roofs: ["gable", "gable", "flat"], walls: P.plaster.concat(P.stone), roofCs: RC.thatch },
+        { roofs: ["flat"], walls: P.stucco.concat(P.white), roofCs: RC.terra },
+        { roofs: ["flat"], walls: P.stucco },
+        { roofs: ["tower", "tower", "flat"], walls: P.white.concat(P.modern) },
+      ],
+      lms: [[], [], ["mayatemple"], ["steppyramid", "observatory", "ballcourt"], ["cathedral"], ["factory"], ["skytower"], ["rocket", "arcology"]],
+      names: { mayatemple: "La Danta", steppyramid: "El Castillo", observatory: "El Caracol", ballcourt: "the Great Ballcourt", cathedral: "Mérida Cathedral", factory: "the henequen mill", skytower: "the beach hotel" },
+    },
+    {
+      id: "aztec", name: "Valley of Mexico", terrain: "lake", trees: "round",
+      reserve: ["roundpyramid", "atlantes", "templomayor", "stadium"],     // the sacred precinct, kept clear at the heart of the island
+      places: ["the lakeshore", "the lakeshore", "Cuicuilco", "Tula", "Tenochtitlan", "Mexico City", "Mexico City", "Mexico City"],
+      years: [null, null, null, "c. 1150", "c. 1500"],
+      ground: { grass: "#9ab865", sand: "#d8c894", bed: "#6f7a5a" }, water: "#5f9fa8",
+      weather: { clear: 5, cloudy: 2.5, rain: 2.5, snow: 0, fog: 1, storm: 1.2, sandstorm: 0 },
+      ages: [
+        { roofs: ["cone"], walls: P.reed, roofCs: RC.thatch },
+        { roofs: ["cone", "gable"], walls: P.reed.concat(P.plaster), roofCs: RC.thatch },
+        { roofs: ["gable", "flat"], walls: P.plaster, roofCs: RC.thatch },
+        { roofs: ["flat"], walls: P.stone.concat(P.plaster), roofCs: RC.sand },
+        { roofs: ["flat"], walls: P.white, roofCs: RC.white },
         { roofs: ["flat", "flat", "dome"], walls: P.stucco, roofCs: RC.terra },
-        { roofs: ["flat"], walls: P.stucco.concat(P.brick) },
         { walls: P.modern.concat(P.stucco) },
       ],
-      lms: [[], [], ["olmechead", "steppyramid"], ["steppyramid", "ballcourt"], ["cathedral"], ["station", "factory"], ["skytower", "stadium"], ["rocket", "arcology"]],
-      names: { olmechead: "a colossal Olmec head", "steppyramid@2": "the Great Pyramid of La Venta", "steppyramid@3": "El Castillo", ballcourt: "the Great Ballcourt", cathedral: "the Metropolitan Cathedral", station: "Buenavista station", skytower: "the Torre Latinoamericana", stadium: "the Estadio Azteca" },
+      lms: [[], [], ["roundpyramid"], ["atlantes"], ["templomayor", "ballcourt"], ["cathedral", "station"], ["stadium", "skytower"], ["rocket", "arcology"]],
+      names: { roundpyramid: "the round pyramid of Cuicuilco", atlantes: "the Atlantes of Tula", templomayor: "the Templo Mayor", ballcourt: "the tlachtli ballcourt", cathedral: "the Metropolitan Cathedral", station: "Buenavista station", skytower: "the Torre Latinoamericana", stadium: "the Estadio Azteca" },
+    },
+    {
+      id: "newyork", name: "Manhattan", terrain: "coast", trees: "round", dense: true,
+      places: ["Lenapehoking", "Lenapehoking", "Lenapehoking", "Lenapehoking", "New Amsterdam", "New York", "New York", "New York"],
+      years: [null, null, null, null, "c. 1650"],
+      ground: { grass: "#93b066", sand: "#d6c79e", bed: "#6c7468" }, water: "#5f8fa6",
+      weather: { clear: 4, cloudy: 3, rain: 2.5, snow: 2.2, fog: 1, storm: 1, sandstorm: 0 },
+      ages: [
+        { roofs: ["wigwam"], walls: P.bark, roofCs: P.bark },
+        { roofs: ["wigwam"], walls: P.bark, roofCs: P.bark },
+        { roofs: ["wigwam"], walls: P.bark, roofCs: P.bark },
+        { roofs: ["wigwam", "wigwam", "gable"], walls: P.bark, roofCs: P.bark },
+        { roofs: ["stepgable"], walls: P.dutch, roofCs: RC.terra.concat(RC.slate), floors: [2, 3], size: [0.7, 0.9] },
+        { roofs: ["brownstone", "brownstone", "stepgable"], walls: P.brown, roofCs: RC.slate, floors: [3, 4], size: [0.75, 0.95] },
+        { roofs: ["deco", "deco", "tower", "jtower"], walls: P.deco, floors: [6, 12], size: [0.8, 1.05] },
+      ],
+      lms: [[], [], [], ["barklonghouse"], ["starfort", "windmill"], ["liberty", "station"], ["empirestate", "chrysler"], ["elevator", "ringhab"]],
+      names: { barklonghouse: "the Lenape longhouse", starfort: "Fort Amsterdam", windmill: "the Dutch windmill", liberty: "the Statue of Liberty", station: "Grand Central Depot", empirestate: "the Empire State Building", chrysler: "the Chrysler Building" },
     },
     {
       id: "mediterranean", name: "Mediterranean", terrain: "coast", trees: "cypress",
@@ -458,6 +511,8 @@
     get houses() { return this.buildings.filter((b) => b.kind === "house"); }
     get landmarks() { return this.buildings.filter((b) => b.kind === "landmark"); }
     get ageInfo() { return AGES[this.age]; }
+    /** The date for this age, which a region may shift to when its place really flourished. */
+    get yearLabel() { return (this.region.years && this.region.years[this.age]) || AGES[this.age].year; }
     /** A real place name for this age where the region has one, else the region's name. */
     get placeName() { return (this.region.places && this.region.places[this.age]) || this.region.name; }
     get season() { return this.state === "bliz" ? 3 : Math.floor((this.ageT / AGE_T) * 4) % 4; }
@@ -473,6 +528,8 @@
       if (type === "river") Object.assign(T, { amp: this.r(1, 1.8), freq: this.r(0.16, 0.26), ph: this.r(0, 6.3), off: sgn * this.r(4.4, 5.6), wid: this.r(0.9, 1.15) });
       if (type === "jungle") Object.assign(T, { amp: this.r(1, 1.8), freq: this.r(0.2, 0.3), ph: this.r(0, 6.3), off: sgn * this.r(5, 6.4), wid: this.r(0.45, 0.6) });
       if (type === "coast") T.c = this.r(5.4, 6.4);
+      if (type === "lake") { T.ri = this.r(6.6, 7.1); T.cw = [0, 1, 2].map((k) => T.th + (k * Math.PI * 2) / 3 + this.r(-0.3, 0.3)); }
+      if (type === "cenote") T.holes = [0, 1, 2].map((k) => { const a = T.th + (k * Math.PI * 2) / 3 + this.r(-0.5, 0.5), rr = this.r(3.8, 7.4); return { x: Math.cos(a) * rr, z: Math.sin(a) * rr, r: this.r(0.55, 0.85) }; });
       return T;
     }
     /** Signed distance-ish to water: > 0 on land, < 0 in water. */
@@ -486,6 +543,15 @@
         const s = x * Math.cos(T.th) + z * Math.sin(T.th) + 0.9 * (vnoise(x * 0.3, z * 0.3, T.seed) - 0.5);
         return T.c - s;
       }
+      if (T.type === "lake") {
+        // an island city in a lake, joined to the shore by causeways
+        const r = Math.hypot(x, z), d = T.ri + 0.8 * (vnoise(x * 0.35, z * 0.35, T.seed) - 0.5) - r;
+        if (d >= 0) return d;
+        const a = Math.atan2(z, x);
+        for (const c of T.cw) { const lat = r * Math.abs(Math.sin(a - c)); if (Math.cos(a - c) > 0 && lat < 0.28) return 0.3 - lat; }
+        return d;
+      }
+      if (T.type === "cenote") return Math.min(99, ...T.holes.map((h) => Math.hypot(x - h.x, z - h.z) - h.r));
       return 99;
     }
     heightAt(x, z) {
@@ -516,12 +582,27 @@
       this.buildings = []; this.nodes = []; this.edges = []; this.trees = []; this.fields = []; this.events = [];
       this.center = this.findCenter();
       this.nodes.push({ x: this.center.x, z: this.center.z });
+      this.reserved = [];
+      for (const kind of this.region.reserve || []) this.reserveLot(kind);
       this.emit({ e: "reset" });
       this.scatterTrees();
       this.startAge(0);
       this.pickWeather();
     }
 
+    /** Keep a lot clear for a landmark that a later age builds at the heart of town. */
+    reserveLot(kind) {
+      const fp = LANDMARKS[kind];
+      for (let k = 0; k < 80; k++) {
+        const a = this.r(0, Math.PI * 2), rr = PLAZA_R + Math.max(fp.w, fp.d) / 2 + 0.3 + this.r(0, 1.5);
+        const lot = { kind, x: this.center.x + Math.cos(a) * rr, z: this.center.z + Math.sin(a) * rr, rot: a + Math.PI / 2, w: fp.w + 0.2, d: fp.d + 0.2 };
+        if (corners(lot).some(([x, z]) => Math.hypot(x, z) > TOWN_R || this.waterDist(x, z) < 0.4)) continue;
+        if (this.reserved.some((o) => obbOverlap(lot, o, 0.2))) continue;
+        this.reserved.push(lot);
+        return true;
+      }
+      return false;
+    }
     findCenter() {
       let best = { x: 0, z: 0 }, bs = Infinity;
       for (let k = 0; k < 300; k++) {
@@ -529,7 +610,7 @@
         const x = Math.cos(a) * rad, z = Math.sin(a) * rad;
         if (!this.landOk(x, z, 1.8)) continue;
         const wd = this.waterDist(x, z);
-        const score = wd < 50 ? Math.abs(wd - 2.4) + rad * 0.2 : rad;
+        const score = wd < 50 && this.terrain.type !== "lake" ? Math.abs(wd - 2.4) + rad * 0.2 : rad;
         if (score < bs) { bs = score; best = { x, z }; }
       }
       return best;
@@ -572,8 +653,10 @@
       this.ageT = 0;
       const S = [];
       const A = AGE_T;
-      for (let k = 0; k < ROADS_PER_AGE[i]; k++) S.push({ t: 0.1 + (k / ROADS_PER_AGE[i]) * 0.6 * A, a: "road" });
-      const n = Math.max(0, TARGET[i] - this.houses.length);
+      const dense = this.region.dense && i >= 5;            // big-city centres: more roads, more buildings
+      const roads = ROADS_PER_AGE[i] + (dense ? 3 : 0);
+      for (let k = 0; k < roads; k++) S.push({ t: 0.1 + (k / roads) * 0.6 * A, a: "road" });
+      const n = Math.max(0, Math.round(TARGET[i] * (dense ? 1.35 : 1)) - this.houses.length);
       for (let k = 0; k < n; k++) S.push({ t: 0.6 + ((k + this.rng() * 0.8) / n) * 0.82 * A, a: "house" });
       if (UPGRADE[i]) {
         const olds = this.houses.filter((b) => b.age < i);
@@ -679,6 +762,7 @@
         if (segCross([ax, az], [bx, bz], [A.x, A.z], [B.x, B.z])) return false;
       }
       for (const b of this.buildings) if (segObbDist(b, ax, az, bx, bz) < ROAD_W / 2 + 0.06) return false;
+      for (const r of this.reserved) if (segObbDist(r, ax, az, bx, bz) < ROAD_W / 2 + 0.06) return false;
       return true;
     }
     pickEdge() {
@@ -700,8 +784,9 @@
 
     // --- buildings --------------------------------------------------------------------------
     /** Can box b stand here? Returns the fields it would flatten, or null. */
-    fits(b, { fieldsOk = false, ignore = null, slope = 0.45, houses = true } = {}) {
+    fits(b, { fieldsOk = false, ignore = null, slope = 0.45, houses = true, lot = null } = {}) {
       for (const [x, z] of corners(b)) if (Math.hypot(x, z) > TOWN_R + 0.2) return null;
+      if (this.reserved.some((r) => r !== lot && obbOverlap(b, r, 0.05))) return null;
       if (pointObbDist(b, this.center.x, this.center.z) < PLAZA_R) return null;
       let lo = Infinity, hi = -Infinity;
       const c = Math.cos(b.rot), s = Math.sin(b.rot);
@@ -750,7 +835,7 @@
     }
     newHouse(st) {
       const roof = this.pick(st.roofs);
-      const tall = roof === "tower" || roof === "neon" || roof === "gtower" || roof === "spire";
+      const tall = ["tower", "neon", "gtower", "spire", "jtower", "deco"].includes(roof);
       const floors = tall ? this.ri(Math.max(4, st.floors[0]), Math.max(5, st.floors[1] + 2)) : this.ri(st.floors[0], Math.min(st.floors[1], 3));
       const w = this.r(st.size[0], st.size[1]);
       return {
@@ -808,6 +893,19 @@
     }
     placeLandmark(kind) {
       const fp = LANDMARKS[kind];
+      const lot = this.reserved.find((r) => r.kind === kind);
+      if (lot) {
+        const b = { x: lot.x, z: lot.z, rot: lot.rot, w: fp.w, d: fp.d, face: 1 };
+        if (this.fits(b, { fieldsOk: true, slope: 0.8, houses: false, lot })) {
+          this.reserved.splice(this.reserved.indexOf(lot), 1);
+          for (const o of this.houses.filter((o) => obbOverlap(b, o, 0.07))) this.remove(o);
+          const lms = this.landmarks;
+          if (lms.length >= MAX_LANDMARKS) this.remove(lms[0]);
+          Object.assign(b, { kind: "landmark", lm: kind, age: this.age, label: this.landmarkName(kind) });
+          this.add(b, this.fields.filter((f) => obbOverlap(b, f, 0.02)));
+          return true;
+        }
+      }
       let best = null, bs = Infinity;
       for (let k = 0; k < 90; k++) {
         let b;
@@ -891,6 +989,8 @@
           const x = a * c - b * s, z = a * s + b * c;
           if (Math.hypot(x, z) < DISC - 1) pts.push([x, z]);
         }
+      } else if (T.type === "lake") {
+        for (let a = 0; a < Math.PI * 2; a += 0.25) { const x = Math.cos(T.th + a) * (T.ri + 1.6), z = Math.sin(T.th + a) * (T.ri + 1.6); if (Math.hypot(x, z) < DISC - 0.8 && this.waterDist(x, z) < -0.3) pts.push([x, z]); }
       } else if (T.type === "coast") {
         const c = Math.cos(T.th), s = Math.sin(T.th), d = T.c + 1.7;
         for (let k = -DISC; k <= DISC; k += 0.5) {

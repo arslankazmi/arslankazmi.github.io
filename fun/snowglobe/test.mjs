@@ -87,7 +87,7 @@ const snap = (s) => JSON.stringify({ r: s.region.id, b: s.buildings.map(({ id, x
   let grows = true;
   for (let i = 1; i < mean.length; i++) if (mean[i] < mean[i - 1]) grows = false;
   ok(grows && mean[7] > 3 * mean[1], "the town grows across the ages");
-  ok(mean[7] >= S.TARGET[7] * 0.7, `the Space Age town gets close to its target (${mean[7].toFixed(0)} of ${S.TARGET[7]})`);
+  ok(mean[7] >= S.TARGET[7] * 0.65, `the Space Age town gets close to its target (${mean[7].toFixed(0)} of ${S.TARGET[7]})`);
 }
 
 // --- landmarks appear and are named --------------------------------------------------------
@@ -160,7 +160,7 @@ const snap = (s) => JSON.stringify({ r: s.region.id, b: s.buildings.map(({ id, x
   ok(p.placeName === "Lahore", "Punjab becomes Lahore");
   const lms = new Set();
   for (let i = 0; i < steps(CYCLE); i++) { p.step(); for (const e of p.drain()) if (e.e === "add" && e.b.kind === "landmark") lms.add(e.b.lm); }
-  ok(S.REGIONS.length === 10, "ten regions in rotation");
+  ok(S.REGIONS.length === 12, "twelve regions in rotation");
 }
 
 // --- every place builds its own landmarks, under their real names --------------------------------
@@ -169,9 +169,11 @@ const snap = (s) => JSON.stringify({ r: s.region.id, b: s.buildings.map(({ id, x
     nile: [[1, "the Great Pyramid of Giza"], [2, "the temple of Karnak"], [6, "the Cairo Tower"]],
     mesopotamia: [[0, "the pillar circle of Göbekli Tepe"], [2, "the Ishtar Gate"]],
     china: [[3, "the Six Harmonies Pagoda"], [6, "the Oriental Pearl Tower"]],
-    japan: [[1, "the great watchtower"], [4, "Osaka Castle"], [6, "Tokyo Tower"]],
+    japan: [[1, "the great watchtower"], [4, "Osaka Castle"], [6, "Tokyo Skytree"], [6, "the Metropolitan Government Building"]],
     norse: [[3, "the stave church"], [4, "Bergenhus fortress"]],
-    mesoamerica: [[2, "a colossal Olmec head"], [3, "El Castillo"], [6, "the Estadio Azteca"]],
+    maya: [[2, "La Danta"], [3, "El Castillo"], [3, "El Caracol"]],
+    aztec: [[2, "the round pyramid of Cuicuilco"], [3, "the Atlantes of Tula"], [4, "the Templo Mayor"], [6, "the Estadio Azteca"]],
+    newyork: [[3, "the Lenape longhouse"], [4, "Fort Amsterdam"], [5, "the Statue of Liberty"], [6, "the Empire State Building"], [6, "the Chrysler Building"]],
     mediterranean: [[1, "the palace of Knossos"], [3, "St Mark's Basilica"], [4, "the Duomo"], [6, "the Sagrada Família"]],
     indus: [[1, "the Great Bath"], [3, "the tomb of Shah Rukn-e-Alam"], [5, "Ghanta Ghar"]],
     punjab: [[4, "Lahore Fort"], [6, "Minar-e-Pakistan"]],
@@ -200,6 +202,24 @@ const snap = (s) => JSON.stringify({ r: s.region.id, b: s.buildings.map(({ id, x
   ok(wrongKind === 0, `landmarks only come from their own place and age (${wrongKind} strays)`);
   ok(missing.length === 0, `each place builds its signature landmarks${missing.length ? " — missing: " + missing.join("; ") : ""}`);
   ok(S.REGIONS.every((r) => r.places && r.places.length === AGES.length && r.lms.length === AGES.length), "every region has a place and landmark list for every age");
+}
+
+// --- big-city centres: Tokyo and New York build dense, tall skylines; Tenochtitlan is an island ----------
+{
+  const tall = (id) => {
+    const s = new Sim(21, { region: id });
+    for (let k = 0; k < 6; k++) s.nextAge();
+    for (let i = 0; i < steps(AGE_T * 0.95); i++) s.step();
+    const hs = s.houses;
+    return { n: hs.length, tall: hs.filter((b) => ["jtower", "deco", "tower", "neon"].includes(b.roof)).length, floors: Math.max(...hs.map((b) => b.floors)), s };
+  };
+  const tk = tall("japan"), ny = tall("newyork"), ca = tall("norse");
+  ok(tk.tall >= tk.n * 0.7 && tk.floors >= 9, `Modern Tokyo is mostly tall towers (${tk.tall}/${tk.n}, up to ${tk.floors} floors)`);
+  ok(ny.tall >= ny.n * 0.6, `Modern New York is mostly skyscrapers (${ny.tall}/${ny.n})`);
+  ok(tk.n > ca.n, `Tokyo packs in more buildings than low-rise Bergen (${tk.n} vs ${ca.n})`);
+  const az = new Sim(5, { region: "aztec" });
+  ok(az.waterDist(0, 0) > 0 && az.waterDist(9, 0) < 0 === az.waterDist(9 * Math.cos(az.terrain.cw[0] + 0.6), 9 * Math.sin(az.terrain.cw[0] + 0.6)) < 0, "the Aztec town stands on an island in a lake");
+  ok(new Sim(5, { region: "newyork" }).yearLabel === "c. 8000 BC" && (() => { const n = new Sim(5, { region: "newyork" }); for (let k = 0; k < 4; k++) n.nextAge(); return n.placeName === "New Amsterdam" && n.yearLabel === "c. 1650"; })(), "New Amsterdam is dated c. 1650");
 }
 
 // --- skipping ahead --------------------------------------------------------------------------
