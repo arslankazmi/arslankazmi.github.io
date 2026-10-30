@@ -80,6 +80,7 @@ const M = {
   canopy: toon({ color: 0xffffff }),
   crop: toon({ color: 0x9cc46a }),
   people: toon({ color: 0xffffff }, false),
+  helmet: new THREE.MeshPhongMaterial({ color: 0xffffff, transparent: true, opacity: 0.45, shininess: 90, specular: 0xffffff, depthWrite: false }),
   legs: toon({ color: 0x4a3a30 }, false),
   wood: toon({ color: 0x7a4a2b }, false),
   brass: toon({ color: 0xd2a74a }, false),
@@ -188,6 +189,14 @@ spin.add(whiteout);
 
 // --- ground, water, roads, fields --------------------------------------------------------------------
 let ground = null, water = null, roads = null, fieldsMesh = null, plaza = null;
+function hullOf(geo) {
+  const h = geo.clone();
+  h.computeBoundingBox();
+  const c = h.boundingBox.getCenter(new THREE.Vector3()), sz = h.boundingBox.getSize(new THREE.Vector3()), T = 0.028;
+  h.translate(-c.x, -c.y, -c.z);
+  h.scale((sz.x + 2 * T) / Math.max(sz.x, 0.01), (sz.y + 2 * T) / Math.max(sz.y, 0.01), (sz.z + 2 * T) / Math.max(sz.z, 0.01));
+  return h.translate(c.x, c.y, c.z);
+}
 function disposeMesh(m) { if (!m) return; m.parent && m.parent.remove(m); m.geometry && m.geometry.dispose(); }
 
 function buildGround() {
@@ -229,7 +238,7 @@ function buildGround() {
   }
 }
 
-const ROAD_C = ["#b99a6b", "#b39a72", "#a8957a", "#9f978a", "#a39b8e", "#7c7670", "#5f5c62"];
+const ROAD_C = ["#b99a6b", "#b39a72", "#a8957a", "#9f978a", "#a39b8e", "#7c7670", "#5f5c62", "#cfd8dc"];
 function buildRoads() {
   disposeMesh(roads); disposeMesh(plaza);
   const k = new Kit(), col = ROAD_C[sim.age], N = sim.nodes;
@@ -240,6 +249,7 @@ function buildRoads() {
       const t = (i + 0.5) / n, x = A.x + (B.x - A.x) * t, z = A.z + (B.z - A.z) * t;
       const g = new THREE.BoxGeometry(L / n + 0.03, 0.05, ROAD_W).rotateY(-ang).translate(x, sim.heightAt(x, z) + 0.02, z);
       k.add(g, col, false);
+      if (sim.age === 7 && i % 2 === 0) k.glow(new THREE.BoxGeometry(L / n * 0.7, 0.052, 0.03).rotateY(-ang).translate(x, sim.heightAt(x, z) + 0.022, z), "#5fd3d8");
       if (sim.age === 6 && i % 2 === 0 && L > 1.5) k.add(new THREE.BoxGeometry(0.16, 0.052, 0.03).rotateY(-ang).translate(x, sim.heightAt(x, z) + 0.021, z), "#f4efe2", false);
     }
   }
@@ -249,6 +259,7 @@ function buildRoads() {
   if (sim.age >= 2) k.add(new THREE.CylinderGeometry(0.16, 0.2, 0.18, 12).translate(cx, sim.heightAt(cx, cz) + 0.05, cz), "#b8b0a0");
   roads = new THREE.Mesh(merge(k.body), M.body);
   roads.receiveShadow = true;
+  if (k.neon.length) roads.add(new THREE.Mesh(merge(k.neon), M.neon));
   town.add(roads);
 }
 function buildFields() {
@@ -335,6 +346,15 @@ function addBuilding(b, instant = false) {
   if (kit.line.length) inner.add(new THREE.Mesh(merge(kit.line), M.line));
   if (kit.win.length) inner.add(new THREE.Mesh(merge(kit.win), M.win));
   if (kit.neon.length) inner.add(new THREE.Mesh(merge(kit.neon), M.neon));
+  const movers = {};
+  for (const [name, mv] of Object.entries(kit.movers)) {
+    const mg = new THREE.Group();
+    if (mv.body) { const m = new THREE.Mesh(mv.body, M.body); m.castShadow = true; mg.add(m, new THREE.Mesh(hullOf(mv.body), M.line)); }
+    if (mv.glow) mg.add(new THREE.Mesh(mv.glow, M.neon));
+    if (name === "rocket") mg.position.set(...kit.rocketBase);
+    inner.add(mg);
+    movers[name] = mg;
+  }
   const spinners = kit.spin.map((s) => { const m = new THREE.Mesh(s.geo, M.body); m.position.set(...s.pivot); m.castShadow = true; m.userData.speed = s.speed; inner.add(m); return m; });
   g.position.set(b.x, b.h, b.z);
   g.rotation.y = -b.rot;
@@ -349,7 +369,7 @@ function addBuilding(b, instant = false) {
     g.add(scaffold);
     puff(b.x, b.h + 0.1, b.z, Math.max(b.w, b.d) * 0.6, "#c9b28a", 12);
   }
-  g.userData = { b, inner, body, spinners, smoke: kit.smoke, lamp: kit.lamp, p: instant ? 1 : 0, dying: false, scaffold, height: size.y, smokeT: rnd() * 2 };
+  g.userData = { b, inner, body, spinners, movers, climb: kit.climb, rocketBase: kit.rocketBase, smoke: kit.smoke, lamp: kit.lamp, p: instant ? 1 : 0, dying: false, scaffold, height: size.y, smokeT: rnd() * 2 };
   town.add(g);
   bmeshes.set(b.id, g);
   if (b.kind === "landmark" && !instant) chime([523, 659, 784]);
@@ -382,6 +402,7 @@ function updateBuildings(sdt, rdt) {
       }
     }
     for (const m of u.spinners) m.rotation.z += rdt * m.userData.speed * Math.max(1, Math.sqrt(speed));
+    if (u.movers.climber) { const [a, c] = u.climb; u.movers.climber.position.y = a + (c - a) * (0.5 - 0.5 * Math.cos(vtNow * 0.18 + u.b.seed)); }
     if (u.smoke.length && u.p >= 1) {
       u.smokeT -= sdt;
       if (u.smokeT <= 0) {
@@ -421,13 +442,15 @@ const SKIN = ["#f1c9a0", "#d9a679", "#a8754f", "#7a4f32", "#e8b98f"];
 const CLOTHES = [
   ["#a8754f", "#8a6a44", "#c9a66b"], ["#e8dcc0", "#c8955f", "#b4553f"], ["#7f9b5a", "#a24a38", "#6f9fb8"],
   ["#5b7fa6", "#8a3a3a", "#6e8c48", "#a87b4f"], ["#7a3f6a", "#2f5a6a", "#c0674a", "#e0b54a"], ["#3a3a42", "#5a4a3a", "#6a5a7a", "#8a3a3a"], ["#e05a5a", "#5fa0d8", "#f2c94c", "#7fbf7f", "#f4efe2"],
+  ["#f4f6f8", "#d9e8ec", "#5fd3d8", "#f2b8e0", "#c9d2da"],
 ];
-const HATC = [["#4a3020", "#2a1a10", "#7a5034"], ["#c8553f", "#e0b54a"], ["#9a9a9a", "#b8a27a"], ["#6a4a3a", "#5b7fa6", "#7f9b5a"], ["#7a1f2f", "#2f2f4a", "#3f6a4a"], ["#1f1f24", "#3a2a22"], ["#e05a5a", "#3a6ad8", "#f2c94c", "#2a2a2a"]];
+const HATC = [["#4a3020", "#2a1a10", "#7a5034"], ["#c8553f", "#e0b54a"], ["#9a9a9a", "#b8a27a"], ["#6a4a3a", "#5b7fa6", "#7f9b5a"], ["#7a1f2f", "#2f2f4a", "#3f6a4a"], ["#1f1f24", "#3a2a22"], ["#e05a5a", "#3a6ad8", "#f2c94c", "#2a2a2a"], ["#cfeff4", "#e6f6ff"]];
 const JOBS = [
   ["gatherer", "hunter", "fire-keeper", "storyteller", "toolmaker"], ["potter", "farmer", "scribe", "merchant", "herder"],
   ["smith", "soldier", "weaver", "sailor", "priest"], ["baker", "monk", "squire", "miller", "minstrel"],
   ["painter", "printer", "astronomer", "banker", "apprentice"], ["engineer", "newspaper seller", "mill worker", "chimney sweep", "inventor"],
   ["barista", "programmer", "cyclist", "delivery rider", "student"],
+  ["astronaut", "robot mechanic", "hydroponic farmer", "starship pilot", "xenobotanist", "holo-artist"],
 ];
 const DOING = ["on the way home", "off to the market", "out for a stroll", "running late", "looking for a lost cat", "humming a tune", "lost in thought", "visiting a friend"];
 function newPerson() {
@@ -456,6 +479,7 @@ function updatePeople(sdt, rdt) {
   if (people.hatAge !== sim.age) {
     people.hat.geometry.dispose();
     people.hat.geometry = hatGeo(sim.age);
+    people.hat.material = sim.age === 7 ? M.helmet : M.people;
     people.hatAge = sim.age;
     for (const p of people.list) { const n = newPerson(); Object.assign(p, { skin: p.skin, cloth: n.cloth, hatC: n.hatC, label: n.label }); }
   }
@@ -595,6 +619,65 @@ for (let i = 0; i < 16; i++) {
   s.scale.setScalar(4 + Math.random() * 3);
   s.userData = { a, r, sp: 0.02 + Math.random() * 0.03 };
   spin.add(s); fogs.push(s);
+}
+
+// --- the Space Age: hover cars, an orbital station, satellites ---------------------------------------------
+const CARS = 18;
+const cars = new THREE.InstancedMesh(new THREE.CapsuleGeometry(0.055, 0.16, 4, 8).rotateZ(Math.PI / 2), new THREE.MeshBasicMaterial({ color: 0xffffff }), CARS);
+cars.instanceColor = new THREE.InstancedBufferAttribute(new Float32Array(CARS * 3), 3);
+const carPath = [];
+for (let i = 0; i < CARS; i++) {
+  carPath.push({ r: 1.8 + Math.random() * 5.2, h: 1.2 + Math.random() * 2.4, w: (0.25 + Math.random() * 0.35) * (Math.random() < 0.5 ? 1 : -1), a: Math.random() * 6.28, ph: Math.random() * 6 });
+  cars.setColorAt(i, C(["#5fd3d8", "#f2b8e0", "#ffd27a", "#8fe0b0", "#ffffff"][i % 5]));
+}
+cars.count = 0;
+town.add(cars);
+const station = new THREE.Group();
+{
+  const k = new Kit();
+  k.add(new THREE.TorusGeometry(0.8, 0.09, 8, 28).rotateX(Math.PI / 2), "#f4f6f8");
+  k.add(new THREE.CylinderGeometry(0.16, 0.16, 0.5, 10), "#e6eef2");
+  for (let i = 0; i < 3; i++) k.add(new THREE.BoxGeometry(1.6, 0.03, 0.05).rotateY((i * Math.PI) / 3), "#d9e8ec", false);
+  for (const s2 of [-1, 1]) k.add(new THREE.BoxGeometry(0.9, 0.02, 0.36).translate(s2 * 1.4, 0, 0), "#3f5f9a");
+  const m = new THREE.Mesh(merge(k.body), M.body);
+  station.add(m, new THREE.Mesh(merge(k.line), M.line));
+}
+spin.add(station);
+const sats = pointCloud(6, pointsMaterial(THREE.AdditiveBlending));
+spin.add(sats);
+let spaceAmt = 0;
+function updateSpace(rdt, sdt, t) {
+  const want = sim.age === 7 && sim.state !== "bliz" ? 1 : 0;
+  spaceAmt += (want - spaceAmt) * Math.min(1, rdt * 0.8);
+  const on = spaceAmt > 0.01;
+  cars.visible = station.visible = sats.visible = on;
+  if (!on) return;
+  for (let i = 0; i < CARS; i++) {
+    const p = carPath[i];
+    p.a += p.w * sdt * 0.6;
+    const x = sim.center.x + Math.cos(p.a) * p.r, z = sim.center.z + Math.sin(p.a) * p.r;
+    dummy.position.set(x, p.h + Math.sin(t * 1.3 + p.ph) * 0.08, z);
+    dummy.rotation.set(0, -p.a - (p.w > 0 ? Math.PI / 2 : -Math.PI / 2), 0);
+    dummy.scale.setScalar(spaceAmt);
+    dummy.updateMatrix();
+    cars.setMatrixAt(i, dummy.matrix);
+  }
+  cars.count = CARS;
+  cars.instanceMatrix.needsUpdate = true;
+  const sa = t * 0.05;
+  station.position.set(Math.cos(sa) * 3.6, GLOBE_CY + 7.4, Math.sin(sa) * 3.6);
+  station.rotation.set(0.35, t * 0.3, 0.1);
+  station.scale.setScalar(spaceAmt * 0.8);
+  const P = sats.geometry.attributes;
+  for (let i = 0; i < 6; i++) {
+    const a = t * (0.12 + i * 0.03) + i, r = 5 + (i % 3) * 1.2, y = GLOBE_CY + 5.8 + (i % 2) * 1.1;
+    P.position.array.set([Math.cos(a) * r, y, Math.sin(a) * r], i * 3);
+    P.color.array.set([1, 0.95, 0.8], i * 3);
+    P.size.array[i] = 0.12 * (0.7 + 0.3 * Math.sin(t * 4 + i));
+    P.alpha.array[i] = spaceAmt;
+  }
+  sats.geometry.setDrawRange(0, 6);
+  for (const k of ["position", "color", "size", "alpha"]) P[k].needsUpdate = true;
 }
 
 // Weather targets blend smoothly.
@@ -772,7 +855,9 @@ function endEventFx(id) {
   if (i < 0) return;
   const a = activeEvents[i];
   a.ending = 0;
+  if (a.rocket) { const g = bmeshes.get(a.ev.target); if (g) { a.rocket.position.set(...g.userData.rocketBase); a.rocket.visible = true; a.rocket.scale.setScalar(0.01); growing.push(a.rocket); } }
 }
+const growing = [];
 function clearEvents() { for (const a of activeEvents) for (const m of a.meshes) disposeGroup(m); activeEvents.length = 0; }
 function updateEvents(sdt) {
   for (let i = activeEvents.length - 1; i >= 0; i--) {
@@ -808,6 +893,27 @@ function updateEvents(sdt) {
         const top = g.position.y + (g.userData.height || 0.8) * 0.8;
         for (let k = 0; k < 3; k++) emit({ glow: true, x: g.position.x + (Math.random() - 0.5) * 0.4, y: top, z: g.position.z + (Math.random() - 0.5) * 0.4, vx: 0, vy: 0.8 + Math.random() * 0.5, vz: 0, life: 0.6, size: 0.18, color: Math.random() < 0.5 ? "#ff8a3a" : "#ffd25a", alpha: 0.9, drag: 0.5 });
         if (Math.random() < 0.3) emit({ x: g.position.x, y: top + 0.3, z: g.position.z, vx: 0.08, vy: 0.5, vz: 0, life: 2.5, size: 0.22, grow: 0.3, color: "#5a5250", alpha: 0.6 });
+      }
+    }
+    if (ev.type === "launch") {
+      const g = bmeshes.get(ev.target), rk = g && g.userData.movers.rocket;
+      if (rk) {
+        const t = sim.t - ev.t0 + acc, base = g.userData.rocketBase;
+        const lift = Math.max(0, t - 2);
+        rk.position.y = base[1] + 0.5 * 2.4 * lift * lift;
+        rk.position.x = base[0] + (t < 2 ? Math.sin(t * 60) * 0.01 : 0);
+        const w = rk.getWorldPosition(new THREE.Vector3());
+        town.worldToLocal(w);
+        const ceiling = GLOBE_CY + Math.sqrt(Math.max(0, GLOBE_R ** 2 - (w.x * w.x + w.z * w.z))) - 0.8;
+        const gone = w.y > ceiling;
+        if (gone && rk.visible) { for (let k2 = 0; k2 < 30; k2++) emit({ glow: true, x: w.x, y: w.y, z: w.z, vx: (Math.random() - 0.5) * 2, vy: (Math.random() - 0.3) * 2, vz: (Math.random() - 0.5) * 2, life: 0.8, size: 0.1, color: "#fff2b0", alpha: 1, drag: 2 }); chime([1046, 1318, 1568]); }
+        rk.visible = !gone;
+        if (t > 1 && !gone) {
+          for (let k2 = 0; k2 < (t > 2 ? 4 : 1); k2++) emit({ glow: true, x: w.x + (Math.random() - 0.5) * 0.1, y: w.y - 0.05, z: w.z + (Math.random() - 0.5) * 0.1, vx: (Math.random() - 0.5) * 0.4, vy: -1.2 - Math.random(), vz: (Math.random() - 0.5) * 0.4, life: 0.45, size: 0.16, color: Math.random() < 0.5 ? "#ffb04a" : "#fff0a0", alpha: 1, drag: 1 });
+          if (Math.random() < 0.6) emit({ x: w.x, y: Math.max(sim.heightAt(w.x, w.z) + 0.2, w.y - 0.3), z: w.z, vx: (Math.random() - 0.5) * 1.2, vy: 0.1, vz: (Math.random() - 0.5) * 1.2, life: 2.5, size: 0.3, grow: 0.4, color: "#e8e4dc", alpha: 0.7, drag: 1.2 });
+        }
+        if (!a.rumbled && t > 1.8) { a.rumbled = true; rumble(); }
+        a.rocket = rk;
       }
     }
     if (ev.type === "festival") {
@@ -942,6 +1048,7 @@ function tone(freq, when, dur, vol = 0.12, type = "sine") {
 function chime(freqs) { if (!actx || muted) return; const t = actx.currentTime; freqs.forEach((f, i) => { tone(f, t + i * 0.12, 1.4, 0.07); tone(f * 2, t + i * 0.12, 0.8, 0.02); }); }
 function pop() { if (!actx || muted) return; tone(180 + Math.random() * 120, actx.currentTime, 0.25, 0.05, "triangle"); }
 function thunder() { if (!actx || muted) return; const t = actx.currentTime; tone(55, t, 1.6, 0.12, "sawtooth"); tone(42, t + 0.1, 1.8, 0.1, "triangle"); }
+function rumble() { if (!actx || muted) return; const t = actx.currentTime; tone(48, t, 3.5, 0.14, "sawtooth"); tone(36, t + 0.2, 3.2, 0.12, "triangle"); }
 function jingle() { if (!actx || muted) return; const t = actx.currentTime; for (let i = 0; i < 7; i++) tone(1400 + Math.random() * 1600, t + i * 0.06 + Math.random() * 0.04, 0.5, 0.025); }
 function setMuted(m) {
   muted = m;
@@ -1102,12 +1209,12 @@ function resize() {
   camera.aspect = w / h;
   camera.updateProjectionMatrix();
   const proj = (h * renderer.getPixelRatio()) / (2 * Math.tan(THREE.MathUtils.degToRad(camera.fov) / 2));
-  for (const m of [fxMat, fxGlowMat, snowPts.material]) m.uniforms.uProj.value = proj;
+  for (const m of [fxMat, fxGlowMat, snowPts.material, sats.material]) m.uniforms.uProj.value = proj;
 }
 new ResizeObserver(resize).observe(canvas);
 
 // --- loop ----------------------------------------------------------------------------------------------------------------------------------------
-let last = performance.now(), acc = 0, hudT = 0;
+let last = performance.now(), acc = 0, hudT = 0, vtNow = 0;
 handle(sim.drain());
 hud(true);
 setSpeed(1);
@@ -1125,6 +1232,7 @@ function frame(now) {
   if (n >= 40) acc = 0;
   const sdt = n * S.DT;
   const vt = sim.t + acc;
+  vtNow = vt;
 
   // spin + shake
   if (!dragging) {
@@ -1148,6 +1256,8 @@ function frame(now) {
   updatePeople(sdt, rdt);
   updateTrees(rdt, sim.season);
   updateEvents(sdt);
+  updateSpace(rdt, sdt, vt);
+  for (let i = growing.length - 1; i >= 0; i--) { const m = growing[i]; m.scale.setScalar(Math.min(1, m.scale.x + rdt * 1.5)); if (m.scale.x >= 1) growing.splice(i, 1); }
   updateFx(fx, fxPts, rdt * Math.max(1, Math.min(4, speed)));
   updateFx(fxg, fxGlow, rdt * Math.max(1, Math.min(4, speed)));
   for (const s of [...bmeshes.values()].filter((g) => g.userData.lamp)) {

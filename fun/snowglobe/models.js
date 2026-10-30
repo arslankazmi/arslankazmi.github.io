@@ -48,10 +48,12 @@ export function merge(list) {
   return m;
 }
 export class Kit {
-  constructor() { this.body = []; this.line = []; this.win = []; this.neon = []; this.smoke = []; this.spin = []; this.lamp = null; }
+  constructor() { this.body = []; this.line = []; this.win = []; this.neon = []; this.smoke = []; this.spin = []; this.lamp = null; this.movers = {}; }
   add(geo, color, outline = true) { const g = paint(prep(geo), color); this.body.push(g); if (outline) this.line.push(hull(g)); return this; }
   window(geo) { this.win.push(prep(geo)); return this; }
   glow(geo, color) { this.neon.push(paint(prep(geo), color)); return this; }
+  /** A separately animated part (a rocket that launches, a climber that rides a cable). */
+  mover(name, parts) { this.movers[name] = { body: merge(parts.filter((p) => !p[2]).map(([g, c]) => paint(prep(g), c))), glow: merge(parts.filter((p) => p[2]).map(([g, c]) => paint(prep(g), c))) }; return this; }
   /** A part that spins about local z through `pivot`; its geometry is centred on the pivot. */
   spinner(parts, pivot, speed) { this.spin.push({ geo: merge(parts.map(([g, c]) => paint(prep(g), c))), pivot, speed }); return this; }
 }
@@ -206,6 +208,52 @@ export function house(b) {
         k.glow(box(0.07, th * 0.55, 0.2, w / 2 + 0.05, y0 + th * 0.3, face * d * 0.3), c);
         k.glow(box(w * 0.8, 0.07, 0.03, 0, y0 + th * 0.92, face * (d / 2 + 0.02)), NEON[Math.floor(rnd() * NEON.length)]);
       }
+      break;
+    }
+    case "pod": {
+      const r = Math.min(W, D) / 2 * 0.92, h = 0.32 + (b.floors - 1) * 0.3;
+      k.add(cyl(r, r * 0.92, h, 16, 0, y0, 0), wall);
+      k.add(ball(r, 0, y0 + h, 0, 1, 0.75, 1, 2), wall);
+      k.glow(cyl(r * 1.02, r * 1.02, 0.05, 16, 0, y0 + h * 0.82, 0), roofC);
+      for (let i = 0; i < 5; i++) { const a = (i / 5) * Math.PI * 2 + rnd(); k.window(new THREE.CylinderGeometry(0.07, 0.07, 0.03, 10).rotateX(Math.PI / 2).rotateY(-a + Math.PI / 2).translate(Math.cos(a) * r * 1.01, y0 + h * 0.45, Math.sin(a) * r * 1.01)); }
+      k.add(cyl(0.012, 0.012, 0.3, 4, r * 0.3, y0 + h + r * 0.7, 0), "#9aa", false);
+      k.glow(ball(0.035, r * 0.3, y0 + h + r * 0.7 + 0.32, 0, 1, 1, 1, 0), roofC);
+      door(k, y0, face * r * 0.98, 0.16, 0.24);
+      break;
+    }
+    case "glassdome": {
+      const r = Math.min(W, D) / 2 * 0.95;
+      k.add(cyl(r, r * 1.02, 0.12, 18, 0, y0, 0), wall);
+      k.add(dome(r * 0.96, 0, y0 + 0.12, 0), "#bfe6e8");
+      for (let i = 0; i < 4; i++) k.add(new THREE.TorusGeometry(r * 0.965, 0.012, 4, 24, Math.PI).rotateY((i * Math.PI) / 4).translate(0, y0 + 0.12, 0), "#f4f6f8", false);
+      k.add(ball(r * 0.3, -r * 0.25, y0 + 0.3, 0.05, 1, 0.8, 1, 1), "#6faf5a", false);
+      k.add(ball(r * 0.22, r * 0.3, y0 + 0.24, -0.1, 1, 0.8, 1, 1), "#8fc46a", false);
+      break;
+    }
+    case "gtower": {
+      const th = Math.max(4, b.floors) * 0.36, w = W * 0.8, d = D * 0.8;
+      let y = y0;
+      const levels = Math.max(2, Math.round(th / 0.7));
+      for (let i = 0; i < levels; i++) {
+        const lh = th / levels, sh = 1 - i * 0.06;
+        k.add(box(w * sh, lh * 0.82, d * sh, 0, y, 0), wall);
+        k.add(box(w * sh + 0.1, lh * 0.18, d * sh + 0.1, 0, y + lh * 0.82, 0), "#7fb56a");
+        for (let j = 0; j < 3; j++) k.add(ball(0.07, (rnd() - 0.5) * w * sh, y + lh + 0.03, (rnd() - 0.5) * d * sh, 1, 0.8, 1, 0), "#5f9f4a", false);
+        windows(k, w * sh, d * sh, 1, lh, y, face, 0.22);
+        y += lh;
+      }
+      k.glow(box(0.04, th * 0.8, 0.04, w / 2, y0 + th * 0.1, d / 2), roofC);
+      door(k, y0, face * (d / 2 + 0.01), 0.22, 0.26);
+      break;
+    }
+    case "spire": {
+      const th = Math.max(4, b.floors) * 0.42, r = Math.min(W, D) * 0.36;
+      k.add(new THREE.CylinderGeometry(r * 0.35, r, th, 8).translate(0, y0 + th / 2, 0), wall);
+      for (const f of [0.35, 0.7]) k.glow(new THREE.TorusGeometry(r * (1 - f * 0.62) + 0.06, 0.03, 6, 20).rotateX(Math.PI / 2).translate(0, y0 + th * f, 0), roofC);
+      k.add(cone(r * 0.35, 0.5, 8, 0, y0 + th, 0), wall);
+      k.glow(ball(0.05, 0, y0 + th + 0.55, 0, 1, 1, 1, 0), "#ff6a8a");
+      for (let i = 0; i < Math.round(th / 0.45); i++) k.window(new THREE.BoxGeometry(0.03, 0.14, 0.1).translate(r * (1 - ((i + 0.5) * 0.45) / th * 0.62) * 0.98, y0 + (i + 0.5) * 0.45, 0).rotateY(i * 1.3));
+      door(k, y0, face * r * 0.95, 0.16, 0.24);
       break;
     }
     default:
@@ -491,6 +539,61 @@ export function landmark(b, region) {
       k.spinner(bl, [0, y0 + 3.01, 0.17], 2.4);
       break;
     }
+    case "rocket": {
+      k.add(cyl(S * 0.48, S * 0.5, 0.12, 20, 0, y0 - 0.04, 0), "#9aa3ab");
+      k.add(cyl(S * 0.3, S * 0.3, 0.02, 20, 0, y0 + 0.08, 0), "#e0b54a", false);
+      const gx = S * 0.32;
+      for (const s2 of [-1, 1]) k.add(box(0.06, 2.4, 0.06, gx, y0, s2 * 0.12), "#c8402f", false);
+      for (let i = 0; i < 8; i++) k.add(box(0.05, 0.03, 0.3, gx, y0 + 0.3 * i + 0.15, 0), "#c8402f", false);
+      k.add(box(0.28, 0.04, 0.05, gx - 0.14, y0 + 1.6, 0), "#c8402f", false);
+      const R = 0.2, parts = [];
+      parts.push([cyl(R, R, 1.5, 14, 0, 0.25, 0), "#f4f6f8"]);
+      parts.push([cone(R, 0.5, 14, 0, 1.75, 0), "#c8402f"]);
+      parts.push([cyl(R * 1.02, R * 1.02, 0.08, 14, 0, 1.1, 0), "#3f78b0"]);
+      parts.push([cyl(R * 0.8, R * 0.95, 0.25, 12, 0, 0, 0), "#555"]);
+      for (let i = 0; i < 3; i++) parts.push([box(0.03, 0.4, 0.22, 0, 0.1, 0, (i * Math.PI * 2) / 3).translate(0, 0, 0), "#c8402f"]);
+      for (let i = 0; i < 3; i++) { const a = (i * Math.PI * 2) / 3; parts[parts.length - 3 + i][0].translate(Math.cos(a) * 0.2, 0, Math.sin(a) * 0.2); }
+      parts.push([new THREE.CylinderGeometry(0.07, 0.07, 0.03, 10).rotateX(Math.PI / 2).translate(0, 1.35, R), "#bfe6e8"]);
+      k.mover("rocket", parts);
+      k.rocketBase = [0, y0 + 0.1, 0];
+      break;
+    }
+    case "elevator": {
+      k.add(cyl(S * 0.42, S * 0.46, 0.3, 16, 0, y0 - 0.04, 0), "#e6eef2");
+      k.add(dome(S * 0.3, 0, y0 + 0.26, 0), "#bfe6e8");
+      // the cable rises to just under the glass above this spot
+      const top = 2.75 + Math.sqrt(Math.max(0, 10.6 ** 2 - (b.x * b.x + b.z * b.z))) - 0.35 - (b.h || 0);
+      k.add(cyl(0.05, 0.05, top - y0 - 0.3, 8, 0, y0 + 0.3, 0), "#7d8a96");
+      k.glow(cyl(0.015, 0.015, top - y0 - 0.3, 4, 0.06, y0 + 0.3, 0), "#5fd3d8");
+      k.add(cyl(0.2, 0.12, 0.12, 10, 0, top - 0.12, 0), "#9aa3ab");
+      for (let i = 0; i < 3; i++) { const a = (i * Math.PI * 2) / 3; k.add(box(0.06, 0.7, 0.06, Math.cos(a) * S * 0.36, y0 + 0.2, Math.sin(a) * S * 0.36), "#9aa3ab", false); }
+      k.mover("climber", [[box(0.26, 0.22, 0.26, 0, -0.11, 0), "#f4f6f8"], [box(0.27, 0.04, 0.27, 0, 0.02, 0), "#5fd3d8", true]]);
+      k.climb = [0.6, top - 0.3];
+      break;
+    }
+    case "arcology": {
+      let y = y0;
+      for (let i = 0; i < 5; i++) {
+        const sz = S * (0.95 - i * 0.16), h = 0.42;
+        k.add(box(sz, h, sz, 0, y, 0), i % 2 ? "#e6eef2" : "#f4f6f8");
+        k.add(box(sz + 0.08, 0.06, sz + 0.08, 0, y + h, 0), "#7fb56a");
+        windows(k, sz, sz, 1, h, y, 1, 0.24);
+        for (let j = 0; j < 4; j++) k.add(ball(0.06, (rnd() - 0.5) * sz, y + h + 0.08, (rnd() - 0.5) * sz, 1, 0.8, 1, 0), "#5f9f4a", false);
+        y += h + 0.06;
+      }
+      k.add(cyl(0.02, 0.05, 1.2, 6, 0, y, 0), "#d9e8ec");
+      k.glow(ball(0.06, 0, y + 1.22, 0, 1, 1, 1, 0), "#5fd3d8");
+      break;
+    }
+    case "ringhab": {
+      k.add(box(W * 0.3, 0.2, D * 0.6, 0, y0, 0), "#9aa3ab");
+      k.add(cyl(0.08, 0.1, 1.0, 8, 0, y0 + 0.2, 0), "#d9e8ec");
+      const ring = [[new THREE.TorusGeometry(0.85, 0.1, 8, 28), "#f4f6f8"], [new THREE.TorusGeometry(0.85, 0.104, 4, 28, Math.PI / 3), "#3f78b0"]];
+      for (let i = 0; i < 4; i++) ring.push([new THREE.BoxGeometry(0.04, 1.7, 0.04).rotateZ((i * Math.PI) / 4), "#d9e8ec"]);
+      ring.push([ball(0.14, 0, 0, 0, 1, 1, 1, 1), "#e6eef2"]);
+      k.spinner(ring, [0, y0 + 1.25, 0], 0.5);
+      break;
+    }
     case "greatbath": {
       const brick = "#b8714a";
       k.add(box(W, 0.28, D, 0, y0 - 0.06, 0), brick);
@@ -663,7 +766,8 @@ export function hatGeo(age) {
     case 3: return prep(cone(0.12, 0.22, 8, 0, 0.4, -0.01));
     case 4: return prep(ball(0.11, 0.02, y + 0.02, 0, 1.2, 0.35, 1.2));
     case 5: return merge([prep(cyl(0.16, 0.16, 0.02, 12, 0, y, 0)), prep(cyl(0.085, 0.09, 0.2, 12, 0, y, 0))]);
-    default: return merge([prep(dome(0.104, 0, 0.43, 0)), prep(box(0.12, 0.015, 0.1, 0, 0.44, 0.08))]);
+    case 6: return merge([prep(dome(0.104, 0, 0.43, 0)), prep(box(0.12, 0.015, 0.1, 0, 0.44, 0.08))]);
+    default: return merge([prep(ball(0.135, 0, 0.4, 0, 1, 1, 1, 1)), prep(cyl(0.012, 0.012, 0.1, 4, 0.06, 0.5, 0))]);   // bubble helmet
   }
 }
 

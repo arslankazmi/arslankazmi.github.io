@@ -34,11 +34,12 @@
     { id: "renaissance", name: "Renaissance", year: "c. 1550" },
     { id: "industrial", name: "Industrial Age", year: "c. 1880" },
     { id: "modern", name: "Modern Age", year: "today" },
+    { id: "space", name: "Space Age", year: "c. 2200" },
   ];
-  const TARGET = [7, 14, 24, 34, 44, 54, 62];        // houses by the end of each age (later ages also build taller)
-  const ROADS_PER_AGE = [3, 5, 6, 8, 9, 10, 10];
-  const UPGRADE = [0, 0.5, 0.5, 0.55, 0.55, 0.65, 0.7];
-  const JITTER = [0.45, 0.35, 0.25, 0.18, 0.12, 0.07, 0.04];  // road wiggle: paths → grids
+  const TARGET = [7, 14, 24, 34, 44, 54, 62, 66];        // houses by the end of each age (later ages also build taller)
+  const ROADS_PER_AGE = [3, 5, 6, 8, 9, 10, 10, 6];
+  const UPGRADE = [0, 0.5, 0.5, 0.55, 0.55, 0.65, 0.7, 0.75];
+  const JITTER = [0.45, 0.35, 0.25, 0.18, 0.12, 0.07, 0.04, 0.03];  // road wiggle: paths → grids
 
   const LABELS = [
     ["hut", "family hut", "storehouse", "drying hut"],
@@ -48,6 +49,7 @@
     ["townhouse", "print shop", "bank", "painter's studio", "library"],
     ["terrace house", "textile mill", "post office", "pub", "workshop"],
     ["apartments", "office", "café", "school", "clinic"],
+    ["pod home", "hydroponic farm", "robot repair shop", "teleport booth", "zero-g gym", "star café"],
   ];
 
   // Footprints (w along the facing road, d deep) and names for landmarks.
@@ -76,6 +78,10 @@
     stadium: { w: 3.2, d: 2.6, name: "the stadium" },
     turbine: { w: 0.8, d: 0.8, name: "the wind turbine" },
     neontower: { w: 1.6, d: 1.6, name: "the neon tower" },
+    rocket: { w: 2.0, d: 2.0, name: "the launch pad" },
+    elevator: { w: 1.6, d: 1.6, name: "the space elevator" },
+    arcology: { w: 2.8, d: 2.8, name: "the arcology" },
+    ringhab: { w: 2.2, d: 1.2, name: "the ring habitat" },
     greatbath: { w: 2.6, d: 2.0, name: "the Great Bath" },
     granary: { w: 2.4, d: 1.6, name: "the great granary" },
     stupa: { w: 1.8, d: 1.8, name: "the stupa" },
@@ -100,6 +106,7 @@
     stone: ["#a9a49a", "#b8b2a5", "#c4bcac"],
     modern: ["#cfd8dc", "#b9c9d3", "#e6e1d6", "#9fb7c4", "#d8c7a8"],
     stucco: ["#e9b872", "#d77a61", "#7fb2a8", "#f0d9a8", "#c98bb0"],
+    future: ["#f4f6f8", "#e6eef2", "#d9e8ec", "#f2ece2", "#cfe3e6"],
     glaze: ["#d9b47a", "#c8955f", "#4f7fae"],
     baked: ["#b8714a", "#a9643f", "#c27c55"],
     redstone: ["#c46a4a", "#b85c40", "#d07b58"],
@@ -130,6 +137,7 @@
     { roofs: ["gable", "hip"], walls: P.plaster, roofCs: RC.terra, floors: [2, 3], size: [0.9, 1.2] },
     { roofs: ["gable", "flat", "gable"], walls: P.brick, roofCs: RC.slate, floors: [2, 3], size: [0.95, 1.25] },
     { roofs: ["flat", "tower", "tower", "flat"], walls: P.modern, roofCs: RC.slate, floors: [3, 7], size: [1.0, 1.3] },
+    { roofs: ["pod", "pod", "glassdome", "gtower", "spire"], walls: P.future, roofCs: ["#5fd3d8", "#8fe0b0", "#f2b8e0", "#ffd27a"], floors: [1, 3], size: [0.95, 1.25] },
   ];
 
   const REGIONS = [
@@ -146,7 +154,7 @@
         { roofs: ["flat", "flat", "gable"], walls: P.sand.concat(P.brick) },
         { walls: P.modern.concat(P.sand) },
       ],
-      lms: [["stones"], ["pyramid"], ["obelisk", "temple"], ["domehall"], ["domehall", "clocktower"], ["factory", "station"], ["skytower", "stadium"]],
+      lms: [["stones"], ["pyramid"], ["obelisk", "temple"], ["domehall"], ["domehall", "clocktower"], ["factory", "station"], ["skytower", "stadium"], ["arcology", "rocket"]],
     },
     {
       id: "mesopotamia", name: "Mesopotamia", terrain: "river", trees: "palm",
@@ -161,7 +169,7 @@
         { roofs: ["flat", "gable"], walls: P.brick.concat(P.sand) },
         { walls: P.modern.concat(P.sand) },
       ],
-      lms: [["stones"], ["ziggurat"], ["ziggurat", "temple"], ["domehall"], ["domehall", "clocktower"], ["factory", "station"], ["skytower"]],
+      lms: [["stones"], ["ziggurat"], ["ziggurat", "temple"], ["domehall"], ["domehall", "clocktower"], ["factory", "station"], ["skytower"], ["arcology", "elevator"]],
     },
     {
       id: "eastasia", name: "East Asia", terrain: "hills", trees: "blossom",
@@ -176,7 +184,7 @@
         { roofs: ["hip", "gable", "flat"], walls: P.brick.concat(P.wood), roofCs: RC.tile },
         { roofs: ["tower", "tower", "neon", "flat"], walls: P.modern },
       ],
-      lms: [["stones"], ["shrine"], ["pagoda"], ["pagoda", "tenshu"], ["tenshu"], ["factory", "station"], ["neontower", "skytower"]],
+      lms: [["stones"], ["shrine"], ["pagoda"], ["pagoda", "tenshu"], ["tenshu"], ["factory", "station"], ["neontower", "skytower"], ["elevator", "ringhab"]],
     },
     {
       id: "norse", name: "Norse Fjord", terrain: "coast", trees: "pine",
@@ -191,7 +199,7 @@
         { roofs: ["gable", "flat"], walls: P.paint.concat(P.brick) },
         { walls: P.modern.concat(P.paint) },
       ],
-      lms: [["stones"], ["longhall"], ["longhall"], ["stave"], ["cathedral", "windmill"], ["lighthouse", "factory"], ["turbine", "skytower"]],
+      lms: [["stones"], ["longhall"], ["longhall"], ["stave"], ["cathedral", "windmill"], ["lighthouse", "factory"], ["turbine", "skytower"], ["rocket", "ringhab"]],
     },
     {
       id: "mesoamerica", name: "Mesoamerica", terrain: "jungle", trees: "jungle",
@@ -206,7 +214,7 @@
         { roofs: ["flat", "gable"], walls: P.stucco.concat(P.brick) },
         { walls: P.modern.concat(P.stucco) },
       ],
-      lms: [["totem"], ["steppyramid"], ["steppyramid"], ["steppyramid", "totem"], ["cathedral"], ["factory", "station"], ["skytower", "stadium"]],
+      lms: [["totem"], ["steppyramid"], ["steppyramid"], ["steppyramid", "totem"], ["cathedral"], ["factory", "station"], ["skytower", "stadium"], ["rocket", "arcology"]],
     },
     {
       id: "mediterranean", name: "Mediterranean Coast", terrain: "coast", trees: "cypress",
@@ -221,12 +229,12 @@
         { roofs: ["gable", "flat"], walls: P.plaster.concat(P.brick), roofCs: RC.terra },
         { walls: P.modern.concat(P.white) },
       ],
-      lms: [["stones"], ["temple"], ["temple", "stadium"], ["castle"], ["cathedral", "windmill"], ["factory", "lighthouse"], ["skytower", "stadium"]],
+      lms: [["stones"], ["temple"], ["temple", "stadium"], ["castle"], ["cathedral", "windmill"], ["factory", "lighthouse"], ["skytower", "stadium"], ["ringhab", "rocket"]],
     },
     // South Asia: the plaque names a real place for each age.
     {
       id: "indus", name: "Indus Valley", terrain: "river", trees: "palm", monsoon: true,
-      places: ["Mehrgarh", "Mohenjo-daro", "Taxila", "Multan", "Multan", "Multan", "Multan"],
+      places: ["Mehrgarh", "Mohenjo-daro", "Taxila", "Multan", "Multan", "Multan", "Multan", "Multan"],
       ground: { grass: "#b4b56c", sand: "#ddc28c", bed: "#857558" }, water: "#6e9a9a",
       weather: { clear: 6, cloudy: 2, rain: 1.2, snow: 0, fog: 0.8, storm: 0.6, sandstorm: 1.2 },
       ages: [
@@ -238,11 +246,11 @@
         { roofs: ["flat", "flat", "gable"], walls: P.baked.concat(P.haveli), roofCs: RC.slate },
         { walls: P.modern.concat(P.haveli) },
       ],
-      lms: [["stones"], ["greatbath", "granary"], ["stupa"], ["tomb"], ["tomb", "fort"], ["clocktower", "station"], ["skytower"]],
+      lms: [["stones"], ["greatbath", "granary"], ["stupa"], ["tomb"], ["tomb", "fort"], ["clocktower", "station"], ["skytower"], ["rocket", "arcology"]],
     },
     {
       id: "punjab", name: "Punjab", terrain: "jungle", trees: "banyan", monsoon: true, winterFog: true,
-      places: ["the Ravi plains", "Harappa", "Sakala", "Lahore", "Lahore", "Lahore", "Lahore"],
+      places: ["the Ravi plains", "Harappa", "Sakala", "Lahore", "Lahore", "Lahore", "Lahore", "Lahore"],
       ground: { grass: "#a3ba68", sand: "#d9c48e", bed: "#7d7a5a" }, water: "#6a9aa6",
       weather: { clear: 5, cloudy: 2.5, rain: 1.5, snow: 0, fog: 1.2, storm: 0.8, sandstorm: 0.4 },
       ages: [
@@ -254,11 +262,11 @@
         { roofs: ["flat", "gable"], walls: P.redstone.concat(P.brick), roofCs: RC.slate },
         { walls: P.modern.concat(P.haveli) },
       ],
-      lms: [["stones"], ["granary", "greatbath"], ["stupa"], ["mosque"], ["fort", "mosque"], ["station", "clocktower"], ["minar", "skytower"]],
+      lms: [["stones"], ["granary", "greatbath"], ["stupa"], ["mosque"], ["fort", "mosque"], ["station", "clocktower"], ["minar", "skytower"], ["elevator", "arcology"]],
     },
     {
       id: "ganges", name: "Ganges Plain", terrain: "river", trees: "banyan", monsoon: true, winterFog: true,
-      places: ["the Ganges plain", "the Ganges plain", "Pataliputra", "Varanasi", "Agra", "Kolkata", "Kolkata"],
+      places: ["the Ganges plain", "the Ganges plain", "Pataliputra", "Varanasi", "Agra", "Kolkata", "Kolkata", "Kolkata"],
       ground: { grass: "#98b862", sand: "#e0cc98", bed: "#7a7a5c" }, water: "#6f9fa8",
       weather: { clear: 4, cloudy: 2.5, rain: 2, snow: 0, fog: 1, storm: 1, sandstorm: 0 },
       ages: [
@@ -270,7 +278,7 @@
         { roofs: ["flat", "gable"], walls: P.pastel.concat(P.brick), roofCs: RC.terra },
         { walls: P.modern.concat(P.pastel) },
       ],
-      lms: [["stones"], ["granary"], ["stupa", "shikhara"], ["shikhara"], ["mausoleum"], ["station", "factory"], ["skytower", "stadium"]],
+      lms: [["stones"], ["granary"], ["stupa", "shikhara"], ["shikhara"], ["mausoleum"], ["station", "factory"], ["skytower", "stadium"], ["rocket", "ringhab"]],
     },
   ];
 
@@ -522,6 +530,7 @@
       if (i >= 1 && i <= 4) for (let k = this.ri(1, 2); k > 0; k--) S.push({ t: this.r(0.1, 0.8) * A, a: "field" });
       for (let k = 0; k < 2; k++) S.push({ t: this.r(0.2, 0.9) * A, a: "tree" });
       for (let k = 0; k < 2; k++) S.push({ t: this.r(0.15, 0.85) * A, a: "event" });
+      if (i === 7) for (const f of [0.38, 0.62, 0.86]) S.push({ t: (f + this.r(0, 0.05)) * A, a: "launch" });
       S.sort((p, q) => p.t - q.t);
       this.sched = S;
       this.emit({ e: "age", age: i });
@@ -534,11 +543,12 @@
       else if (it.a === "field") this.placeField();
       else if (it.a === "tree") { for (let k = 0; k < 30; k++) { const a = this.r(0, 6.3), rr = Math.sqrt(this.rng()) * 9; if (this.tryTree(Math.cos(a) * rr, Math.sin(a) * rr)) { this.emit({ e: "trees" }); break; } } }
       else if (it.a === "event") this.startEvent();
+      else if (it.a === "launch") { if (this.landmarks.some((b) => b.lm === "rocket")) this.startEvent("launch"); }
     }
     /** Skip ahead: finish this age's building work now, then move on. */
     nextAge() {
       if (this.state === "bliz") return false;
-      for (const it of this.sched) if (it.a !== "event") this.exec(it);
+      for (const it of this.sched) if (it.a !== "event" && it.a !== "launch") this.exec(it);
       this.sched = [];
       if (this.age < AGES.length - 1) this.startAge(this.age + 1);
       else this.startBlizzard();
@@ -685,13 +695,13 @@
     }
     newHouse(st) {
       const roof = this.pick(st.roofs);
-      const tall = roof === "tower" || roof === "neon";
+      const tall = roof === "tower" || roof === "neon" || roof === "gtower" || roof === "spire";
       const floors = tall ? this.ri(Math.max(4, st.floors[0]), Math.max(5, st.floors[1] + 2)) : this.ri(st.floors[0], Math.min(st.floors[1], 3));
       const w = this.r(st.size[0], st.size[1]);
       return {
         kind: "house", age: this.age, roof, floors, w, d: w * this.r(0.8, 1.05),
         wall: this.pick(st.walls), roofC: this.pick(st.roofCs),
-        label: tall ? this.pick(["apartments", "office tower", "hotel"]) : this.pick(LABELS[this.age]),
+        label: this.age === 7 ? this.pick(LABELS[7].concat(tall ? ["sky garden", "orbital office"] : [])) : tall ? this.pick(["apartments", "office tower", "hotel"]) : this.pick(LABELS[this.age]),
       };
     }
     placeHouse() {
@@ -797,7 +807,7 @@
     }
 
     // --- events -------------------------------------------------------------------------------
-    startEvent() {
+    startEvent(force = null) {
       const opts = ["festival"];
       const houses = this.houses;
       if (this.age >= 1 && houses.length >= 4) opts.push("fire");
@@ -805,10 +815,12 @@
       const path = this.age >= 2 ? this.shipPath() : null;
       if (path) opts.push("ship", "ship");
       if (this.fields.length) opts.push("harvest");
-      const type = this.pick(opts);
+      const pad = this.landmarks.find((b) => b.lm === "rocket");
+      const type = force || this.pick(opts);
       const ev = { id: this.nextId++, type, t0: this.t, dur: this.r(8, 13), x: this.center.x, z: this.center.z };
       if (type === "fire") { const b = this.pick(houses); ev.target = b.id; ev.x = b.x; ev.z = b.z; }
       if (type === "ship") { ev.path = path; ev.dur = this.r(14, 20); }
+      if (type === "launch") { ev.target = pad.id; ev.x = pad.x; ev.z = pad.z; ev.dur = 9; }
       this.events.push(ev);
       this.emit({ e: "event", ev });
     }

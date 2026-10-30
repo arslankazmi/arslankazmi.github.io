@@ -42,7 +42,8 @@ const snap = (s) => JSON.stringify({ r: s.region.id, b: s.buildings.map(({ id, x
     }
   }
   const seq = ages.join("");
-  ok(seq.length >= 28 && "0123456".repeat(10).startsWith(seq), `ages advance 0→6 then restart (${seq.slice(0, 30)}…)`);
+  const ORDER = AGES.map((_, i) => i).join("");
+  ok(seq.length >= 28 && ORDER.repeat(10).startsWith(seq), `ages advance 0→7 then restart (${seq.slice(0, 30)}…)`);
   let fresh = true;
   for (let i = 2; i < regions.length; i++) if (regions[i] === regions[i - 1] || regions[i] === regions[i - 2]) fresh = false;
   ok(regions.length >= 5 && fresh, `regions never repeat the last two (${regions.join(" → ")})`);
@@ -85,8 +86,8 @@ const snap = (s) => JSON.stringify({ r: s.region.id, b: s.buildings.map(({ id, x
   console.log(`  houses at the end of each age (mean over seeds): ${mean.map((m) => m.toFixed(0)).join(" → ")}`);
   let grows = true;
   for (let i = 1; i < mean.length; i++) if (mean[i] < mean[i - 1]) grows = false;
-  ok(grows && mean[6] > 3 * mean[1], "the town grows across the ages");
-  ok(mean[6] >= S.TARGET[6] * 0.7, `the Modern town gets close to its target (${mean[6].toFixed(0)} of ${S.TARGET[6]})`);
+  ok(grows && mean[7] > 3 * mean[1], "the town grows across the ages");
+  ok(mean[7] >= S.TARGET[7] * 0.7, `the Space Age town gets close to its target (${mean[7].toFixed(0)} of ${S.TARGET[7]})`);
 }
 
 // --- landmarks appear and are named --------------------------------------------------------
@@ -96,6 +97,25 @@ const snap = (s) => JSON.stringify({ r: s.region.id, b: s.buildings.map(({ id, x
   for (let i = 0; i < steps(CYCLE); i++) { s.step(); for (const e of s.drain()) if (e.e === "add" && e.b.kind === "landmark") names.add(e.b.label); }
   ok(names.size >= 5, `a cycle builds several landmarks (${[...names].join(", ")})`);
   ok(s.landmarks.length <= 4, "no more than four landmarks stand at once");
+}
+
+// --- the Space Age builds the future and launches rockets -------------------------------------------
+{
+  const s = new Sim(12, { region: "norse" });
+  for (let k = 0; k < AGES.length - 1; k++) s.nextAge();
+  const roofs = new Set(), lms = new Set();
+  let launches = 0;
+  for (let i = 0; i < steps(AGE_T - 1); i++) {
+    s.step();
+    for (const e of s.drain()) {
+      if (e.e === "add" && e.b.kind === "house") roofs.add(e.b.roof);
+      if (e.e === "add" && e.b.kind === "landmark") lms.add(e.b.lm);
+      if (e.e === "event" && e.ev.type === "launch") launches++;
+    }
+  }
+  ok(["pod", "glassdome", "gtower", "spire"].some((r) => roofs.has(r)), `Space Age houses are futuristic (${[...roofs].join(", ")})`);
+  ok(lms.has("rocket"), `the fjord builds a launch pad (${[...lms].join(", ")})`);
+  ok(launches >= 1, `rockets launch (${launches})`);
 }
 
 // --- weather respects the region ------------------------------------------------------------
@@ -148,11 +168,11 @@ const snap = (s) => JSON.stringify({ r: s.region.id, b: s.buildings.map(({ id, x
   const s = new Sim(9);
   s.nextAge();
   ok(s.age === 1 && s.houses.length >= S.TARGET[0] - 2, `next age finishes the current one first (${s.houses.length} houses)`);
-  for (let k = 0; k < 5; k++) s.nextAge();
-  ok(s.age === 6, "next age reaches Modern");
+  for (let k = 0; k < AGES.length - 2; k++) s.nextAge();
+  ok(s.age === AGES.length - 1 && AGES[s.age].id === "space", "next age reaches the Space Age, after Modern");
   const r0 = s.region.id;
   s.nextAge();
-  ok(s.state === "bliz", "next age during Modern starts the blizzard");
+  ok(s.state === "bliz", "next age during the Space Age starts the blizzard");
   for (let i = 0; i < steps(BLIZ_T + 0.5); i++) s.step();
   ok(s.state === "grow" && s.age === 0 && s.region.id !== r0, "after the blizzard a new region starts at the Stone Age");
 }
